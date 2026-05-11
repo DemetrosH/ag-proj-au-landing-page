@@ -62,6 +62,13 @@ export function Header() {
     return date.toLocaleDateString('fr-CA', { day: 'numeric', month: 'short' });
   };
 
+  const formatCompactDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    return `${day}/${month}`;
+  };
+
   // Date constraint logic
   const getTomorrowStr = () => {
     const d = new Date();
@@ -121,11 +128,11 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-brand-border bg-white/90 backdrop-blur-md">
       <div className="container mx-auto px-4">
         {/* Top Header: Logo, Search, Account/Cart */}
-        <div className="h-20 flex items-center justify-between gap-2 sm:gap-8">
+        <div className="h-20 flex items-center justify-between gap-1 sm:gap-8">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
-            <span className="text-2xl font-bold tracking-tight text-gray-900">
-              <span className="text-[#E7A128]">Artéfact</span> Urbain
+            <span className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900">
+              <span className="text-[#E7A128]">Artéfact</span> <span className="hidden sm:inline">Urbain</span>
               <span className="hidden sm:inline-block ml-2 text-sm font-medium uppercase tracking-widest text-gray-400">Location</span>
             </span>
           </Link>
@@ -152,7 +159,7 @@ export function Header() {
                 setIsDatePickerOpen(!isDatePickerOpen);
                 if (!isDatePickerOpen) setIsMobileMenuOpen(false);
               }}
-              className={`flex items-center space-x-2 py-2 rounded-full border transition-all ${
+              className={`flex items-center space-x-1 sm:space-x-2 py-2 rounded-full border transition-all ${
                 isDateSet ? 'bg-brand-gold/10 border-brand-gold text-brand-gold' : 'border-brand-border text-gray-600 hover:border-brand-gold'
               } px-2 sm:px-4`}
             >
@@ -162,7 +169,7 @@ export function Header() {
               <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider whitespace-nowrap">
                 {isDateSet ? (
                   <>
-                    <span className="sm:hidden">{formatDate(startDate!)} - {formatDate(endDate!)}</span>
+                    <span className="sm:hidden">{formatCompactDate(startDate!)} - {formatCompactDate(endDate!)}</span>
                     <span className="hidden sm:inline">{formatDate(startDate!)} - {formatDate(endDate!)}</span>
                   </>
                 ) : (
@@ -175,7 +182,7 @@ export function Header() {
             </button>
 
             {user ? (
-              <div className="relative group">
+              <div className="hidden sm:block relative group">
                 <button className="flex items-center space-x-2 text-sm font-bold text-brand-dark hover:text-brand-orange transition-colors">
                   <div className="w-8 h-8 rounded-full bg-brand-surface border border-brand-border flex items-center justify-center">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,7 +207,7 @@ export function Header() {
                 </div>
               </div>
             ) : (
-              <Link href="/login" className="flex items-center space-x-2 text-sm font-medium text-gray-600 hover:text-brand-gold transition-colors">
+              <Link href="/login" className="hidden sm:flex items-center space-x-2 text-sm font-medium text-gray-600 hover:text-brand-gold transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
@@ -344,6 +351,44 @@ export function Header() {
             </nav>
 
             <div className="pt-6 border-t border-brand-border">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-4">Compte</p>
+              {user ? (
+                <div className="space-y-4">
+                  <Link 
+                    href="/profile" 
+                    className="flex items-center space-x-3 text-brand-dark"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span className="text-lg font-black uppercase tracking-tighter">Mon Profil</span>
+                  </Link>
+                  <button 
+                    onClick={handleLogout}
+                    className="flex items-center space-x-3 text-red-500"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    <span className="text-lg font-black uppercase tracking-tighter">Déconnexion</span>
+                  </button>
+                </div>
+              ) : (
+                <Link 
+                  href="/login" 
+                  className="flex items-center space-x-3 text-brand-dark"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  <span className="text-lg font-black uppercase tracking-tighter">Connexion</span>
+                </Link>
+              )}
+            </div>
+
+            <div className="pt-6 border-t border-brand-border">
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-4">Populaire</p>
               <div className="grid grid-cols-2 gap-4">
                 {categories.slice(0, 6).map((cat) => (
@@ -376,7 +421,7 @@ export function Header() {
                   onChange={handleStartDateChange}
                   onKeyDown={(e) => e.preventDefault()}
                   onClick={(e) => (e.target as any).showPicker?.()}
-                  className="w-full border border-brand-border rounded-xl p-4 text-sm focus:border-brand-gold focus:ring-0 cursor-pointer"
+                  className="w-full border border-brand-border rounded-xl p-5 text-lg focus:border-brand-gold focus:ring-0 cursor-pointer bg-brand-surface"
                 />
               </div>
               <div className="flex-grow">
@@ -389,7 +434,7 @@ export function Header() {
                   onChange={handleEndDateChange}
                   onKeyDown={(e) => e.preventDefault()}
                   onClick={(e) => (e.target as any).showPicker?.()}
-                  className="w-full border border-brand-border rounded-xl p-4 text-sm focus:border-brand-gold focus:ring-0 cursor-pointer"
+                  className="w-full border border-brand-border rounded-xl p-5 text-lg focus:border-brand-gold focus:ring-0 cursor-pointer bg-brand-surface"
                   disabled={!startDate}
                 />
               </div>
