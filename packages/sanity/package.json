@@ -1,0 +1,13 @@
+{
+  "name": "@repo/sanity",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./schemas": "./src/schemas/index.ts"
+  },
+  "devDependencies": {
+    "sanity": "^3.0.0",
+    "typescript": "5.9.2"
+  }
+}

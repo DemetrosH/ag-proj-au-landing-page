@@ -1,0 +1,983 @@
+{
+  "categories": [
+    {
+      "id": 313,
+      "name": "Alimentaire",
+      "slug": "alimentaire",
+      "description": ""
+    },
+    {
+      "id": 314,
+      "name": "Ameublements",
+      "slug": "ameublements",
+      "description": ""
+    },
+    {
+      "id": 327,
+      "name": "Appareils electronique",
+      "slug": "appareils-electronique",
+      "description": ""
+    },
+    {
+      "id": 320,
+      "name": "Bloc d'alimentation / Batteries",
+      "slug": "bloc-dalimentation-batteries",
+      "description": ""
+    },
+    {
+      "id": 315,
+      "name": "Chapiteaux",
+      "slug": "chapiteaux",
+      "description": ""
+    },
+    {
+      "id": 316,
+      "name": "Communication",
+      "slug": "communication",
+      "description": ""
+    },
+    {
+      "id": 335,
+      "name": "Divers",
+      "slug": "divers",
+      "description": ""
+    },
+    {
+      "id": 317,
+      "name": "Éclairage",
+      "slug": "eclairage",
+      "description": ""
+    },
+    {
+      "id": 341,
+      "name": "Enseigne Néon",
+      "slug": "enseigne-neon",
+      "description": ""
+    },
+    {
+      "id": 318,
+      "name": "Jeux",
+      "slug": "jeux",
+      "description": ""
+    },
+    {
+      "id": 319,
+      "name": "Poids / Support",
+      "slug": "poids-support",
+      "description": ""
+    },
+    {
+      "id": 333,
+      "name": "Populaire",
+      "slug": "populaire",
+      "description": ""
+    },
+    {
+      "id": 338,
+      "name": "Production audio&amp;vidéo",
+      "slug": "production-audiovideo",
+      "description": ""
+    },
+    {
+      "id": 343,
+      "name": "Produits vedette",
+      "slug": "produits-vedette",
+      "description": ""
+    },
+    {
+      "id": 332,
+      "name": "Projecteurs&amp;accessoires",
+      "slug": "projecteursaccessoires",
+      "description": ""
+    },
+    {
+      "id": 321,
+      "name": "Rallonges&amp;multiprises",
+      "slug": "rallongesmultiprises",
+      "description": ""
+    },
+    {
+      "id": 322,
+      "name": "Scène",
+      "slug": "scene",
+      "description": ""
+    },
+    {
+      "id": 325,
+      "name": "Signaletique",
+      "slug": "signaletique",
+      "description": ""
+    },
+    {
+      "id": 323,
+      "name": "Sonorisation",
+      "slug": "sonorisation",
+      "description": ""
+    },
+    {
+      "id": 324,
+      "name": "Tapis",
+      "slug": "tapis",
+      "description": ""
+    },
+    {
+      "id": 15,
+      "name": "Uncategorized",
+      "slug": "uncategorized",
+      "description": ""
+    },
+    {
+      "id": 334,
+      "name": "Véhicule",
+      "slug": "vehicule",
+      "description": ""
+    },
+    {
+      "id": 326,
+      "name": "Vidéo",
+      "slug": "video",
+      "description": "Vidéo"
+    }
+  ],
+  "productMapping": {
+    "bean bag  intérieur/extérieur rouge 20 x 12 po": [
+      "Ameublements"
+    ],
+    "console - xenyx 802s 8 entrées": [
+      "Sonorisation"
+    ],
+    "micro sm58-lc + mousse anti-vent": [
+      "Sonorisation"
+    ],
+    "alimentation portable 3600w (ecoflow power pack)": [
+      "Bloc d'alimentation / Batteries"
+    ],
+    "alimentation portable 1500w (jackery power pack)": [
+      "Bloc d'alimentation / Batteries"
+    ],
+    "foyer d'extérieur 36 pouces avec pare-étincelles": [
+      "Ameublements"
+    ],
+    "jeu de lancer de hache avec étoiles": [
+      "Jeux"
+    ],
+    "chauffage électrique de terrasse mural infrarouge 1500 w": [
+      "Ameublements"
+    ],
+    "banc pliable portable, 6 places": [
+      "Ameublements"
+    ],
+    "guirlande de fanions rouge 100 pieds": [
+      "Signaletique"
+    ],
+    "guirlande de fanions bleu 100 pieds": [
+      "Signaletique"
+    ],
+    "guirlande de fanions orange 100 pieds": [
+      "Signaletique"
+    ],
+    "guess who géant": [
+      "Jeux"
+    ],
+    "chaise adirondack – bleu marine": [
+      "Ameublements"
+    ],
+    "but de hockey de ruelle": [
+      "Jeux"
+    ],
+    "enseigne néon - photo -  26 x 8 po": [
+      "Enseigne Néon"
+    ],
+    "enseigne néon - halte famille -  55 x 8 po": [
+      "Enseigne Néon"
+    ],
+    "enseigne néon - lancer de haches -  71,5 x 8 po": [
+      "Enseigne Néon"
+    ],
+    "enseigne néon - gueule-o-thon-  55 x 8 po": [
+      "Enseigne Néon"
+    ],
+    "enseigne néon - tatouages -  43 x 8 po": [
+      "Enseigne Néon"
+    ],
+    "enseigne néon - coloriage -  38,25 x 7,5 po": [
+      "Enseigne Néon"
+    ],
+    "enseigne néon - bonbons - 33 x 7.5 po": [
+      "Enseigne Néon"
+    ],
+    "machine à barbe à papa": [
+      "Alimentaire",
+      "Populaire",
+      "Produits vedette"
+    ],
+    "chauffage électrique de terrasse 1500 w": [
+      "Ameublements"
+    ],
+    "projecteur lcd epson (modèle vs250)": [
+      "Projecteurs&amp;accessoires"
+    ],
+    "cône réfléchissant avec base de 10 lbs  – 42 po": [
+      "Signaletique"
+    ],
+    "machine à popcorn commerciale 12 oz": [
+      "Alimentaire",
+      "Produits vedette"
+    ],
+    "sac de pop-corn, 12 portions  de 1 once": [
+      "Alimentaire"
+    ],
+    "sacs à popcorn en papier 1 oz": [
+      "Alimentaire"
+    ],
+    "jeux de lancer de haches et fléchettes": [
+      "Jeux",
+      "Produits vedette"
+    ],
+    "machine à brume continue": [
+      "Jeux",
+      "Produits vedette",
+      "Scène"
+    ],
+    "machine à bulles de fumée": [
+      "Jeux"
+    ],
+    "four à pizza au propane (non inclus)": [
+      "Alimentaire",
+      "Produits vedette"
+    ],
+    "jeu connect 4 géant": [
+      "Jeux",
+      "Produits vedette"
+    ],
+    "sucre barbe à papa - orange": [
+      "Alimentaire"
+    ],
+    "sucre barbe à papa - fraise ( jolly berry )": [
+      "Alimentaire"
+    ],
+    "20 portions de sucre - framboise bleue": [
+      "Alimentaire"
+    ],
+    "20 portions de sucre - pomme verte": [
+      "Alimentaire"
+    ],
+    "20 portions de sucre - gomme balloune": [
+      "Alimentaire"
+    ],
+    "20 portions de sucre - orange": [
+      "Alimentaire"
+    ],
+    "20 portions de sucre - fraise ( jolly berry )": [
+      "Alimentaire"
+    ],
+    "kit - prise de parole autonome (1 caisse de son, 1 pied pour caisse de son, 1 micro, 1 pied de micro)": [
+      "Uncategorized"
+    ],
+    "micro md 421-ii cardioïde dynamique": [
+      "Uncategorized"
+    ],
+    "kit caméra - panasonic lumix gh5": [
+      "Production audio&amp;vidéo"
+    ],
+    "kit caméra - panasonic lumix gh4": [
+      "Production audio&amp;vidéo"
+    ],
+    "kit caméra - dslr canon eos r6": [
+      "Production audio&amp;vidéo"
+    ],
+    "pied micro court télésc. (k&amp;m 25950 noir)": [
+      "Uncategorized"
+    ],
+    "pied micro long télésc. (k&amp;m 210 noir)": [
+      "Uncategorized"
+    ],
+    "caméra - panasonic lumix gh5": [
+      "Uncategorized"
+    ],
+    "veste de sécurités": [
+      "Uncategorized"
+    ],
+    "table à pique-nique en bois, jaune.": [
+      "Ameublements"
+    ],
+    "enseigne néon - exposition -  48 x 8,5 po": [
+      "Enseigne Néon"
+    ],
+    "chariot wagon lourd (1 200 lbs)": [
+      "Poids / Support",
+      "Rallonges&amp;multiprises",
+      "Signaletique"
+    ],
+    "pesée de 30 lbs en caoutchouc": [
+      "Poids / Support"
+    ],
+    "gilet de sécurité orange (dossard)": [
+      "Signaletique"
+    ],
+    "gilet de sécurité jaune (dossard)": [
+      "Signaletique"
+    ],
+    "gilet de sécurité bleu (dossard)": [
+      "Signaletique"
+    ],
+    "lumière d'urgence magnétique pour véhicule, 12 v": [
+      "Signaletique"
+    ],
+    "lumière black light uv 320w": [
+      "Éclairage"
+    ],
+    "lumière black light uv 42w sur pied": [
+      "Éclairage"
+    ],
+    "lumière black light uv 120w": [
+      "Éclairage"
+    ],
+    "liquide à fumée (fog juice) 4l": [
+      "Jeux"
+    ],
+    "bonhomme gonflable dansant 20 pi, bleu": [
+      "Signaletique"
+    ],
+    "bonhomme gonflable dansant 10 pi, bleu": [
+      "Signaletique"
+    ],
+    "bonhomme gonflable dansant 6 pi, rouge": [
+      "Signaletique"
+    ],
+    "affiche coroplast 20 x 20 po : stationnement autorisé": [
+      "Signaletique"
+    ],
+    "affiche coroplast 32 x 32 po : interdiction de stationner": [
+      "Signaletique"
+    ],
+    "affiche coroplast 48 x 10 po : stationnement": [
+      "Signaletique"
+    ],
+    "lampe à clip": [
+      "Éclairage"
+    ],
+    "midas dl32 io stage box (digital snake) pour m32": [
+      "Sonorisation"
+    ],
+    "media player - cd/sd/usb/bt/radio player": [
+      "Production audio&amp;vidéo"
+    ],
+    "micro-casque sans fil (shure blx14/p31)": [
+      "Production audio&amp;vidéo"
+    ],
+    "ethercon cat5e pour stage box (digital snake)": [
+      "Sonorisation"
+    ],
+    "micro cardioïde condensateur (lav mx185)": [
+      "Sonorisation"
+    ],
+    "micro cardioïde condensateur  large (sm27)": [
+      "Sonorisation"
+    ],
+    "micro cardioïde condensateur (atm350 clip-on)": [
+      "Sonorisation"
+    ],
+    "micro cardioïde condensateur (at4041; overhead)": [
+      "Sonorisation"
+    ],
+    "micro kick drum super cardioïde dynamic (beta 52)": [
+      "Sonorisation"
+    ],
+    "bonhomme gonflable dansant  ( air dancer ) 20 pi, orange": [
+      "Signaletique"
+    ],
+    "bonhomme gonflable dansant 20 pi ( air dancer ), rouge": [
+      "Signaletique"
+    ],
+    "bonhomme gonflable dansant ( air dancer ) 10 pi, orange": [
+      "Signaletique"
+    ],
+    "bonhomme gonflable dansant ( air dancer ) 10 pi, rouge": [
+      "Signaletique"
+    ],
+    "enseigne néon - maquillage -  42 x 7,5 po": [
+      "Enseigne Néon"
+    ],
+    "enseigne néon - ? -  22 x 13 po": [
+      "Enseigne Néon"
+    ],
+    "panneau d'affichage pliant petit 3 x 2 pi \"sandwich\"": [
+      "Signaletique"
+    ],
+    "hdmi over ethernet": [
+      "Vidéo"
+    ],
+    "console - midas m32 live": [
+      "Sonorisation"
+    ],
+    "sirop concentré pour machine à slush - punch aux fruits": [
+      "Alimentaire"
+    ],
+    "sirop concentré pour machine à slush - cerise": [
+      "Alimentaire"
+    ],
+    "sirop concentré pour machine à slush - framboise bleue": [
+      "Alimentaire"
+    ],
+    "génératrice 3500w 120/240v": [
+      "Rallonges&amp;multiprises"
+    ],
+    "4 litres de solution à bulles à base d'eau": [
+      "Jeux"
+    ],
+    "sucre barbe à papa - pomme verte": [
+      "Alimentaire"
+    ],
+    "sucre barbe à papa - gomme balloune": [
+      "Alimentaire"
+    ],
+    "galaxy tablette a8": [
+      "Appareils electronique"
+    ],
+    "enregistreur audio zoom h1n-vp 2 canaux": [
+      "Production audio&amp;vidéo"
+    ],
+    "lecteur vidéo universel (sd, usb, vga, hdmi)": [
+      "Vidéo"
+    ],
+    "perche télescopique (mic boom)": [
+      "Production audio&amp;vidéo"
+    ],
+    "projecteur led d'extérieur 80w": [
+      "Éclairage"
+    ],
+    "rallonge 2 brins (longeurs variées) (extension)": [
+      "Rallonges&amp;multiprises"
+    ],
+    "pailles biodégradables extra larges": [
+      "Alimentaire"
+    ],
+    "verre en papier 12 oz": [
+      "Alimentaire"
+    ],
+    "cônes jetables en papier pour barbe à papa": [
+      "Alimentaire"
+    ],
+    "remorque 28 pieds": [
+      "Véhicule"
+    ],
+    "remorque 10 pieds": [
+      "Véhicule"
+    ],
+    "e350 panel": [
+      "Véhicule"
+    ],
+    "grand caravan": [
+      "Véhicule"
+    ],
+    "cube 16 pieds": [
+      "Véhicule"
+    ],
+    "toyota tacoma": [
+      "Véhicule"
+    ],
+    "rav4": [
+      "Véhicule"
+    ],
+    "lumière de scène rgb par 54 led*4w": [
+      "Éclairage"
+    ],
+    "trépied d'éclairage en t à manivelle": [
+      "Éclairage"
+    ],
+    "structure pour affiches 4' x 8' (vertical)": [
+      "Signaletique"
+    ],
+    "verres de caton divers et couvercles": [
+      "Alimentaire"
+    ],
+    "glocalme u3 - routeur lte": [
+      "Appareils electronique"
+    ],
+    "rideau rouge 1 paire": [
+      "Chapiteaux"
+    ],
+    "pile aaa rechargeable": [
+      "Bloc d'alimentation / Batteries"
+    ],
+    "pile aa rechargeable": [
+      "Bloc d'alimentation / Batteries"
+    ],
+    "kit éclairage fiilex (3x p360 pro plus lampe led)": [
+      "Éclairage"
+    ],
+    "verres et couvercle compostable": [
+      "Alimentaire"
+    ],
+    "foyer": [
+      "Ameublements"
+    ],
+    "gopro hero 8": [
+      "Vidéo"
+    ],
+    "ipad 10.2 in - wifi + 4g (artéfact)": [
+      "Appareils electronique"
+    ],
+    "machine à bulles": [
+      "Jeux"
+    ],
+    "panneau d'affichage pliant 4 x 3 pi \"sandwich\"": [
+      "Signaletique"
+    ],
+    "tapis de fitness rouge rond": [
+      "Tapis"
+    ],
+    "iphone 14 pro max 1tb": [
+      "Appareils electronique"
+    ],
+    "écran de projection 100 po avec trépied pliable": [
+      "Vidéo"
+    ],
+    "écran de projection 100 po": [
+      "Vidéo"
+    ],
+    "trépied compatible avec projecteurs, boîtes à lumières, appareils photos, projecteurs, réflecteurs": [
+      "Appareils electronique",
+      "Éclairage",
+      "Vidéo"
+    ],
+    "demi mur pour chapiteau vert et blanc 10 x 10 pi": [
+      "Chapiteaux",
+      "Produits vedette"
+    ],
+    "mur plein pour chapiteau vert et blanc 10 x 10 pi": [
+      "Chapiteaux"
+    ],
+    "demi mur pour chapiteau bleu et blanc 10 x 10 pi": [
+      "Chapiteaux"
+    ],
+    "mur plein pour chapiteau bleu et blanc 10 x 10 pi": [
+      "Chapiteaux"
+    ],
+    "mur plein pour chapiteau rouge et blanc 10 x 10 pi": [
+      "Chapiteaux",
+      "Produits vedette"
+    ],
+    "kit -  4 bollards dorés de foule et 3 câbles rouges": [
+      "Signaletique"
+    ],
+    "machine à slush (simple)": [
+      "Alimentaire",
+      "Produits vedette"
+    ],
+    "scanner cannon": [
+      "Appareils electronique"
+    ],
+    "support de toile autoportant 10x8 telescopic": [
+      "Projecteurs&amp;accessoires"
+    ],
+    "sangle à barrure noir ( strap )": [
+      "Uncategorized"
+    ],
+    "seau en plastique – 5 gallons": [
+      "Uncategorized"
+    ],
+    "ricoh theta v camera 360": [
+      "Appareils electronique"
+    ],
+    "console - behringer xr18 + tablette android": [
+      "Sonorisation"
+    ],
+    "micro sans fil  shure blx24r/sm58": [
+      "Sonorisation"
+    ],
+    "subwoofer amplifié electro-voice elx200-18sp 18 po": [
+      "Sonorisation"
+    ],
+    "tablette samsung galaxy t860 a": [
+      "Appareils electronique"
+    ],
+    "câble xlr - snake 16-4-50 pi": [
+      "Sonorisation"
+    ],
+    "câble xlr - snake 16-4-100 pi": [
+      "Sonorisation"
+    ],
+    "caisse de son amplifié moniteur qsc k12.2 + étui protecteur": [
+      "Sonorisation"
+    ],
+    "microphone shotgun sennheiser mkh416-p48u3": [
+      "Production audio&amp;vidéo"
+    ],
+    "subwoofer amplifié electro-voice elx200-12sp 12 po": [
+      "Sonorisation"
+    ],
+    "console - mackie profxv3 16 entrées": [
+      "Sonorisation"
+    ],
+    "console - behringer x1222usb premium 12 entrées": [
+      "Sonorisation"
+    ],
+    "console - behringer q1204usb 8 entrées": [
+      "Sonorisation"
+    ],
+    "télévision hd 32 po": [
+      "Vidéo"
+    ],
+    "marches pour scène portative": [
+      "Scène"
+    ],
+    "tableau magnétique en porcelaine 3x2": [
+      "Uncategorized"
+    ],
+    "micro sm57 + ws": [
+      "Sonorisation"
+    ],
+    "micro sm58s + ws (+ switch)": [
+      "Sonorisation"
+    ],
+    "support trépied télé max. 55 po": [
+      "Vidéo"
+    ],
+    "pied poteau mat  sub à caisse de son": [
+      "Sonorisation"
+    ],
+    "pied micro court télésc. (k&m 25950 noir)": [
+      "Sonorisation"
+    ],
+    "pied micro long télésc. (k&m 210 noir)": [
+      "Sonorisation"
+    ],
+    "câble audio 1/4 à 1/4 (mono) 50 pi (jack 1/4)": [
+      "Sonorisation"
+    ],
+    "câble audio 1/4 à 1/4 (mono) 25 pi (jack 1/4)": [
+      "Sonorisation"
+    ],
+    "usb à dmx cable": [
+      "Éclairage"
+    ],
+    "câble audio 1/4 à 1/4 (mono) 15 pi (jack 1/4)": [
+      "Sonorisation"
+    ],
+    "xlr m à mini-xlr f (ta3-xlr)": [
+      "Sonorisation"
+    ],
+    "adaptateur xlr femelle vers femelle": [
+      "Sonorisation"
+    ],
+    "adaptateur xlr à trs 3,5 mm (1/8)": [
+      "Sonorisation"
+    ],
+    "compteur de personnes": [
+      "Signaletique"
+    ],
+    "adapteur 1/4 vers 1/8 (3,5 mm)": [
+      "Sonorisation"
+    ],
+    "transpalette": [
+      "Uncategorized"
+    ],
+    "tableau magnétique en porcelaine 4x8": [
+      "Uncategorized"
+    ],
+    "structure pour affiches 4' x 8' (horizontale)": [
+      "Signaletique"
+    ],
+    "tapis souris": [
+      "Uncategorized"
+    ],
+    "support ordinateur portable": [
+      "Uncategorized"
+    ],
+    "bean bag extérieur noir 70 x 55 po": [
+      "Ameublements"
+    ],
+    "câble audio 1/4 mono vers xlr male 1/4": [
+      "Sonorisation"
+    ],
+    "câble audio 1/4 trs vers 2xlr male 1/4": [
+      "Sonorisation"
+    ],
+    "support murale télé": [
+      "Vidéo"
+    ],
+    "caisse de son amplifié (ev zlx-12bt) + sac protecteur": [
+      "Sonorisation"
+    ],
+    "câble audio xlr 100 pi": [
+      "Sonorisation"
+    ],
+    "direct box actif radial prodi": [
+      "Sonorisation"
+    ],
+    "direct box passif radial prodi": [
+      "Sonorisation"
+    ],
+    "pied pour caisse de son": [
+      "Sonorisation"
+    ],
+    "câble audio xlr 10 pi": [
+      "Sonorisation"
+    ],
+    "câble audio xlr 50 pi": [
+      "Sonorisation"
+    ],
+    "câble audio xlr 25 pi": [
+      "Sonorisation"
+    ],
+    "caisse de son - moniteur (alto ts408 8 po)  2000w bluetooth": [
+      "Sonorisation"
+    ],
+    "terminal square": [
+      "Appareils electronique"
+    ],
+    "baril de tirage/bingo/loterie": [
+      "Jeux"
+    ],
+    "table de bar ronde": [
+      "Ameublements"
+    ],
+    "dji ronin-sc gimbal": [
+      "Production audio&amp;vidéo",
+      "Vidéo"
+    ],
+    "tapis à poils longs  8 x 10 pi": [
+      "Populaire",
+      "Tapis"
+    ],
+    "tapis à poils longs  5,3 x 7,5 pi": [
+      "Tapis"
+    ],
+    "tapis rond à poils longs 6,5 x 6,5 pi": [
+      "Tapis"
+    ],
+    "table pliante acier inoxydable 48 x 24 po": [
+      "Ameublements"
+    ],
+    "chaise de sport portable 6 personnes rouge": [
+      "Ameublements"
+    ],
+    "chaise extérieure grise": [
+      "Ameublements"
+    ],
+    "table extérieure grise style bistro": [
+      "Ameublements"
+    ],
+    "globe lumineux led 30 cm étanche": [
+      "Éclairage",
+      "Populaire"
+    ],
+    "sucre barbe à papa - framboise bleue": [
+      "Alimentaire"
+    ],
+    "nappe en tissu 96 x 52 po, noire": [
+      "Ameublements"
+    ],
+    "kit - prise de parole (2 caisses de son, 2 pieds pour caisse de son, 1 micro, 1 pied de micro, console)": [
+      "Populaire",
+      "Sonorisation"
+    ],
+    "lumière de scène disco led adj starburst": [
+      "Éclairage",
+      "Populaire"
+    ],
+    "télévision 4k 55 po": [
+      "Vidéo"
+    ],
+    "8 x 8 po truss par 4,92 pi": [
+      "Scène"
+    ],
+    "8 x 8 po truss par 6,56 pi": [
+      "Scène"
+    ],
+    "adapteur 240v/30a à 120v/20a": [
+      "Rallonges&amp;multiprises"
+    ],
+    "8 x 8 po truss par 3,28 pi": [
+      "Scène"
+    ],
+    "base 16 x 16 po pour truss 8 x 8 po": [
+      "Scène"
+    ],
+    "cambro noir 4-3/4 gal.": [
+      "Alimentaire"
+    ],
+    "jupe pour scène portative – 48 x 24 po": [
+      "Scène"
+    ],
+    "8 x 8 po box truss": [
+      "Scène"
+    ],
+    "jupe pour scène portative – 48 x 16 po": [
+      "Scène"
+    ],
+    "garde-corps pour scène portative": [
+      "Scène"
+    ],
+    "base pour bollard enseigne (poids) 30 lbs": [
+      "Poids / Support"
+    ],
+    "table pliante noire 72 x 30 po": [
+      "Ameublements"
+    ],
+    "chargeur portable, 20 000 mah (power pack, power bank)": [
+      "Bloc d'alimentation / Batteries"
+    ],
+    "guirlande lumineuse led usb 24 pi": [
+      "Éclairage"
+    ],
+    "porte-voix / mégaphone": [
+      "Communication",
+      "Signaletique"
+    ],
+    "cône de circulation rouge 28 po": [
+      "Signaletique"
+    ],
+    "poids -  sac de sable pour chapiteau (tente pop-up)": [
+      "Chapiteaux",
+      "Poids / Support"
+    ],
+    "poids -  disque pour chapiteau (tente pop-up)": [
+      "Chapiteaux"
+    ],
+    "bougie / chandelle del rechargeable": [
+      "Éclairage"
+    ],
+    "plateau de cafétéria 12x16, rouge": [
+      "Alimentaire"
+    ],
+    "plateau de cafétéria 12x16, noir": [
+      "Alimentaire"
+    ],
+    "verre réutilisable 10 oz": [
+      "Alimentaire"
+    ],
+    "sonomètre numérique (lecteur de décibels)": [
+      "Appareils electronique"
+    ],
+    "multiprises (10) - robuste": [
+      "Rallonges&amp;multiprises"
+    ],
+    "lutrin manhasset m48": [
+      "Sonorisation"
+    ],
+    "machine à slush (double)": [
+      "Alimentaire",
+      "Populaire",
+      "Produits vedette"
+    ],
+    "aaxa m7 projecteur": [
+      "Vidéo"
+    ],
+    "chapiteau 5 x 5 pi noir (photobooth)": [
+      "Chapiteaux",
+      "Populaire",
+      "Produits vedette"
+    ],
+    "scène portative – 48 x 48 po (stage)": [
+      "Populaire",
+      "Scène"
+    ],
+    "machine à fumée (smoke)": [
+      "Jeux",
+      "Populaire",
+      "Scène"
+    ],
+    "alimentation portable 500w (jackery power pack)": [
+      "Bloc d'alimentation / Batteries"
+    ],
+    "glacière yeti  34 x 18 x 18 po": [
+      "Alimentaire"
+    ],
+    "alimentation portable 200w (jackery power pack)": [
+      "Bloc d'alimentation / Batteries"
+    ],
+    "glacière yeti  22 x 16 x 16 po": [
+      "Alimentaire"
+    ],
+    "guirlande lumineuse led 100 pi": [
+      "Éclairage",
+      "Populaire"
+    ],
+    "rideau de scène 10l x 8h velours noir avec support autoportant": [
+      "Scène"
+    ],
+    "chaise adirondack turquoise": [
+      "Ameublements",
+      "Populaire"
+    ],
+    "banc rouge en velours": [
+      "Ameublements"
+    ],
+    "passe-fils (cable mat) 37 po 5 canaux": [
+      "Rallonges&amp;multiprises"
+    ],
+    "passe-fils (cable mat) 40 po 2 canaux": [
+      "Rallonges&amp;multiprises"
+    ],
+    "guirlande lumineuse led 25 pi": [
+      "Éclairage"
+    ],
+    "lampe de travail magnétique rechargeable usb-c": [
+      "Éclairage"
+    ],
+    "chaise pliante de plastique bourgogne": [
+      "Ameublements"
+    ],
+    "chaise pliante de plastique noire": [
+      "Ameublements",
+      "Populaire"
+    ],
+    "rallonge 100 pi 30a 10/4 - noire - 240 v (extension)": [
+      "Rallonges&amp;multiprises"
+    ],
+    "walkie-talkie motorola t465/470": [
+      "Signaletique"
+    ],
+    "rallonge 100 pi 14/3 - noire - 120 v (extension)": [
+      "Rallonges&amp;multiprises"
+    ],
+    "mur plein pour chapiteau noir 10 x 10 pi": [
+      "Chapiteaux"
+    ],
+    "rallonge 25 pi 14/3, 3 prises - noire - 120 v (extension)": [
+      "Rallonges&amp;multiprises"
+    ],
+    "demi mur pour chapiteau rouge et blanc 10 x 10 pi": [
+      "Chapiteaux"
+    ],
+    "rallonge 25 pi 14/3 - noire -  120 v (extension)": [
+      "Rallonges&amp;multiprises"
+    ],
+    "rallonge 100 pi 10/3 - noire - 120 v  (extension)": [
+      "Rallonges&amp;multiprises"
+    ],
+    "rallonge 100 pi 12/3 - noire - 120 v (extension)": [
+      "Rallonges&amp;multiprises"
+    ],
+    "rallonge 10 pi 14/3 - noire - 120 v (extension)": [
+      "Rallonges&amp;multiprises"
+    ],
+    "multiprises (6)": [
+      "Rallonges&amp;multiprises"
+    ],
+    "rallonge 50 pi 14/3 - noire - 120 v (extension)": [
+      "Rallonges&amp;multiprises"
+    ],
+    "chapiteau 10 x 10 pi, rouge et blanc": [
+      "Chapiteaux",
+      "Populaire"
+    ],
+    "chapiteau 10 x 20 pi, noir": [
+      "Chapiteaux"
+    ],
+    "chapiteau 10 x 10 pi,  vert et blanc": [
+      "Chapiteaux"
+    ],
+    "chapiteau 10 x 10 pi, noir": [
+      "Chapiteaux"
+    ],
+    "chapiteau 10 x 10 pi, bleu et blanc": [
+      "Chapiteaux",
+      "Populaire",
+      "Produits vedette"
+    ]
+  }
+}

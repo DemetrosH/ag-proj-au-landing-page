@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  
+  --brand-orange: #F7A831;
+  --brand-orange-hover: #e5961d;
+  --brand-cyan: #0082CA;
+  --brand-cyan-light: #00AFEC;
+  --brand-dark: #1A1A1A;
+  --brand-gray: #F5F5F5;
+  --brand-border: #e5e5e5;
+  
+  --font-montserrat: var(--font-montserrat), 'Montserrat', sans-serif;
+  --font-poppins: var(--font-poppins), 'Poppins', sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-white text-gray-900 antialiased selection:bg-brand-orange selection:text-white;
+    font-family: var(--font-poppins);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-montserrat);
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl;
+  }
+  
+  .btn-orange {
+    @apply bg-brand-orange text-white px-8 py-4 rounded-xl font-bold transition-all duration-300 inline-flex items-center justify-center shadow-lg shadow-brand-orange/20 hover:shadow-brand-orange/40 hover:-translate-y-0.5;
+  }
+  
+  .btn-orange:hover {
+    background-color: var(--brand-orange-hover);
+  }
+  
+  .btn-outline {
+    @apply border-2 border-brand-dark hover:bg-brand-dark hover:text-white text-brand-dark px-8 py-4 rounded-xl font-bold transition-all duration-300 inline-flex items-center justify-center;
+  }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.bg-festive-gradient {
+  background: radial-gradient(circle at top right, rgba(212, 175, 55, 0.05), transparent 40%),
+              radial-gradient(circle at bottom left, rgba(255, 250, 240, 1), transparent 40%);
+}

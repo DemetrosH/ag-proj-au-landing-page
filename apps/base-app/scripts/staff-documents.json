@@ -1,0 +1,236 @@
+[
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Elysanne Tremblay",
+      "slug": {
+        "_type": "slug",
+        "current": "elysanne-tremblay"
+      },
+      "bio": "",
+      "department": "evenementiel",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Olivier Arseneault",
+      "slug": {
+        "_type": "slug",
+        "current": "olivier-arseneault"
+      },
+      "bio": "",
+      "department": "evenementiel",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Vanadis Moussu",
+      "slug": {
+        "_type": "slug",
+        "current": "vanadis-moussu"
+      },
+      "bio": "",
+      "department": "accompagnement",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Félicia Corbeil",
+      "slug": {
+        "_type": "slug",
+        "current": "felicia-corbeil"
+      },
+      "bio": "",
+      "department": "administration",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Véronique Marengère",
+      "slug": {
+        "_type": "slug",
+        "current": "veronique-marengere"
+      },
+      "bio": "",
+      "department": "archeologie",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Fanny Mignet",
+      "slug": {
+        "_type": "slug",
+        "current": "fanny-mignet"
+      },
+      "bio": "",
+      "department": "evenementiel",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Christian Couture",
+      "slug": {
+        "_type": "slug",
+        "current": "christian-couture"
+      },
+      "bio": "",
+      "department": "evenementiel",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Odile Pelletier",
+      "slug": {
+        "_type": "slug",
+        "current": "odile-pelletier"
+      },
+      "bio": "",
+      "department": "accompagnement",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Mitja Lesnik",
+      "slug": {
+        "_type": "slug",
+        "current": "mitja-lesnik"
+      },
+      "bio": "",
+      "department": "numerique",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Vincent Arsenault",
+      "slug": {
+        "_type": "slug",
+        "current": "vincent-arsenault"
+      },
+      "bio": "",
+      "department": "numerique",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Émile Couture",
+      "slug": {
+        "_type": "slug",
+        "current": "emile-couture"
+      },
+      "bio": "",
+      "department": "administration",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Laurie Juteau",
+      "slug": {
+        "_type": "slug",
+        "current": "laurie-juteau"
+      },
+      "bio": "",
+      "department": "evenementiel",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Éloïse Plamondon-Pagé",
+      "slug": {
+        "_type": "slug",
+        "current": "eloise-plamondon-page"
+      },
+      "bio": "",
+      "department": "evenementiel",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Simon Paquin",
+      "slug": {
+        "_type": "slug",
+        "current": "simon-paquin"
+      },
+      "bio": "",
+      "department": "archeologie",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Joey Leblanc",
+      "slug": {
+        "_type": "slug",
+        "current": "joey-leblanc"
+      },
+      "bio": "",
+      "department": "archeologie",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Marie-Anne Paradis",
+      "slug": {
+        "_type": "slug",
+        "current": "marie-anne-paradis"
+      },
+      "bio": "",
+      "department": "archeologie",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Irène St-Amand",
+      "slug": {
+        "_type": "slug",
+        "current": "irene-st-amand"
+      },
+      "bio": "",
+      "department": "administration",
+      "role": ""
+    }
+  },
+  {
+    "type": "teamMember",
+    "content": {
+      "name": "Jeanne Couture",
+      "slug": {
+        "_type": "slug",
+        "current": "jeanne-couture"
+      },
+      "bio": "",
+      "department": "administration",
+      "role": ""
+    }
+  }
+]

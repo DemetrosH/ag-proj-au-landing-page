@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #FAFAFA;
+  --foreground: #1A1A1A;
+  --brand-gold: #E7A128;
+  --brand-orange: #D35400;
+  --brand-accent: #FBAF2C;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1A1A1A;
+    --foreground: #FAFAFA;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-playfair), serif;
+}
+
+/* The "Line" of Style */
+.brand-line {
+  height: 1px;
+  background: var(--brand-gold);
+  width: 100%;
+}

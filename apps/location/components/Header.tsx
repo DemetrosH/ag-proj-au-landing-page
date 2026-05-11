@@ -1,0 +1,309 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRental } from '../context/RentalContext';
+import { useCart } from '../context/CartContext';
+// Import WooCommerce mapping data
+import wcData from '../data/wc-data.json';
+import { createClient } from '../lib/supabase/client';
+import { URBA_ACCESS_RULES, UserRole } from '../lib/access-control';
+
+export function Header() {
+  const { startDate, endDate, setDates, isDateSet } = useRental();
+  const { itemCount } = useCart();
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [user, setUser] = useState<any>(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const fetchUserAndRole = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        setUser({ ...user, role: profile?.role || 'guest' });
+      } else {
+        setUser(null);
+      }
+    };
+    fetchUserAndRole();
+  }, []);
+
+  useEffect(() => {
+    const role: UserRole = user?.role || 'guest';
+    const rules = URBA_ACCESS_RULES[role];
+    
+    // Filter and format categories from sync data
+    const activeCategories = wcData.categories
+      .filter(cat => cat.name !== 'Uncategorized' && cat.name !== 'Populaire' && cat.name !== 'Produits vedette')
+      .filter(cat => !rules.hideCats.includes(cat.slug))
+      .map(cat => ({
+        ...cat,
+        name: cat.name.replace('&amp;', '&')
+      }));
+    setCategories(activeCategories);
+  }, [user]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    window.location.reload();
+  };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('fr-CA', { day: 'numeric', month: 'short' });
+  };
+
+  // Date constraint logic
+  const getTomorrowStr = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split('T')[0];
+  };
+
+  const getFormattedDateStr = (date: Date) => {
+    return date.toISOString().split('T')[0];
+  };
+
+  const tomorrowStr = getTomorrowStr();
+
+  // If start date exists, max end date is start date + 6 days
+  let maxEndDateStr = '';
+  if (startDate) {
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + 6);
+    maxEndDateStr = getFormattedDateStr(d);
+  }
+
+  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let newStart = e.target.value;
+    if (!newStart || newStart < tomorrowStr) {
+      newStart = tomorrowStr;
+    }
+    
+    // Check if current end date is now invalid
+    let newEnd = endDate;
+    if (newEnd) {
+      const s = new Date(newStart);
+      const eDate = new Date(newEnd);
+      const maxE = new Date(s);
+      maxE.setDate(maxE.getDate() + 6);
+
+      if (eDate < s || eDate > maxE) {
+        newEnd = newStart; // Reset end date to start date if out of bounds
+      }
+    }
+    setDates(newStart, newEnd);
+  };
+
+  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let newEnd = e.target.value;
+    const minEnd = startDate || tomorrowStr;
+    
+    if (newEnd < minEnd) {
+      newEnd = minEnd;
+    } else if (maxEndDateStr && newEnd > maxEndDateStr) {
+      newEnd = maxEndDateStr;
+    }
+    
+    setDates(startDate, newEnd);
+  };
+
+  return (
+    <header className="sticky top-0 z-50 w-full border-b border-brand-border bg-white/90 backdrop-blur-md">
+      <div className="container mx-auto px-4">
+        {/* Top Header: Logo, Search, Account/Cart */}
+        <div className="h-20 flex items-center justify-between gap-8">
+          {/* Logo */}
+          <Link href="/" className="flex-shrink-0">
+            <span className="text-2xl font-bold tracking-tight text-gray-900">
+              <span className="text-[#E7A128]">Artéfact</span> Urbain
+              <span className="ml-2 text-sm font-medium uppercase tracking-widest text-gray-400">Location</span>
+            </span>
+          </Link>
+
+          {/* Search Bar - Center */}
+          <div className="hidden lg:flex flex-grow max-w-xl relative">
+            <input
+              type="text"
+              placeholder="Rechercher un équipement..."
+              className="w-full bg-brand-surface border border-brand-border rounded-full py-2.5 px-6 text-sm focus:outline-none focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/5 transition-all"
+            />
+            <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-gold">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Account & Cart */}
+          <div className="flex items-center space-x-6">
+            {/* Date Selector Trigger */}
+            <button 
+              onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-full border transition-all ${
+                isDateSet ? 'bg-brand-gold/10 border-brand-gold text-brand-gold' : 'border-brand-border text-gray-600 hover:border-brand-gold'
+              }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span className="text-xs font-bold uppercase tracking-wider">
+                {isDateSet ? `${formatDate(startDate!)} - ${formatDate(endDate!)}` : 'Choisir Dates'}
+              </span>
+            </button>
+
+            {user ? (
+              <div className="relative group">
+                <button className="flex items-center space-x-2 text-sm font-bold text-brand-dark hover:text-brand-orange transition-colors">
+                  <div className="w-8 h-8 rounded-full bg-brand-surface border border-brand-border flex items-center justify-center">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <span className="hidden sm:inline max-w-[100px] truncate">{user.email?.split('@')[0]}</span>
+                </button>
+                <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-brand-border shadow-2xl rounded-2xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                  <Link 
+                    href="/profile"
+                    className="w-full text-left px-4 py-2 text-xs font-bold uppercase tracking-widest text-brand-dark hover:bg-brand-surface rounded-xl transition-colors block"
+                  >
+                    Mon Profil
+                  </Link>
+                  <button 
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                  >
+                    Déconnexion
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <Link href="/login" className="flex items-center space-x-2 text-sm font-medium text-gray-600 hover:text-brand-gold transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span className="hidden sm:inline">Connexion</span>
+              </Link>
+            )}
+            
+            <Link href="/soumission" className="relative group">
+              <svg className="w-6 h-6 text-gray-600 group-hover:text-brand-gold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-brand-gold text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                  {itemCount}
+                </span>
+              )}
+            </Link>
+          </div>
+        </div>
+
+        {/* Bottom Header: Navigation */}
+        <div className="h-12 border-t border-brand-border flex items-center justify-center">
+          <nav className="flex items-center h-full space-x-12 text-xs font-bold tracking-widest uppercase">
+            <Link href="/" className="text-gray-900 hover:text-brand-gold transition-colors flex items-center h-full px-2">
+              Accueil
+            </Link>
+            <div 
+              className="relative group h-full flex items-center"
+              onMouseEnter={() => setIsCategoryOpen(true)}
+              onMouseLeave={() => setIsCategoryOpen(false)}
+            >
+              <Link href="/categories" className="text-gray-900 hover:text-brand-gold transition-colors flex items-center h-full px-2">
+                Catégories
+                <svg className={`ml-1 w-4 h-4 transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </Link>
+              
+              {isCategoryOpen && (
+                <div className="absolute top-full left-0 pt-4 w-[700px] max-w-[90vw] animate-fade-in-up z-50">
+                  <div className="bg-white border border-brand-border shadow-2xl rounded-2xl p-8 relative before:absolute before:inset-x-0 before:-top-4 before:h-4 before:bg-transparent">
+                    <div className="columns-2 gap-x-12">
+                      {categories.map((cat) => (
+                        <Link 
+                          key={cat.id} 
+                          href={`/categories/${cat.slug}`}
+                          className="block break-inside-avoid mb-3 text-gray-600 hover:text-brand-gold text-[13px] font-semibold tracking-wide transition-colors leading-tight"
+                          onClick={() => setIsCategoryOpen(false)}
+                        >
+                          {cat.name}
+                        </Link>
+                      ))}
+                    </div>
+                    <div className="pt-5 mt-3 border-t border-brand-border text-center">
+                      <Link 
+                        href="/categories" 
+                        className="inline-block text-brand-gold text-xs font-bold uppercase tracking-widest hover:underline"
+                        onClick={() => setIsCategoryOpen(false)}
+                      >
+                        Voir toutes les catégories →
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            <Link href="/contact#address" className="text-gray-900 hover:text-brand-gold transition-colors flex items-center h-full px-2">
+              Contact
+            </Link>
+            <Link href="/soumission" className="text-brand-gold hover:text-brand-gold-hover transition-colors flex items-center">
+              <svg className="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+              </svg>
+              Soumission
+            </Link>
+          </nav>
+        </div>
+      </div>
+
+      {/* Inline Date Picker Modal */}
+      {isDatePickerOpen && (
+        <div className="absolute top-full left-0 w-full bg-white border-b border-brand-border shadow-2xl animate-fade-in-down">
+          <div className="container mx-auto px-4 py-8">
+            <div className="flex flex-col md:flex-row items-end gap-8 max-w-4xl mx-auto">
+              <div className="flex-grow">
+                <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Début de location</label>
+                <input 
+                  type="date" 
+                  min={tomorrowStr}
+                  value={startDate || ''} 
+                  onChange={handleStartDateChange}
+                  className="w-full border border-brand-border rounded-xl p-3 focus:border-brand-gold focus:ring-0"
+                />
+              </div>
+              <div className="flex-grow">
+                <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Fin de location (Max 7 jours)</label>
+                <input 
+                  type="date" 
+                  min={startDate || tomorrowStr}
+                  max={maxEndDateStr || undefined}
+                  value={endDate || ''} 
+                  onChange={handleEndDateChange}
+                  className="w-full border border-brand-border rounded-xl p-3 focus:border-brand-gold focus:ring-0"
+                  disabled={!startDate} // Force user to pick start date first for better UX
+                />
+              </div>
+              <button 
+                onClick={() => setIsDatePickerOpen(false)}
+                className="bg-brand-gold text-white font-bold px-8 py-3 rounded-xl hover:bg-brand-gold-hover transition-all disabled:opacity-50"
+                disabled={!startDate || !endDate}
+              >
+                Confirmer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </header>
+  );
+}
