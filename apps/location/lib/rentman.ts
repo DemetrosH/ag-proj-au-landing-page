@@ -189,7 +189,7 @@ async function getProductsFromDb(options: {
         price: p.price,
         description: p.description,
         image: p.image_url,
-        features: p.tags || [],
+        features: (p.tags || []).filter((tag: string) => !['location-a', 'location-b', 'location-c', 'populaire', 'produits-vedette', 'uncategorized'].includes(tag.toLowerCase())),
         isFeatured: p.is_featured
       }));
   } catch (e) {
@@ -332,7 +332,11 @@ function mapRentmanToProduct(item: any, categoryId: string, filesLookup: Record<
     price: item.price || 0,
     description: item.shop_description_long || item.shop_description_short || item.description || '',
     image: imageUrl || '',
-    features: item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [],
+    features: item.tags 
+      ? item.tags.split(',')
+          .map((t: string) => t.trim())
+          .filter((t: string) => !['location-a', 'location-b', 'location-c', 'populaire', 'produits-vedette', 'uncategorized'].includes(t.toLowerCase()))
+      : [],
     isFeatured: !!item.shop_featured,
   };
 }
@@ -414,7 +418,7 @@ export async function getProductById(id: string, role: UserRole = 'guest'): Prom
       price: p.price,
       description: p.description,
       image: p.image_url,
-      features: p.tags || [],
+      features: (p.tags || []).filter((tag: string) => !['location-a', 'location-b', 'location-c', 'populaire', 'produits-vedette', 'uncategorized'].includes(tag.toLowerCase())),
       isFeatured: p.is_featured
     };
   }
