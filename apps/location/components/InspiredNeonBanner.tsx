@@ -39,7 +39,7 @@ export function InspiredNeonBanner() {
               Illuminez vos événements avec nos créations sur mesure. Ajoutez une touche de lumière unique à votre décor.
             </p>
             <Link 
-              href="/enseigne-neon"
+              href="/categories/enseigne-neon"
               className="inline-block px-10 py-5 text-sm font-black text-white tracking-[0.3em] uppercase border-2 border-pink-500 hover:bg-pink-500 hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] transition-all duration-300 rounded-full"
             >
               Voir l'inventaire
