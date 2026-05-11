@@ -101,7 +101,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             <h3 className="text-lg font-bold uppercase tracking-widest">Caractéristiques</h3>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {product.features
-                .filter(feature => !['location-a', 'location-b', 'location-c', 'populaire', 'produits-vedette', 'uncategorized'].includes(feature.toLowerCase()))
+                .filter(feature => !['location a', 'location b', 'location c', 'location-a', 'location-b', 'location-c', 'populaire', 'produits-vedette', 'uncategorized'].includes(feature.toLowerCase()))
                 .map((feature, idx) => (
                 <li key={idx} className="flex items-center gap-3 text-gray-600">
                   <svg className="w-5 h-5 text-brand-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
