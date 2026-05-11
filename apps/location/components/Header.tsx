@@ -121,12 +121,12 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-brand-border bg-white/90 backdrop-blur-md">
       <div className="container mx-auto px-4">
         {/* Top Header: Logo, Search, Account/Cart */}
-        <div className="h-20 flex items-center justify-between gap-8">
+        <div className="h-20 flex items-center justify-between gap-2 sm:gap-8">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <span className="text-2xl font-bold tracking-tight text-gray-900">
               <span className="text-[#E7A128]">Artéfact</span> Urbain
-              <span className="ml-2 text-sm font-medium uppercase tracking-widest text-gray-400">Location</span>
+              <span className="hidden sm:inline-block ml-2 text-sm font-medium uppercase tracking-widest text-gray-400">Location</span>
             </span>
           </Link>
 
@@ -145,16 +145,16 @@ export function Header() {
           </div>
 
           {/* Account & Cart */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-3 sm:space-x-6">
             {/* Date Selector Trigger */}
             <button 
               onClick={() => {
                 setIsDatePickerOpen(!isDatePickerOpen);
                 if (!isDatePickerOpen) setIsMobileMenuOpen(false);
               }}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-full border transition-all ${
+              className={`flex items-center space-x-2 py-2 rounded-full border transition-all ${
                 isDateSet ? 'bg-brand-gold/10 border-brand-gold text-brand-gold' : 'border-brand-border text-gray-600 hover:border-brand-gold'
-              }`}
+              } px-2 sm:px-4`}
             >
               <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
