@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Category } from '../lib/rentman';
-import { NeonBanner } from './NeonBanner';
+import { InspiredNeonBanner as NeonBanner } from './InspiredNeonBanner';
 
 interface CategoryGridProps {
   categories: Category[];

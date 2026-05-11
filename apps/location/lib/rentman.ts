@@ -190,7 +190,7 @@ export async function getHomeCategories(role: UserRole = 'guest'): Promise<Categ
 
         // Check for hidden tags
         const itemTags = item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [];
-        const hasHiddenTag = itemTags.some(tag => rules.hideTags.includes(tag));
+        const hasHiddenTag = itemTags.some((tag: string) => rules.hideTags.includes(tag));
         
         return !hasHiddenTag;
       })
@@ -280,7 +280,7 @@ function mapRentmanToProduct(item: any, categoryId: string, filesLookup: Record<
     categoryId,
     price: item.price || 0,
     description: item.shop_description_long || item.shop_description_short || item.description || '',
-    image: imageUrl, 
+    image: imageUrl || '',
     features: item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [],
     isFeatured: !!item.shop_featured,
   };
@@ -302,7 +302,7 @@ export async function getEquipment(limit = 100, role: UserRole = 'guest'): Promi
       
       // Check for hidden tags
       const itemTags = item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [];
-      const hasHiddenTag = itemTags.some(tag => rules.hideTags.includes(tag));
+      const hasHiddenTag = itemTags.some((tag: string) => rules.hideTags.includes(tag));
       if (hasHiddenTag) return false;
 
       return true;
@@ -361,7 +361,7 @@ export async function getProductsForCategory(categorySlug: string, role: UserRol
 
     // 2. Check for hidden tags
     const itemTags = item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [];
-    const hasHiddenTag = itemTags.some(tag => rules.hideTags.includes(tag));
+    const hasHiddenTag = itemTags.some((tag: string) => rules.hideTags.includes(tag));
     
     return !hasHiddenTag;
   });
@@ -379,7 +379,7 @@ export async function getProductById(id: string, role: UserRole = 'guest'): Prom
   
   // Check for hidden tags
   const itemTags = item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [];
-  const hasHiddenTag = itemTags.some(tag => rules.hideTags.includes(tag));
+  const hasHiddenTag = itemTags.some((tag: string) => rules.hideTags.includes(tag));
   if (hasHiddenTag) return null;
 
   // Resolve image for the single product
@@ -396,6 +396,6 @@ export async function getProductById(id: string, role: UserRole = 'guest'): Prom
 
   return {
     ...mapRentmanToProduct(item, 'unknown'),
-    image: imageUrl
+    image: imageUrl || ''
   };
 }

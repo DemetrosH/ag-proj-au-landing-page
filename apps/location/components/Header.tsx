@@ -79,13 +79,13 @@ export function Header() {
   if (startDate) {
     const d = new Date(startDate);
     d.setDate(d.getDate() + 6);
-    maxEndDateStr = getFormattedDateStr(d);
+    maxEndDateStr = getFormattedDateStr(d) || '';
   }
 
   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let newStart = e.target.value;
-    if (!newStart || newStart < tomorrowStr) {
-      newStart = tomorrowStr;
+    if (!newStart || (tomorrowStr && newStart < tomorrowStr)) {
+      newStart = tomorrowStr || '';
     }
     
     // Check if current end date is now invalid
@@ -105,7 +105,7 @@ export function Header() {
 
   const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let newEnd = e.target.value;
-    const minEnd = startDate || tomorrowStr;
+    const minEnd = startDate || tomorrowStr || '';
     
     if (newEnd < minEnd) {
       newEnd = minEnd;

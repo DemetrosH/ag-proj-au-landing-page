@@ -18,13 +18,7 @@ export function CategoryProductList({ products }: CategoryProductListProps) {
     e.preventDefault();
     e.stopPropagation();
     
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      quantity: 1
-    });
+    addToCart(product);
 
     setAddedId(product.id);
     setTimeout(() => setAddedId(null), 2000);

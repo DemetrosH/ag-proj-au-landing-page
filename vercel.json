@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npx turbo run build --filter=location",
+  "outputDirectory": "apps/location/.next",
+  "installCommand": "npm install"
+}

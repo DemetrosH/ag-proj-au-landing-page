@@ -19,6 +19,16 @@ export interface CategoryConfig {
   order?: number;
 }
 
+export interface Division {
+  _id: string;
+  title: string;
+  slug: string;
+  description?: string;
+  imageUrl?: string;
+  link?: string;
+  order?: number;
+}
+
 interface LandingPageProps {
   categories: Category[];
   division?: Division;
