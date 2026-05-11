@@ -19,7 +19,7 @@ export function InspiredHero() {
       <div className="absolute top-0 right-0 w-1/2 h-full bg-brand-gray/50 -skew-x-6 translate-x-1/4 z-0" />
       
       <div className="container mx-auto px-4 max-w-7xl relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-16">
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           
           {/* Left Column: Content */}
           <div className="lg:w-1/2">
@@ -28,7 +28,7 @@ export function InspiredHero() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <h1 className="text-5xl md:text-7xl font-black text-brand-dark uppercase tracking-tighter leading-[0.9] mb-8">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-brand-dark uppercase tracking-tight md:tracking-tighter leading-[1.1] md:leading-[0.9] mb-8">
                 Votre Expertise, <br />
                 Notre <span className="text-brand-orange">Équipement</span>
               </h1>
@@ -50,11 +50,11 @@ export function InspiredHero() {
                 ))}
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-4">
-                <a href="#inventory" className="btn-orange text-sm uppercase tracking-widest">
+              <div className="flex flex-col sm:flex-row gap-5">
+                <a href="#inventory" className="btn-orange text-sm uppercase tracking-widest text-center w-full sm:w-auto">
                   Parcourir l'inventaire
                 </a>
-                <a href="/contact" className="btn-outline text-sm uppercase tracking-widest">
+                <a href="/contact" className="btn-outline text-sm uppercase tracking-widest text-center w-full sm:w-auto">
                   Demander un devis
                 </a>
               </div>
@@ -95,8 +95,8 @@ export function InspiredHero() {
                 </div>
               </div>
               
-              {/* Decorative side element */}
-              <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-brand-orange rounded-3xl z-0" />
+              {/* Decorative side element - Hidden on mobile */}
+              <div className="hidden lg:block absolute -bottom-6 -left-6 w-24 h-24 bg-brand-orange rounded-3xl z-0" />
             </motion.div>
           </div>
           

@@ -1,0 +1,12 @@
+{
+  "installCommand": "npm install",
+  "builds": [
+    {
+      "src": "apps/location/package.json",
+      "use": "@vercel/next",
+      "config": {
+        "installCommand": "cd ../.. && npm install"
+      }
+    }
+  ]
+}

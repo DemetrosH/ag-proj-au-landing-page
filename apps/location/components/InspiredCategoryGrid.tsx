@@ -24,6 +24,7 @@ const borderColors = [
 const featuredProductKeywords: Record<string, string[]> = {
   "alimentaire": ["papa", "slush", "popcorn", "hot dog"],
   "chapiteaux": ["10x10", "mur", "photo", "poids"],
+  "ameublements": ["table", "chaise", "tabouret", "mange"],
   "mobilier": ["table", "chaise", "tabouret", "mange"],
   "ameublement": ["table", "chaise", "tabouret", "mange"],
   "equipements electriques": ["passe", "rallonge", "panneau", "generatrice"],

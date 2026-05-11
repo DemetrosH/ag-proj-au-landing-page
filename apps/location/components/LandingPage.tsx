@@ -128,11 +128,11 @@ export function LandingPage({ categories, division, categoryConfigs = [] }: Land
       <SEOSection />
 
       {/* 5. Modern Mini Footer CTA */}
-      <section className="py-24 bg-brand-gray/30 border-t border-gray-100">
+      <section className="py-12 md:py-24 bg-brand-gray/30 border-t border-gray-100">
         <div className="container mx-auto px-4 max-w-7xl">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-12 bg-brand-dark p-12 md:p-20 rounded-[4rem] text-white overflow-hidden relative shadow-2xl">
-            <div className="relative z-10">
-              <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-6 leading-none">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-12 bg-brand-dark p-8 md:p-20 rounded-[2rem] md:rounded-[4rem] text-white overflow-hidden relative shadow-2xl">
+            <div className="relative z-10 text-center md:text-left">
+              <h2 className="text-3xl md:text-6xl font-black uppercase tracking-tighter mb-6 leading-none">
                 Besoin d'un <br /><span className="text-brand-orange">Conseil ?</span>
               </h2>
               <p className="text-lg text-gray-400 max-w-md font-medium">

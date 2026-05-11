@@ -5,6 +5,9 @@ import { getUserRole } from '../../../lib/auth';
 import { URBA_ACCESS_RULES } from '../../../lib/access-control';
 import { CategoryProductList } from './CategoryProductList';
 
+// Cache category pages for 1 hour
+export const revalidate = 3600;
+
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const role = await getUserRole();

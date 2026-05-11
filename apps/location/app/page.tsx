@@ -5,6 +5,9 @@ import { getLocationDivision, getCategoryConfigs } from '../lib/sanity';
 
 import { getUserRole } from '../lib/auth';
 
+// Cache the page for 1 hour — Rentman API data doesn't change frequently
+export const revalidate = 3600;
+
 export default async function Home() {
   const role = await getUserRole();
   const [categories, division, rawCategoryConfigs, allEquipment] = await Promise.all([

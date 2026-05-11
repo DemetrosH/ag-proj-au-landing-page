@@ -32,3 +32,43 @@ create trigger on_auth_user_created
 -- 4. Initial Role Assignment (Optional Example)
 -- Update a specific user to admin:
 -- update profiles set role = 'admin' where email = 'your-email@example.com';
+
+-- 5. Categories table
+create table categories (
+  id uuid default gen_random_uuid() primary key,
+  rentman_id text unique not null,
+  name text not null,
+  slug text unique not null,
+  description text,
+  last_synced timestamp with time zone default now()
+);
+
+-- 6. Products table
+create table products (
+  id uuid default gen_random_uuid() primary key,
+  rentman_id text unique not null,
+  name text not null,
+  slug text unique not null,
+  price numeric default 0,
+  description text,
+  image_url text,
+  category_slug text references categories(slug) on delete set null,
+  is_featured boolean default false,
+  tags text[],
+  last_synced timestamp with time zone default now()
+);
+
+-- 7. Search Indexes
+-- Simple indexes for common queries
+create index idx_products_category on products(category_slug);
+create index idx_products_featured on products(is_featured) where is_featured = true;
+
+-- 8. Row Level Security for Public Access
+alter table categories enable row level security;
+alter table products enable row level security;
+
+create policy "Categories are viewable by everyone." on categories
+  for select using (true);
+
+create policy "Products are viewable by everyone." on products
+  for select using (true);

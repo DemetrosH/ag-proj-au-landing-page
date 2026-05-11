@@ -8,6 +8,7 @@ const RENTMAN_API_TOKEN = process.env.RENTMAN_API_TOKEN;
 // Import WooCommerce mapping data
 import wcData from '../data/wc-data.json';
 import { UserRole, URBA_ACCESS_RULES } from './access-control';
+import { createClient } from './supabase/server';
 
 export interface RentmanProduct {
   id: string | number;
@@ -57,7 +58,7 @@ export interface RentmanFolder {
 /**
  * Generic fetch wrapper for Rentman API
  */
-async function rentmanFetch<T>(endpoint: string, options: any = {}): Promise<T> {
+export async function rentmanFetch<T>(endpoint: string, options: any = {}): Promise<T> {
   if (!RENTMAN_API_TOKEN || RENTMAN_API_TOKEN === 'YOUR_RENTMAN_API_TOKEN') {
     throw new Error('Rentman API Token is not configured');
   }
@@ -116,7 +117,7 @@ export async function getCategories(): Promise<Category[]> {
 /**
  * Helper to fetch all pages of a Rentman endpoint
  */
-async function rentmanFetchAll<T>(endpoint: string, params: any = {}): Promise<T[]> {
+export async function rentmanFetchAll<T>(endpoint: string, params: any = {}): Promise<T[]> {
   const allData: T[] = [];
   const limit = 1000;
   let offset = 0;
@@ -145,15 +146,87 @@ async function rentmanFetchAll<T>(endpoint: string, params: any = {}): Promise<T
 }
 
 /**
+ * Fetch products from Supabase with optional category filtering
+ */
+async function getProductsFromDb(options: { 
+  categorySlug?: string, 
+  limit?: number, 
+  isFeatured?: boolean,
+  role?: UserRole 
+} = {}): Promise<Product[]> {
+  try {
+    const supabase = await createClient();
+    const rules = URBA_ACCESS_RULES[options.role || 'guest'];
+    
+    let query = supabase
+      .from('products')
+      .select('*');
+
+    if (options.categorySlug) {
+      query = query.eq('category_slug', options.categorySlug);
+    }
+    
+    if (options.isFeatured) {
+      query = query.eq('is_featured', true);
+    }
+
+    if (options.limit) {
+      query = query.limit(options.limit);
+    }
+
+    const { data, error } = await query;
+    if (error || !data || data.length === 0) {
+      return [];
+    }
+
+    return data
+      .filter(p => !p.tags?.some((tag: string) => rules.hideTags.includes(tag)))
+      .map(p => ({
+        id: p.rentman_id,
+        name: p.name,
+        slug: p.slug,
+        categoryId: p.category_slug || 'unknown',
+        price: p.price,
+        description: p.description,
+        image: p.image_url,
+        features: p.tags || [],
+        isFeatured: p.is_featured
+      }));
+  } catch (e) {
+    console.error('[Supabase] Fetch error:', e);
+    return [];
+  }
+}
+
+/**
  * Enhanced getCategories for Home Page with product previews
  */
 export async function getHomeCategories(role: UserRole = 'guest'): Promise<Category[]> {
   const rules = URBA_ACCESS_RULES[role];
   const categories = await getCategories();
-  
-  // Filter out hidden categories
   const allowedCategories = categories.filter(cat => !rules.hideCats.includes(cat.slug));
   
+  // 1. Try DB first
+  const dbProducts = await getProductsFromDb({ role });
+  if (dbProducts.length > 0) {
+    return allowedCategories.map(cat => {
+      const categoryProducts = dbProducts.filter(p => p.categoryId === cat.slug);
+      const previewImages = categoryProducts
+        .map(p => p.image)
+        .filter((img, i, self) => img && self.indexOf(img) === i)
+        .slice(0, 4);
+
+      return {
+        ...cat,
+        productCount: categoryProducts.length,
+        previewImages,
+        products: categoryProducts.slice(0, 10)
+      };
+    }).filter(cat => (cat as any).productCount > 0);
+  }
+
+  // 2. Fallback to Rentman
+  console.log('[Rentman] DB is empty, falling back to direct API...');
   const [allEquipment, folders, filesLookup] = await Promise.all([
     rentmanFetchAll<any>('/equipment'),
     rentmanFetchAll<any>('/folders'),
@@ -161,71 +234,49 @@ export async function getHomeCategories(role: UserRole = 'guest'): Promise<Categ
   ]);
 
   const results = allowedCategories.map(cat => {
-    // Find matching folder IDs for this category
     const targetFolderIds = folders
       .filter(f => {
         const folderName = f.name.toLowerCase().trim();
         const catName = cat.name.toLowerCase().trim();
-        return folderName === catName || 
-               folderName === `${catName}-ws` || 
-               folderName === `${catName} - ws` ||
-               f.path.toLowerCase().includes(`/${catName}/`) ||
-               f.path.toLowerCase().includes(`/${catName}-ws/`);
+        return folderName === catName || folderName === `${catName}-ws` || f.path.toLowerCase().includes(`/${catName}/`);
       })
       .map(f => String(f.id));
 
-    // Get products for this category using the same logic as getProductsForCategory
     const categoryProducts = allEquipment
       .filter(item => {
         if (!item.in_shop) return false;
-        
         const itemFolderId = item.folder ? item.folder.split('/').pop() : null;
         if (itemFolderId && targetFolderIds.includes(String(itemFolderId))) return true;
-
         const itemNameLower = item.name.toLowerCase().trim();
         const mappedCategories = (wcData.productMapping as any)[itemNameLower];
         const isInCategory = mappedCategories && mappedCategories.includes(cat.name);
-        
         if (!isInCategory) return false;
-
-        // Check for hidden tags
         const itemTags = item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [];
-        const hasHiddenTag = itemTags.some((tag: string) => rules.hideTags.includes(tag));
-        
-        return !hasHiddenTag;
+        return !itemTags.some((tag: string) => rules.hideTags.includes(tag));
       })
       .map(item => mapRentmanToProduct(item, cat.slug, filesLookup));
 
-    // Extract first 4 unique images for the grid preview
-    const previewImages: string[] = [];
-    const seenImages = new Set<string>();
-
-    for (const p of categoryProducts) {
-      if (previewImages.length >= 4) break;
-      if (p.image && !seenImages.has(p.image)) {
-        previewImages.push(p.image);
-        seenImages.add(p.image);
-      }
-    }
+    const previewImages = categoryProducts
+      .map(p => p.image)
+      .filter((img, i, self) => img && self.indexOf(img) === i)
+      .slice(0, 4);
 
     return {
       ...cat,
       productCount: categoryProducts.length,
       previewImages,
-      products: categoryProducts.slice(0, 10) // Include top 10 products for carousel
+      products: categoryProducts.slice(0, 10)
     };
   });
 
-  const filteredResults = results.filter(cat => (cat as any).productCount > 0);
-  console.log(`[Rentman] Found ${filteredResults.length} active categories for landing page`);
-  return filteredResults;
+  return results.filter(cat => (cat as any).productCount > 0);
 }
 
 /**
  * Fetches all files and returns a lookup map of file ID -> public URL
  * Uses pagination to ensure all files are retrieved.
  */
-async function getFilesLookup(): Promise<Record<string, string>> {
+export async function getFilesLookup(): Promise<Record<string, string>> {
   try {
     const lookup: Record<string, string> = {};
     const limit = 1000;
@@ -290,38 +341,34 @@ function mapRentmanToProduct(item: any, categoryId: string, filesLookup: Record<
  * Fetch general equipment (all categories)
  */
 export async function getEquipment(limit = 100, role: UserRole = 'guest'): Promise<Product[]> {
+  const dbProducts = await getProductsFromDb({ limit, role });
+  if (dbProducts.length > 0) return dbProducts;
+
   const rules = URBA_ACCESS_RULES[role];
   const [allEquipment, filesLookup] = await Promise.all([
     rentmanFetchAll<any>('/equipment', { limit }),
     getFilesLookup()
   ]);
   
-  const filtered = allEquipment
+  return allEquipment
     .filter(item => {
       if (!item.in_shop) return false;
-      
-      // Check for hidden tags
       const itemTags = item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [];
-      const hasHiddenTag = itemTags.some((tag: string) => rules.hideTags.includes(tag));
-      if (hasHiddenTag) return false;
-
-      return true;
+      return !itemTags.some((tag: string) => rules.hideTags.includes(tag));
     })
     .map(item => mapRentmanToProduct(item, 'general', filesLookup));
-
-  return filtered;
 }
 
 /**
  * Fetch all equipment and filter by category slug
  */
 export async function getProductsForCategory(categorySlug: string, role: UserRole = 'guest'): Promise<Product[]> {
+  const dbProducts = await getProductsFromDb({ categorySlug, role });
+  if (dbProducts.length > 0) return dbProducts;
+
   const rules = URBA_ACCESS_RULES[role];
-  // Find the category corresponding to the slug
   const category = wcData.categories.find(c => c.slug === categorySlug);
   if (!category) return [];
-
-  const categoryName = category.name;
 
   const [allEquipment, folders, filesLookup] = await Promise.all([
     rentmanFetchAll<any>('/equipment'),
@@ -329,69 +376,62 @@ export async function getProductsForCategory(categorySlug: string, role: UserRol
     getFilesLookup()
   ]);
   
-  // Find folders that match our criteria
   const targetFolderIds = folders
     .filter(f => {
       const folderName = f.name.toLowerCase().trim();
-      const catName = categoryName.toLowerCase().trim();
-      return folderName === catName || 
-             folderName === `${catName}-ws` || 
-             folderName === `${catName} - ws` ||
-             f.path.toLowerCase().includes(`/${catName}/`) ||
-             f.path.toLowerCase().includes(`/${catName}-ws/`);
+      const catName = category.name.toLowerCase().trim();
+      return folderName === catName || folderName === `${catName}-ws` || f.path.toLowerCase().includes(`/${catName}/`);
     })
     .map(f => String(f.id));
 
-  const filtered = allEquipment.filter(item => {
+  return allEquipment.filter(item => {
     if (!item.in_shop) return false;
-    
-    // 1. Check if product is in a new Rentman "-WS" folder
     const itemFolderId = item.folder ? item.folder.split('/').pop() : null;
     const itemNameLower = item.name.toLowerCase().trim();
     const mappedCategories = (wcData.productMapping as any)[itemNameLower];
-
-    let isInCategory = false;
-    if (itemFolderId && targetFolderIds.includes(String(itemFolderId))) {
-      isInCategory = true;
-    } else if (mappedCategories && mappedCategories.includes(categoryName)) {
-      isInCategory = true;
-    }
-
+    const isInCategory = (itemFolderId && targetFolderIds.includes(String(itemFolderId))) || (mappedCategories && mappedCategories.includes(category.name));
     if (!isInCategory) return false;
-
-    // 2. Check for hidden tags
     const itemTags = item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [];
-    const hasHiddenTag = itemTags.some((tag: string) => rules.hideTags.includes(tag));
-    
-    return !hasHiddenTag;
-  });
-
-  return filtered.map(item => mapRentmanToProduct(item, categorySlug, filesLookup));
+    return !itemTags.some((tag: string) => rules.hideTags.includes(tag));
+  }).map(item => mapRentmanToProduct(item, categorySlug, filesLookup));
 }
 
 /**
  * Fetch a single product by ID
  */
 export async function getProductById(id: string, role: UserRole = 'guest'): Promise<Product | null> {
+  const supabase = await createClient();
+  const { data: p, error } = await supabase.from('products').select('*').eq('rentman_id', id).single();
+
+  if (p && !error) {
+    const rules = URBA_ACCESS_RULES[role];
+    if (p.tags?.some((tag: string) => rules.hideTags.includes(tag))) return null;
+    return {
+      id: p.rentman_id,
+      name: p.name,
+      slug: p.slug,
+      categoryId: p.category_slug || 'unknown',
+      price: p.price,
+      description: p.description,
+      image: p.image_url,
+      features: p.tags || [],
+      isFeatured: p.is_featured
+    };
+  }
+
   const rules = URBA_ACCESS_RULES[role];
   const item = await rentmanFetch<any>(`/equipment/${id}`);
   if (!item || !item.in_shop) return null;
-  
-  // Check for hidden tags
   const itemTags = item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [];
-  const hasHiddenTag = itemTags.some((tag: string) => rules.hideTags.includes(tag));
-  if (hasHiddenTag) return null;
+  if (itemTags.some((tag: string) => rules.hideTags.includes(tag))) return null;
 
-  // Resolve image for the single product
   const fileId = item.image ? item.image.split('/').pop() : null;
   let imageUrl = '';
   if (fileId) {
     try {
       const file = await rentmanFetch<any>(`/files/${fileId}`);
       imageUrl = file?.url || '';
-    } catch (e) {
-      console.error(`Failed to resolve image for product ${id}:`, e);
-    }
+    } catch (e) {}
   }
 
   return {

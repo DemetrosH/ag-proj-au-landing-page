@@ -14,6 +14,7 @@ export function Header() {
   const { itemCount } = useCart();
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
   const supabase = createClient();
@@ -130,7 +131,7 @@ export function Header() {
           </Link>
 
           {/* Search Bar - Center */}
-          <div className="hidden lg:flex flex-grow max-w-xl relative">
+          <div className="hidden xl:flex flex-grow max-w-xl relative">
             <input
               type="text"
               placeholder="Rechercher un équipement..."
@@ -147,16 +148,29 @@ export function Header() {
           <div className="flex items-center space-x-6">
             {/* Date Selector Trigger */}
             <button 
-              onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
+              onClick={() => {
+                setIsDatePickerOpen(!isDatePickerOpen);
+                if (!isDatePickerOpen) setIsMobileMenuOpen(false);
+              }}
               className={`flex items-center space-x-2 px-4 py-2 rounded-full border transition-all ${
                 isDateSet ? 'bg-brand-gold/10 border-brand-gold text-brand-gold' : 'border-brand-border text-gray-600 hover:border-brand-gold'
               }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <span className="text-xs font-bold uppercase tracking-wider">
-                {isDateSet ? `${formatDate(startDate!)} - ${formatDate(endDate!)}` : 'Choisir Dates'}
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider whitespace-nowrap">
+                {isDateSet ? (
+                  <>
+                    <span className="sm:hidden">{formatDate(startDate!)} - {formatDate(endDate!)}</span>
+                    <span className="hidden sm:inline">{formatDate(startDate!)} - {formatDate(endDate!)}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="sm:hidden">Dates</span>
+                    <span className="hidden sm:inline">Choisir Dates</span>
+                  </>
+                )}
               </span>
             </button>
 
@@ -204,11 +218,30 @@ export function Header() {
                 </span>
               )}
             </Link>
+
+            {/* Mobile Menu Toggle */}
+            <button 
+              onClick={() => {
+                setIsMobileMenuOpen(!isMobileMenuOpen);
+                if (!isMobileMenuOpen) setIsDatePickerOpen(false);
+              }}
+              className="lg:hidden p-2 text-gray-600 hover:text-brand-gold transition-colors"
+            >
+              {isMobileMenuOpen ? (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+              )}
+            </button>
           </div>
         </div>
 
-        {/* Bottom Header: Navigation */}
-        <div className="h-12 border-t border-brand-border flex items-center justify-center">
+        {/* Bottom Header: Navigation - Desktop Only */}
+        <div className="hidden lg:flex h-12 border-t border-brand-border items-center justify-center">
           <nav className="flex items-center h-full space-x-12 text-xs font-bold tracking-widest uppercase">
             <Link href="/" className="text-gray-900 hover:text-brand-gold transition-colors flex items-center h-full px-2">
               Accueil
@@ -256,46 +289,109 @@ export function Header() {
             <Link href="/contact#address" className="text-gray-900 hover:text-brand-gold transition-colors flex items-center h-full px-2">
               Contact
             </Link>
-            <Link href="/soumission" className="text-brand-gold hover:text-brand-gold-hover transition-colors flex items-center">
-              <svg className="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-              </svg>
-              Soumission
-            </Link>
           </nav>
         </div>
       </div>
+
+      {/* Mobile Navigation Overlay */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden absolute top-full left-0 w-full bg-white border-t border-brand-border shadow-2xl z-50 animate-fade-in-down max-h-[80vh] overflow-y-auto">
+          <div className="p-6 space-y-6">
+            {/* Mobile Search */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Rechercher..."
+                className="w-full bg-brand-surface border border-brand-border rounded-xl py-3 px-6 text-sm focus:outline-none focus:border-brand-gold"
+              />
+              <button className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Mobile Links */}
+            <nav className="flex flex-col space-y-4">
+              <Link 
+                href="/" 
+                className="text-lg font-black uppercase tracking-tighter text-brand-dark"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Accueil
+              </Link>
+              <Link 
+                href="/categories" 
+                className="text-lg font-black uppercase tracking-tighter text-brand-dark"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Catégories
+              </Link>
+              <Link 
+                href="/contact" 
+                className="text-lg font-black uppercase tracking-tighter text-brand-dark"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Contact
+              </Link>
+              <Link 
+                href="/soumission" 
+                className="text-lg font-black uppercase tracking-tighter text-brand-orange"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Soumission
+              </Link>
+            </nav>
+
+            <div className="pt-6 border-t border-brand-border">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-4">Populaire</p>
+              <div className="grid grid-cols-2 gap-4">
+                {categories.slice(0, 6).map((cat) => (
+                  <Link 
+                    key={cat.id} 
+                    href={`/categories/${cat.slug}`}
+                    className="text-xs font-bold text-gray-600 hover:text-brand-gold"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {cat.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Inline Date Picker Modal */}
       {isDatePickerOpen && (
         <div className="absolute top-full left-0 w-full bg-white border-b border-brand-border shadow-2xl animate-fade-in-down">
           <div className="container mx-auto px-4 py-8">
-            <div className="flex flex-col md:flex-row items-end gap-8 max-w-4xl mx-auto">
+            <div className="flex flex-col md:flex-row items-stretch md:items-end gap-4 md:gap-8 max-w-4xl mx-auto">
               <div className="flex-grow">
-                <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Début de location</label>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Début de location</label>
                 <input 
                   type="date" 
                   min={tomorrowStr}
                   value={startDate || ''} 
                   onChange={handleStartDateChange}
-                  className="w-full border border-brand-border rounded-xl p-3 focus:border-brand-gold focus:ring-0"
+                  className="w-full border border-brand-border rounded-xl p-4 text-sm focus:border-brand-gold focus:ring-0"
                 />
               </div>
               <div className="flex-grow">
-                <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Fin de location (Max 7 jours)</label>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Fin (Max 7 jours)</label>
                 <input 
                   type="date" 
                   min={startDate || tomorrowStr}
                   max={maxEndDateStr || undefined}
                   value={endDate || ''} 
                   onChange={handleEndDateChange}
-                  className="w-full border border-brand-border rounded-xl p-3 focus:border-brand-gold focus:ring-0"
-                  disabled={!startDate} // Force user to pick start date first for better UX
+                  className="w-full border border-brand-border rounded-xl p-4 text-sm focus:border-brand-gold focus:ring-0"
+                  disabled={!startDate}
                 />
               </div>
               <button 
                 onClick={() => setIsDatePickerOpen(false)}
-                className="bg-brand-gold text-white font-bold px-8 py-3 rounded-xl hover:bg-brand-gold-hover transition-all disabled:opacity-50"
+                className="bg-brand-gold text-white font-black uppercase tracking-widest text-xs px-8 py-4 rounded-xl hover:bg-brand-gold-hover transition-all disabled:opacity-50 mt-4 md:mt-0 shadow-lg shadow-brand-gold/20"
                 disabled={!startDate || !endDate}
               >
                 Confirmer
