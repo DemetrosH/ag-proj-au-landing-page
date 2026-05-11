@@ -374,7 +374,9 @@ export function Header() {
                   min={tomorrowStr}
                   value={startDate || ''} 
                   onChange={handleStartDateChange}
-                  className="w-full border border-brand-border rounded-xl p-4 text-sm focus:border-brand-gold focus:ring-0"
+                  onKeyDown={(e) => e.preventDefault()}
+                  onClick={(e) => (e.target as any).showPicker?.()}
+                  className="w-full border border-brand-border rounded-xl p-4 text-sm focus:border-brand-gold focus:ring-0 cursor-pointer"
                 />
               </div>
               <div className="flex-grow">
@@ -385,7 +387,9 @@ export function Header() {
                   max={maxEndDateStr || undefined}
                   value={endDate || ''} 
                   onChange={handleEndDateChange}
-                  className="w-full border border-brand-border rounded-xl p-4 text-sm focus:border-brand-gold focus:ring-0"
+                  onKeyDown={(e) => e.preventDefault()}
+                  onClick={(e) => (e.target as any).showPicker?.()}
+                  className="w-full border border-brand-border rounded-xl p-4 text-sm focus:border-brand-gold focus:ring-0 cursor-pointer"
                   disabled={!startDate}
                 />
               </div>
