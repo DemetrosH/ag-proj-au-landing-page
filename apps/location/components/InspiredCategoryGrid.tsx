@@ -62,7 +62,14 @@ export function InspiredCategoryGrid({ categories, configs = [], showTitle = tru
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {categories.map((category, index) => {
-            const config = configs.find(c => c.rentmanId === category.id || c.rentmanId === category.slug);
+            const normalizedCatName = category.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+            
+            // Find config by ID, slug, or normalized name match
+            const config = configs.find(c => 
+              c.rentmanId === category.id || 
+              c.rentmanId === category.slug ||
+              (c.title && c.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === normalizedCatName)
+            );
             
             // 1. Content Overrides
             const displayTitle = config?.title || category.name;
@@ -94,10 +101,10 @@ export function InspiredCategoryGrid({ categories, configs = [], showTitle = tru
 
             // B. Fill with keywords if needed
             if (displayProducts.length < 4) {
-              const normalizedCatName = category.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
               let keywords: string[] = [];
               for (const [key, kw] of Object.entries(featuredProductKeywords)) {
-                if (normalizedCatName.includes(key) || key.includes(normalizedCatName)) {
+                const normalizedKey = key.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+                if (normalizedCatName.includes(normalizedKey) || normalizedKey.includes(normalizedCatName)) {
                   keywords = kw;
                   break;
                 }
