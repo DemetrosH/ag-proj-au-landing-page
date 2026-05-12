@@ -17,6 +17,13 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
+  
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  
   const supabase = createClient();
 
   useEffect(() => {
@@ -56,6 +63,32 @@ export function Header() {
     setUser(null);
     window.location.reload();
   };
+
+  // Search logic
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (searchQuery.length < 2) {
+        setSearchResults([]);
+        setIsSearchOpen(false);
+        return;
+      }
+
+      setIsSearching(true);
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, rentman_id, name, image_url, price, category_slug')
+        .ilike('name', `%${searchQuery}%`)
+        .limit(6);
+
+      if (!error && data) {
+        setSearchResults(data);
+        setIsSearchOpen(true);
+      }
+      setIsSearching(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -141,14 +174,61 @@ export function Header() {
           <div className="hidden xl:flex flex-grow max-w-xl relative">
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => searchQuery.length >= 2 && setIsSearchOpen(true)}
               placeholder="Rechercher un équipement..."
               className="w-full bg-brand-surface border border-brand-border rounded-full py-2.5 px-6 text-sm focus:outline-none focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/5 transition-all"
             />
             <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-gold">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              {isSearching ? (
+                <div className="w-5 h-5 border-2 border-brand-gold border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              )}
             </button>
+
+            {/* Desktop Search Results Dropdown */}
+            {isSearchOpen && searchResults.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-brand-border shadow-2xl rounded-2xl overflow-hidden z-50">
+                <div className="max-h-[400px] overflow-y-auto">
+                  {searchResults.map((result) => (
+                    <Link
+                      key={result.rentman_id || result.id}
+                      href={`/products/${result.rentman_id || result.id}`}
+                      className="flex items-center gap-4 p-4 hover:bg-brand-surface transition-colors border-b border-brand-border last:border-0"
+                      onClick={() => {
+                        setIsSearchOpen(false);
+                        setSearchQuery('');
+                      }}
+                    >
+                      <div className="w-12 h-12 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0 border border-brand-border">
+                        {result.image_url ? (
+                          <img src={result.image_url} alt={result.name} className="w-full h-full object-contain" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-300 italic">No img</div>
+                        )}
+                      </div>
+                      <div className="flex-grow">
+                        <p className="text-sm font-bold text-gray-900">{result.name}</p>
+                        <p className="text-xs text-gray-500 font-medium">{result.price}$ / jour</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                <div className="p-3 bg-brand-surface text-center">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Appuyez sur entrée pour voir tous les résultats</p>
+                </div>
+              </div>
+            )}
+            
+            {isSearchOpen && searchQuery.length >= 2 && searchResults.length === 0 && !isSearching && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-brand-border shadow-2xl rounded-2xl p-6 text-center z-50">
+                <p className="text-sm text-gray-500">Aucun produit trouvé pour "{searchQuery}"</p>
+              </div>
+            )}
           </div>
 
           {/* Account & Cart */}
@@ -308,14 +388,54 @@ export function Header() {
             <div className="relative">
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Rechercher..."
                 className="w-full bg-brand-surface border border-brand-border rounded-xl py-3 px-6 text-sm focus:outline-none focus:border-brand-gold"
               />
               <button className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                {isSearching ? (
+                  <div className="w-5 h-5 border-2 border-brand-gold border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                )}
               </button>
+
+              {/* Mobile Search Results */}
+              {searchQuery.length >= 2 && (searchResults.length > 0 || isSearching) && (
+                <div className="mt-2 bg-white border border-brand-border rounded-xl overflow-hidden max-h-[300px] overflow-y-auto">
+                  {searchResults.map((result) => (
+                    <Link
+                      key={result.rentman_id || result.id}
+                      href={`/products/${result.rentman_id || result.id}`}
+                      className="flex items-center gap-3 p-3 hover:bg-brand-surface transition-colors border-b border-brand-border last:border-0"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        setSearchQuery('');
+                      }}
+                    >
+                      <div className="w-10 h-10 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0 border border-brand-border">
+                        {result.image_url ? (
+                          <img src={result.image_url} alt={result.name} className="w-full h-full object-contain" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[8px] text-gray-300 italic">No img</div>
+                        )}
+                      </div>
+                      <div className="flex-grow">
+                        <p className="text-xs font-bold text-gray-900">{result.name}</p>
+                      </div>
+                    </Link>
+                  ))}
+                  {isSearching && (
+                    <div className="p-3 text-center text-xs text-gray-500">Recherche en cours...</div>
+                  )}
+                  {!isSearching && searchResults.length === 0 && (
+                    <div className="p-3 text-center text-xs text-gray-500">Aucun résultat</div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Mobile Links */}
