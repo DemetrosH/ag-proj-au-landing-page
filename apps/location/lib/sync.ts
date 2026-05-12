@@ -24,7 +24,13 @@ export async function syncRentmanToSupabase() {
 
     console.log(`[Sync] Fetched ${allEquipment.length} items, ${folders.length} folders, and ${Object.keys(filesLookup.fileIdToUrl).length} images.`);
 
-    // 2. Sync Categories
+    // 2. Fetch Availability for all items
+    console.log('[Sync] Fetching availability for all items...');
+    const equipmentIds = allEquipment.map(item => String(item.id));
+    const today = new Date().toISOString().split('T')[0];
+    const availabilityMap = await getEquipmentAvailability(equipmentIds, today, today);
+
+    // 3. Sync Categories
     console.log('[Sync] Upserting categories...');
     const categoriesToUpsert = categories.map(cat => ({
       rentman_id: cat.id,
@@ -40,7 +46,7 @@ export async function syncRentmanToSupabase() {
 
     if (catError) throw catError;
 
-    // 3. Sync Products
+    // 4. Sync Products
     console.log('[Sync] Processing products...');
     
     // Prepare folder lookup for faster category matching
@@ -89,6 +95,8 @@ export async function syncRentmanToSupabase() {
           imageUrl = filesLookup.itemIdToUrl[String(item.id)];
         }
 
+        const stockLevel = availabilityMap[String(item.id)] || 0;
+
         return {
           rentman_id: String(item.id),
           name: item.name,
@@ -99,6 +107,9 @@ export async function syncRentmanToSupabase() {
           category_slug: categorySlug,
           is_featured: !!item.shop_featured,
           tags: item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [],
+          stock_level: stockLevel,
+          availability_status: stockLevel > 0 ? 'available' : 'out_of_stock',
+          specifications: item.remarks || '',
           last_synced: new Date().toISOString()
         };
       });

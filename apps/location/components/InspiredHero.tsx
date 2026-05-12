@@ -2,14 +2,50 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
+import Link from 'next/link';
 
 const features = [
-  "Scène & structure",
-  "Ameublement & décor",
-  "Sonorisation & éclairage",
-  "Vidéo & technologie",
-  "Enseigne Néon sur mesure"
+  {
+    parts: [
+      { text: "Scène", href: "/categories/scene" },
+      { text: " & ", href: null },
+      { text: "structure", href: "/categories/scene" }
+    ]
+  },
+  {
+    parts: [
+      { text: "Ameublement", href: "/categories/ameublements" },
+      { text: " & ", href: null },
+      { text: "décor", href: "/categories/ameublements" }
+    ]
+  },
+  {
+    parts: [
+      { text: "Sonorisation", href: "/categories/sonorisation" },
+      { text: " & ", href: null },
+      { text: "éclairage", href: "/categories/eclairage" }
+    ]
+  },
+  {
+    parts: [
+      { text: "Vidéo", href: "/categories/video" },
+      { text: " & ", href: null },
+      { text: "technologie", href: "/categories/video" }
+    ]
+  },
+  {
+    parts: [
+      { text: "Enseigne Néon", href: "/categories/enseigne-neon" },
+      { text: " sur mesure", href: null }
+    ]
+  },
+  {
+    parts: [
+      { text: "Chapiteaux", href: "/categories/chapiteaux" },
+      { text: " & ", href: null },
+      { text: "abris", href: "/categories/chapiteaux" }
+    ]
+  }
 ];
 
 export function InspiredHero() {
@@ -37,15 +73,29 @@ export function InspiredHero() {
                 Artéfact Urbain est votre partenaire technique pour tous vos besoins en location d'équipement événementiel. Nous assurons la réussite visuelle et logistique de vos projets.
               </p>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-5 mb-10">
                 {features.map((feature, i) => (
-                  <div key={i} className="flex items-center space-x-3 group">
-                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-orange/10 flex items-center justify-center group-hover:bg-brand-orange transition-colors">
-                      <svg className="w-4 h-4 text-brand-orange group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div key={i} className="flex items-center space-x-3">
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-orange/10 flex items-center justify-center">
+                      <svg className="w-4 h-4 text-brand-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
-                    <span className="font-bold text-brand-dark uppercase text-sm tracking-wide">{feature}</span>
+                    <div className="font-bold text-brand-dark uppercase text-[11px] tracking-widest flex flex-wrap">
+                      {feature.parts.map((part, pi) => (
+                        part.href ? (
+                          <Link 
+                            key={pi} 
+                            href={part.href} 
+                            className="hover:text-brand-orange hover:underline transition-colors decoration-2 underline-offset-4"
+                          >
+                            {part.text}
+                          </Link>
+                        ) : (
+                          <span key={pi} className="text-gray-400">{part.text}</span>
+                        )
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>

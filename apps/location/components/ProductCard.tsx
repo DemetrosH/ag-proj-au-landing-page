@@ -6,12 +6,15 @@ import Link from 'next/link';
 import { ArrowRight, Plus, Check } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
+import { useRental } from '../context/RentalContext';
+
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
+  const { isDateSet } = useRental();
   const [added, setAdded] = React.useState(false);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
@@ -32,16 +35,22 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="aspect-[3/4] bg-gradient-to-br from-white to-gray-50 border border-gray-100 rounded-2xl overflow-hidden mb-4 relative transition-all duration-500 hover:shadow-2xl hover:shadow-gray-200/50 hover:-translate-y-1">
         
         {/* Quick Add Button */}
-        <button 
-          onClick={handleQuickAdd}
-          className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center z-30 transition-all shadow-lg ${
-            added 
-            ? 'bg-green-500 text-white scale-110' 
-            : 'bg-white text-brand-dark hover:bg-brand-orange hover:text-white group-hover:scale-100 scale-90 opacity-0 group-hover:opacity-100'
-          }`}
-        >
-          {added ? <Check size={18} strokeWidth={3} /> : <Plus size={20} strokeWidth={3} />}
-        </button>
+        {(!isDateSet || (product.stock_level !== undefined && product.stock_level > 0)) ? (
+          <button 
+            onClick={handleQuickAdd}
+            className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center z-30 transition-all shadow-lg ${
+              added 
+              ? 'bg-green-500 text-white scale-110' 
+              : 'bg-white text-brand-dark hover:bg-brand-orange hover:text-white group-hover:scale-100 scale-90 opacity-0 group-hover:opacity-100'
+            }`}
+          >
+            {added ? <Check size={18} strokeWidth={3} /> : <Plus size={20} strokeWidth={3} />}
+          </button>
+        ) : (
+          <div className="absolute top-3 right-3 px-2 py-1 bg-red-100 text-red-600 text-[10px] font-bold rounded uppercase z-30 shadow-sm border border-red-200">
+            Épuisé
+          </div>
+        )}
 
         {/* Subtle background pattern/glow */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-gold/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>

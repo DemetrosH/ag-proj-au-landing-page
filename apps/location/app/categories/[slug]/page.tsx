@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { getUserRole } from '../../../lib/auth';
 import { URBA_ACCESS_RULES } from '../../../lib/access-control';
 import { CategoryProductList } from './CategoryProductList';
+import { CategorySEOContent } from './CategorySEOContent';
+import { NeonBanner } from './NeonBanner';
 
 // Cache category pages for 1 hour
 export const revalidate = 3600;
@@ -48,6 +50,16 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
     return priceB - priceA;
   });
 
+  const displayTitle = slug === 'alimentaire' 
+    ? "LOCATION D'ÉQUIPEMENT ALIMENTAIRE" 
+    : slug === 'enseigne-neon' 
+      ? "LOCATION D'ENSEIGNES NÉON" 
+      : slug === 'scene'
+        ? "LOCATION DE SCÈNE"
+        : slug === 'bloc-dalimentation-batteries'
+          ? "BLOCS D'ALIMENTATION & BATTERIES"
+          : category.name;
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -57,11 +69,29 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           <Link href="/" className="text-sm font-bold text-brand-gold uppercase tracking-widest mb-4 inline-block hover:underline">
             ← Retour à l'accueil
           </Link>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">{category.name}</h1>
-          <div 
-            className="text-xl text-gray-500 max-w-2xl leading-relaxed prose prose-brand max-w-none"
-            dangerouslySetInnerHTML={{ __html: category.description }}
-          />
+          <div className="mb-12">
+            <h1 className="text-4xl md:text-5xl font-black text-brand-dark uppercase tracking-tighter mb-8 relative inline-block">
+              <span className="relative z-10">{displayTitle}</span>
+              <span className="absolute bottom-1 left-0 w-16 h-1.5 bg-brand-orange z-0"></span>
+            </h1>
+
+            {slug === 'alimentaire' ? (
+              <p className="text-xl text-gray-600 max-w-4xl leading-relaxed font-medium">
+                Dynamisez vos événements avec notre service de <span className="font-black text-brand-dark underline decoration-brand-orange/30 decoration-4 underline-offset-4">location d'équipement alimentaire</span> professionnel. Que ce soit pour un festival, une fête d’entreprise ou un rassemblement privé, nous fournissons le matériel nécessaire pour créer des stations gourmandes mémorables et efficaces.
+              </p>
+            ) : slug === 'bloc-dalimentation-batteries' ? (
+              <p className="text-xl text-gray-500 max-w-2xl leading-relaxed font-bold">
+                Nos solutions d'alimentation portable
+              </p>
+            ) : (
+              <div 
+                className="text-xl text-gray-500 max-w-2xl leading-relaxed prose prose-brand max-w-none"
+                dangerouslySetInnerHTML={{ __html: category.description }}
+              />
+            )}
+            <CategorySEOContent slug={slug} />
+            {slug === 'enseigne-neon' && <NeonBanner />}
+          </div>
         </div>
 
         <CategoryProductList products={products} />

@@ -24,6 +24,7 @@ export interface RentmanProduct {
   shop_seo_title?: string;
   shop_seo_keyword?: string;
   shop_seo_description?: string;
+  remarks?: string;
 }
 
 export interface Product {
@@ -36,6 +37,10 @@ export interface Product {
   image: string;
   features: string[];
   isFeatured: boolean;
+  stock_level?: number;
+  availability_status?: string;
+  accessories?: Product[];
+  specifications?: string;
 }
 
 export interface Category {
@@ -66,7 +71,11 @@ export async function rentmanFetch<T>(endpoint: string, options: any = {}): Prom
   const url = new URL(`${RENTMAN_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`);
   if (options.params) {
     Object.entries(options.params).forEach(([key, value]) => {
-      url.searchParams.append(key, String(value));
+      if (Array.isArray(value)) {
+        value.forEach(v => url.searchParams.append(`${key}[]`, String(v)));
+      } else {
+        url.searchParams.append(key, String(value));
+      }
     });
   }
 
@@ -146,6 +155,48 @@ export async function rentmanFetchAll<T>(endpoint: string, params: any = {}): Pr
 }
 
 /**
+ * Fetches availability for a list of equipment IDs for a specific period
+ */
+export async function getEquipmentAvailability(ids: string[], start: string, end: string): Promise<Record<string, number>> {
+  try {
+    const availabilityMap: Record<string, number> = {};
+    
+    // Batch in groups of 50 to avoid URL length limits
+    const batchSize = 50;
+    for (let i = 0; i < ids.length; i += batchSize) {
+      const batch = ids.slice(i, i + batchSize);
+      
+      const result = await rentmanFetch<any>('/equipment/availability', { 
+        params: { 
+          equipment: batch, 
+          start, 
+          end 
+        } 
+      });
+
+      const data = result.data || result;
+      if (Array.isArray(data)) {
+        data.forEach((item: any) => {
+          // Rentman returns availability per day. We'll take the minimum availability in the period.
+          // Or if we just check for "today", it will be one entry.
+          const equipmentId = String(item.equipment);
+          const quantity = item.quantity !== undefined ? Number(item.quantity) : 0;
+          
+          if (availabilityMap[equipmentId] === undefined || quantity < availabilityMap[equipmentId]) {
+            availabilityMap[equipmentId] = quantity;
+          }
+        });
+      }
+    }
+    
+    return availabilityMap;
+  } catch (error) {
+    console.error('Failed to fetch Rentman availability:', error);
+    return {};
+  }
+}
+
+/**
  * Fetch products from Supabase with optional category filtering
  */
 async function getProductsFromDb(options: { 
@@ -189,8 +240,11 @@ async function getProductsFromDb(options: {
         price: p.price,
         description: p.description,
         image: p.image_url,
-        features: (p.tags || []).filter((tag: string) => !['location a', 'location b', 'location c', 'location-a', 'location-b', 'location-c', 'populaire', 'produits-vedette', 'uncategorized'].includes(tag.toLowerCase())),
-        isFeatured: p.is_featured
+        features: (p.tags || []).filter((tag: string) => !['location a', 'location b', 'location c', 'location-a', 'location-b', 'location-c', 'populaire', 'produits-vedette', 'uncategorized', 'has-accessories'].includes(tag.toLowerCase())),
+        isFeatured: p.is_featured,
+        stock_level: p.stock_level,
+        availability_status: p.availability_status,
+        specifications: p.specifications
       }));
   } catch (e) {
     console.error('[Supabase] Fetch error:', e);
@@ -361,7 +415,7 @@ export function mapRentmanToProduct(item: any, categoryId: string, filesLookup: 
     features: item.tags 
       ? item.tags.split(',')
           .map((t: string) => t.trim())
-          .filter((t: string) => !['location a', 'location b', 'location c', 'location-a', 'location-b', 'location-c', 'populaire', 'produits-vedette', 'uncategorized'].includes(t.toLowerCase()))
+          .filter((t: string) => !['location a', 'location b', 'location c', 'location-a', 'location-b', 'location-c', 'populaire', 'produits-vedette', 'uncategorized', 'has-accessories'].includes(t.toLowerCase()))
       : [],
     isFeatured: !!item.shop_featured,
   };
@@ -444,8 +498,10 @@ export async function getProductById(id: string, role: UserRole = 'guest'): Prom
       price: p.price,
       description: p.description,
       image: p.image_url,
-      features: (p.tags || []).filter((tag: string) => !['location a', 'location b', 'location c', 'location-a', 'location-b', 'location-c', 'populaire', 'produits-vedette', 'uncategorized'].includes(tag.toLowerCase())),
-      isFeatured: p.is_featured
+      features: (p.tags || []).filter((tag: string) => !['location a', 'location b', 'location c', 'location-a', 'location-b', 'location-c', 'populaire', 'produits-vedette', 'uncategorized', 'has-accessories'].includes(tag.toLowerCase())),
+      isFeatured: p.is_featured,
+      stock_level: p.stock_level,
+      availability_status: p.availability_status
     };
   }
 
@@ -468,4 +524,41 @@ export async function getProductById(id: string, role: UserRole = 'guest'): Prom
     ...mapRentmanToProduct(item, 'unknown'),
     image: imageUrl || ''
   };
+}
+
+/**
+ * Fetch accessories for a specific equipment item
+ */
+export async function getAccessories(id: string, role: UserRole = 'guest'): Promise<Product[]> {
+  try {
+    // In Rentman API v2, accessories are often fetched via /equipment/{id}/accessories
+    // If that doesn't work, we might need to check if they are in the equipment object itself
+    const result = await rentmanFetch<any>(`/equipment/${id}/accessories`);
+    const data = result.data || result;
+    
+    if (!Array.isArray(data)) return [];
+
+    // Get the actual equipment IDs for the accessories
+    // The Rentman response usually has a link to the equipment item
+    const accessoryIds = data
+      .map((acc: any) => {
+        // Some responses have 'equipment', others might have 'item' or similar
+        const eqId = acc.equipment || acc.item;
+        return eqId ? String(eqId).split('/').pop() : null;
+      })
+      .filter((id): id is string => id !== null);
+    
+    if (accessoryIds.length === 0) return [];
+
+    // Fetch the full details for each accessory
+    // We try to get them from Supabase first for performance
+    const accessories = await Promise.all(
+      accessoryIds.slice(0, 10).map(accId => getProductById(accId, role))
+    );
+
+    return accessories.filter((p): p is Product => p !== null);
+  } catch (error) {
+    console.error(`Failed to fetch accessories for product ${id}:`, error);
+    return [];
+  }
 }

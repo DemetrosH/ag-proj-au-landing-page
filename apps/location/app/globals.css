@@ -45,6 +45,35 @@
   .btn-outline {
     @apply border-2 border-brand-dark hover:bg-brand-dark hover:text-white text-brand-dark px-8 py-4 rounded-xl font-bold transition-all duration-300 inline-flex items-center justify-center;
   }
+
+  .prose-brand {
+    @apply text-gray-600 text-lg leading-relaxed;
+  }
+
+  .prose-brand p {
+    @apply mb-6;
+  }
+
+  .prose-brand ul {
+    @apply list-none pl-0 mb-8 space-y-3;
+  }
+
+  .prose-brand li {
+    @apply relative pl-6 flex items-start gap-2;
+  }
+
+  .prose-brand li::before {
+    content: "●";
+    @apply text-brand-orange absolute left-0 text-[10px] mt-1.5;
+  }
+
+  .prose-brand strong {
+    @apply text-brand-dark font-black uppercase tracking-tight;
+  }
+
+  .prose-brand h1, .prose-brand h2, .prose-brand h3 {
+    @apply text-brand-dark font-black uppercase tracking-tighter mb-4 mt-8;
+  }
 }
 
 /* Animations */

@@ -94,11 +94,6 @@ export function LandingPage({ categories, division, categoryConfigs = [] }: Land
     return indexA - indexB;
   });
 
-  // Split categories to insert the Neon Banner in the middle
-  const middleIndex = Math.ceil(activeCategories.length / 2);
-  const firstHalf = activeCategories.slice(0, middleIndex);
-  const secondHalf = activeCategories.slice(middleIndex);
-
   return (
     <div className="flex flex-col min-h-screen bg-white font-sans text-gray-900">
       
@@ -107,21 +102,18 @@ export function LandingPage({ categories, division, categoryConfigs = [] }: Land
 
       {/* 2. Main Content Area */}
       <main className="bg-white">
-        
-        {/* First Half of Categories */}
-        <InspiredCategoryGrid categories={firstHalf} configs={categoryConfigs} />
-
-        {/* 3. Integrated Neon Banner Break */}
-        <InspiredNeonBanner />
-
-        {/* Second Half of Categories */}
-        <InspiredCategoryGrid categories={secondHalf} configs={categoryConfigs} showTitle={false} />
-        
-        {activeCategories.length === 0 && (
-          <div className="py-20 text-center text-gray-400 font-medium">
-            Chargement de l'inventaire...
-          </div>
-        )}
+        <div className="container mx-auto px-4 max-w-7xl py-24">
+          <InspiredCategoryGrid 
+            categories={activeCategories} 
+            configs={categoryConfigs} 
+          />
+          
+          {activeCategories.length === 0 && (
+            <div className="py-20 text-center text-gray-400 font-medium">
+              Chargement de l'inventaire...
+            </div>
+          )}
+        </div>
       </main>
 
       {/* 4. SEO Optimization Content */}

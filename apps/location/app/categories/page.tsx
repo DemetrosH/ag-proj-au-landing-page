@@ -1,56 +1,81 @@
-import { getCategories } from '../../lib/rentman';
+import { getHomeCategories, getEquipment } from '../../lib/rentman';
+import { getCategoryConfigs } from '../../lib/sanity';
+import { getUserRole } from '../../lib/auth';
 import { Header } from '../../components/Header';
-import Link from 'next/link';
+import { CategoryCard } from '../../components/CategoryCard';
+
+export const revalidate = 3600;
 
 export default async function CategoriesPage() {
-  const categories = await getCategories();
+  const role = await getUserRole();
+  const [categories, rawCategoryConfigs, allEquipment] = await Promise.all([
+    getHomeCategories(role),
+    getCategoryConfigs(role),
+    getEquipment(5000, role)
+  ]);
+
+  // Resolve missing images from Rentman for Sanity configs (same logic as landing page)
+  const categoryConfigs = rawCategoryConfigs?.map((config: any) => {
+    if (!config.featuredProducts) return config;
+    return {
+      ...config,
+      featuredProducts: config.featuredProducts.map((fp: any) => {
+        if (!fp.imageUrl && fp.slug) {
+          const rentmanProduct = allEquipment.find((p: any) => p.slug === fp.slug || p.id === fp.slug);
+          if (rentmanProduct?.image) {
+            fp.imageUrl = rentmanProduct.image;
+          }
+        }
+        return fp;
+      })
+    };
+  });
 
   return (
     <div className="min-h-screen bg-white">
       <Header />
       
-      <main className="container mx-auto px-4 py-24 md:py-32">
+      <main className="container mx-auto px-4 py-24 md:py-32 max-w-7xl">
         <div className="mb-20 text-center max-w-3xl mx-auto">
-          <h1 className="text-5xl font-bold mb-6">Toutes nos catégories</h1>
-          <p className="text-xl text-gray-500">
+          <h1 className="text-5xl font-black text-brand-dark uppercase tracking-tighter mb-6">
+            Toutes nos <span className="text-brand-orange">catégories</span>
+          </h1>
+          <p className="text-xl text-gray-500 font-medium">
             Parcourez notre catalogue complet d'équipements événementiels classés par expertise.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {categories.map((category, index) => {
-            // A few different icons for variety
-            const icons = [
-              <path key="1" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />,
-              <path key="2" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.989-2.386l-.548-.547z" />,
-              <path key="3" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />,
-              <path key="4" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />,
-              <path key="5" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-            ];
-
+            const config = categoryConfigs.find((c: any) => c.rentmanId === category.id || c.rentmanId === category.slug);
             return (
-              <Link 
+              <CategoryCard 
                 key={category.id} 
-                href={`/categories/${category.slug}`}
-                className="group flex flex-col p-8 border border-brand-border rounded-[2.5rem] hover:border-brand-gold hover:shadow-xl transition-all duration-500"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-brand-surface flex items-center justify-center text-brand-gold mb-8 group-hover:bg-brand-gold group-hover:text-white transition-colors duration-500">
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    {icons[index % icons.length]}
-                  </svg>
-                </div>
-                <h2 className="text-2xl font-bold mb-4">{category.name}</h2>
-                <p className="text-gray-500 text-sm leading-relaxed flex-grow">
-                  {category.description}
-                </p>
-                <div className="mt-8 flex items-center text-xs font-bold uppercase tracking-widest text-brand-gold">
-                  Explorer <span className="ml-2 transform group-hover:translate-x-2 transition-transform">→</span>
-                </div>
-              </Link>
+                category={category} 
+                config={config} 
+                index={index} 
+              />
             );
           })}
         </div>
       </main>
+      
+      {/* Footer (Simplified for categories page) */}
+      <footer className="bg-white border-t border-brand-border py-16">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-400 font-medium">
+            <div className="mb-6 md:mb-0">
+              <span className="text-foreground font-bold tracking-tight">ARTÉFACT <span className="text-brand-gold">LOCATION</span></span>
+            </div>
+            <div className="flex space-x-10 uppercase tracking-widest text-[10px]">
+              <a href="#" className="hover:text-brand-gold transition-colors">Conditions</a>
+              <a href="#" className="hover:text-brand-gold transition-colors">Confidentialité</a>
+              <a href="#" className="hover:text-brand-gold transition-colors">Support</a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
+
