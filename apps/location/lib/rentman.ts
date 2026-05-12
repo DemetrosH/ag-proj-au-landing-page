@@ -272,13 +272,20 @@ export async function getHomeCategories(role: UserRole = 'guest'): Promise<Categ
   return results.filter(cat => (cat as any).productCount > 0);
 }
 
+export interface FilesLookup {
+  fileIdToUrl: Record<string, string>;
+  itemIdToUrl: Record<string, string>;
+}
+
 /**
  * Fetches all files and returns a lookup map of file ID -> public URL
+ * and item ID -> public URL (for items with missing primary images)
  * Uses pagination to ensure all files are retrieved.
  */
-export async function getFilesLookup(): Promise<Record<string, string>> {
+export async function getFilesLookup(): Promise<FilesLookup> {
   try {
-    const lookup: Record<string, string> = {};
+    const fileIdToUrl: Record<string, string> = {};
+    const itemIdToUrl: Record<string, string> = {};
     const limit = 1000;
     let offset = 0;
     let hasMore = true;
@@ -294,7 +301,16 @@ export async function getFilesLookup(): Promise<Record<string, string>> {
 
       files.forEach(file => {
         if (file.url) {
-          lookup[String(file.id)] = file.url;
+          fileIdToUrl[String(file.id)] = file.url;
+          
+          // If this file is linked to an item and is an image, index it by item ID
+          // We only take the first image found for an item as the fallback
+          if (file.item && (file.type?.startsWith('image/') || file.extension?.match(/jpg|jpeg|png|webp|gif/i))) {
+            const itemId = file.item.split('/').pop();
+            if (itemId && !itemIdToUrl[itemId]) {
+              itemIdToUrl[itemId] = file.url;
+            }
+          }
         }
       });
 
@@ -308,21 +324,26 @@ export async function getFilesLookup(): Promise<Record<string, string>> {
       if (offset > 20000) break; 
     }
     
-    console.log(`[Rentman] Built files lookup with ${Object.keys(lookup).length} images`);
-    return lookup;
+    console.log(`[Rentman] Built files lookup with ${Object.keys(fileIdToUrl).length} images and ${Object.keys(itemIdToUrl).length} item fallbacks`);
+    return { fileIdToUrl, itemIdToUrl };
   } catch (error) {
     console.error('Failed to fetch Rentman files:', error);
-    return {};
+    return { fileIdToUrl: {}, itemIdToUrl: {} };
   }
 }
 
 /**
  * Maps a Rentman item to our local Product schema
  */
-function mapRentmanToProduct(item: any, categoryId: string, filesLookup: Record<string, string> = {}): Product {
-  // Extract file ID from "/files/123"
+export function mapRentmanToProduct(item: any, categoryId: string, filesLookup: FilesLookup = { fileIdToUrl: {}, itemIdToUrl: {} }): Product {
+  // Strategy 1: Primary Image field
   const fileId = item.image ? item.image.split('/').pop() : null;
-  const imageUrl = fileId ? filesLookup[fileId] : '';
+  let imageUrl = fileId ? filesLookup.fileIdToUrl[fileId] : '';
+
+  // Strategy 2: Fallback to linked files if primary is missing
+  if (!imageUrl && item.id && filesLookup.itemIdToUrl[String(item.id)]) {
+    imageUrl = filesLookup.itemIdToUrl[String(item.id)];
+  }
 
   return {
     id: String(item.id),

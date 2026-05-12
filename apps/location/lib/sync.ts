@@ -22,7 +22,7 @@ export async function syncRentmanToSupabase() {
       getCategories()
     ]);
 
-    console.log(`[Sync] Fetched ${allEquipment.length} items, ${folders.length} folders, and ${Object.keys(filesLookup).length} images.`);
+    console.log(`[Sync] Fetched ${allEquipment.length} items, ${folders.length} folders, and ${Object.keys(filesLookup.fileIdToUrl).length} images.`);
 
     // 2. Sync Categories
     console.log('[Sync] Upserting categories...');
@@ -82,7 +82,12 @@ export async function syncRentmanToSupabase() {
 
         // Resolve Image
         const fileId = item.image ? item.image.split('/').pop() : null;
-        const imageUrl = fileId ? filesLookup[fileId] : '';
+        let imageUrl = fileId ? filesLookup.fileIdToUrl[fileId] : '';
+
+        // Fallback to linked files if primary is missing
+        if (!imageUrl && item.id && filesLookup.itemIdToUrl[String(item.id)]) {
+          imageUrl = filesLookup.itemIdToUrl[String(item.id)];
+        }
 
         return {
           rentman_id: String(item.id),
