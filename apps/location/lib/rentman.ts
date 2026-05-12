@@ -303,10 +303,15 @@ export async function getFilesLookup(): Promise<FilesLookup> {
         if (file.url) {
           fileIdToUrl[String(file.id)] = file.url;
           
-          // If this file is linked to an item and is an image, index it by item ID
-          // We only take the first image found for an item as the fallback
-          if (file.item && (file.type?.startsWith('image/') || file.extension?.match(/jpg|jpeg|png|webp|gif/i))) {
-            const itemId = file.item.split('/').pop();
+          // If this file is linked to an equipment item and is an image, index it by item ID.
+          // NOTE: file.item is a plain integer (e.g. 1332), NOT a path string.
+          // file.itemtype === 'Materiaal' identifies equipment (as opposed to crew, state, etc.)
+          if (
+            file.item &&
+            file.itemtype === 'Materiaal' &&
+            (file.type?.startsWith('image/') || file.extension?.match(/jpg|jpeg|png|webp|gif/i))
+          ) {
+            const itemId = String(file.item); // already a plain integer
             if (itemId && !itemIdToUrl[itemId]) {
               itemIdToUrl[itemId] = file.url;
             }
