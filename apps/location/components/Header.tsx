@@ -171,25 +171,42 @@ export function Header() {
             </span>
           </Link>
 
-          {/* Search Bar - Center */}
-          <div className="hidden xl:flex flex-grow max-w-xl relative">
+          <div 
+            className="hidden xl:flex flex-grow max-w-xl relative"
+            onMouseEnter={() => searchQuery.length >= 2 && setIsSearchOpen(true)}
+            onMouseLeave={() => setIsSearchOpen(false)}
+          >
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => searchQuery.length >= 2 && setIsSearchOpen(true)}
               placeholder="Rechercher un équipement..."
-              className="w-full bg-brand-surface border border-brand-border rounded-full py-2.5 px-6 text-sm focus:outline-none focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/5 transition-all"
+              className="w-full bg-brand-surface border border-brand-border rounded-full py-2.5 px-6 pr-12 text-sm focus:outline-none focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/5 transition-all"
             />
-            <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-gold">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              {searchQuery && (
+                <button 
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSearchResults([]);
+                    setIsSearchOpen(false);
+                  }}
+                  className="text-gray-400 hover:text-red-500 p-1"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
               {isSearching ? (
                 <div className="w-5 h-5 border-2 border-brand-gold border-t-transparent rounded-full animate-spin"></div>
               ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               )}
-            </button>
+            </div>
 
             {/* Desktop Search Results Dropdown */}
             {isSearchOpen && searchResults.length > 0 && (
@@ -392,17 +409,30 @@ export function Header() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Rechercher..."
-                className="w-full bg-brand-surface border border-brand-border rounded-xl py-3 px-6 text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full bg-brand-surface border border-brand-border rounded-xl py-3 px-12 text-sm focus:outline-none focus:border-brand-gold"
               />
-              <button className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                {searchQuery && (
+                  <button 
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSearchResults([]);
+                    }}
+                    className="text-gray-400 hover:text-red-500 p-1"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
                 {isSearching ? (
                   <div className="w-5 h-5 border-2 border-brand-gold border-t-transparent rounded-full animate-spin"></div>
                 ) : (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 )}
-              </button>
+              </div>
 
               {/* Mobile Search Results */}
               {searchQuery.length >= 2 && (searchResults.length > 0 || isSearching) && (
