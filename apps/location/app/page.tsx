@@ -24,7 +24,7 @@ export default async function Home() {
       ...config,
       featuredProducts: config.featuredProducts.map((fp: any) => {
         if (!fp.imageUrl && fp.slug) {
-          const rentmanProduct = allEquipment.find((p: any) => p.slug === fp.slug || p.id === fp.slug);
+          const rentmanProduct = allEquipment.find((p: any) => String(p.slug) === String(fp.slug) || String(p.id) === String(fp.slug));
           if (rentmanProduct?.image) {
             fp.imageUrl = rentmanProduct.image;
           }

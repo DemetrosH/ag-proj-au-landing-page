@@ -220,7 +220,7 @@ export async function getHomeCategories(role: UserRole = 'guest'): Promise<Categ
         ...cat,
         productCount: categoryProducts.length,
         previewImages,
-        products: categoryProducts.slice(0, 10)
+        products: categoryProducts.slice(0, 100)
       };
     }).filter(cat => (cat as any).productCount > 0);
   }
