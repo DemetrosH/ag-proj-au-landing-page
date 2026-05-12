@@ -210,8 +210,8 @@ export function Header() {
 
             {/* Desktop Search Results Dropdown */}
             {isSearchOpen && searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-brand-border shadow-2xl rounded-2xl overflow-hidden z-50">
-                <div className="max-h-[400px] overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-brand-border shadow-2xl rounded-2xl z-50 before:absolute before:inset-x-0 before:-top-4 before:h-4 before:bg-transparent">
+                <div className="max-h-[400px] overflow-y-auto rounded-2xl overflow-hidden">
                   {searchResults.map((result) => (
                     <Link
                       key={result.rentman_id || result.id}
@@ -243,7 +243,7 @@ export function Header() {
             )}
             
             {isSearchOpen && searchQuery.length >= 2 && searchResults.length === 0 && !isSearching && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-brand-border shadow-2xl rounded-2xl p-6 text-center z-50">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-brand-border shadow-2xl rounded-2xl p-6 text-center z-50 before:absolute before:inset-x-0 before:-top-4 before:h-4 before:bg-transparent">
                 <p className="text-sm text-gray-500">Aucun produit trouvé pour "{searchQuery}"</p>
               </div>
             )}
