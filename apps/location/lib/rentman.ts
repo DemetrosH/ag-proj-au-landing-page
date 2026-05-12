@@ -231,7 +231,17 @@ async function getProductsFromDb(options: {
     }
 
     return data
-      .filter(p => !p.tags?.some((tag: string) => rules.hideTags.includes(tag)))
+      .filter(p => {
+        // Hide if any hideTag is present
+        if (p.tags?.some((tag: string) => rules.hideTags.includes(tag))) return false;
+        
+        // If requiredTags are specified, at least one must be present
+        if (rules.requiredTags && rules.requiredTags.length > 0) {
+          return p.tags?.some((tag: string) => rules.requiredTags?.includes(tag));
+        }
+        
+        return true;
+      })
       .map(p => ({
         id: p.rentman_id,
         name: p.name,
@@ -446,7 +456,16 @@ export async function getEquipment(limit = 100, role: UserRole = 'guest'): Promi
     .filter(item => {
       if (!item.in_shop) return false;
       const itemTags = item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [];
-      return !itemTags.some((tag: string) => rules.hideTags.includes(tag));
+      
+      // Hide if any hideTag is present
+      if (itemTags.some((tag: string) => rules.hideTags.includes(tag))) return false;
+      
+      // If requiredTags are specified, at least one must be present
+      if (rules.requiredTags && rules.requiredTags.length > 0) {
+        return itemTags.some((tag: string) => rules.requiredTags?.includes(tag));
+      }
+      
+      return true;
     })
     .map(item => mapRentmanToProduct(item, 'general', filesLookup));
 }
