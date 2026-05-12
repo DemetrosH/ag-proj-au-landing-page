@@ -15,6 +15,13 @@ export async function syncRentmanToSupabase() {
   console.log('[Sync] Starting Rentman to Supabase synchronization...');
 
   try {
+    // 0. Fetch existing products to preserve images if sync fails to find them
+    const { data: existingProducts } = await supabase.from('products').select('rentman_id, image_url');
+    const existingImages: Record<string, string> = {};
+    existingProducts?.forEach(p => {
+      existingImages[p.rentman_id] = p.image_url;
+    });
+
     // 1. Fetch everything from Rentman in parallel
     const [allEquipment, folders, filesLookup, categories] = await Promise.all([
       rentmanFetchAll<any>('/equipment'),
@@ -108,6 +115,11 @@ export async function syncRentmanToSupabase() {
 
         if (!imageUrl && item.image) {
           console.warn(`[Sync] No image found for product ${item.name} (ID: ${item.id}, FileRef: ${item.image})`);
+        }
+
+        // Final Image fallback: keep existing if new is empty
+        if (!imageUrl && existingImages[String(item.id)]) {
+          imageUrl = existingImages[String(item.id)];
         }
 
         return {
