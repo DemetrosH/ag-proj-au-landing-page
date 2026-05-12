@@ -2,7 +2,7 @@
  * Rentman API Utility & Product Mapping
  */
 
-const RENTMAN_BASE_URL = 'https://api.rentman.net';
+const RENTMAN_BASE_URL = 'https://api.rentman.net/v2';
 const RENTMAN_API_TOKEN = process.env.RENTMAN_API_TOKEN;
 
 // Import WooCommerce mapping data

@@ -1,8 +1,9 @@
 import { createAdminClient } from './supabase/admin';
 import { 
-  rentmanFetchAll, 
+  rentmanFetchAll,
   getFilesLookup, 
-  getCategories 
+  getCategories,
+  getEquipmentAvailability
 } from './rentman';
 import wcData from '../data/wc-data.json';
 
@@ -104,6 +105,10 @@ export async function syncRentmanToSupabase() {
         }
 
         const stockLevel = availabilityMap[String(item.id)] || 0;
+
+        if (!imageUrl && item.image) {
+          console.warn(`[Sync] No image found for product ${item.name} (ID: ${item.id}, FileRef: ${item.image})`);
+        }
 
         return {
           rentman_id: String(item.id),
