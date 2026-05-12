@@ -66,14 +66,14 @@ export async function syncRentmanToSupabase() {
     const productsToUpsert = allEquipment
       .filter(item => item.in_shop) // Only sync items marked for shop
       .map(item => {
-        // Resolve Category Slug
-        let categorySlug: string | null = null;
+        // Resolve Category Slugs
+        let categorySlugs = new Set<string>();
         
         // Strategy A: Folder matching
         const itemFolderId = item.folder ? item.folder.split('/').pop() : null;
         if (itemFolderId && folderLookup[itemFolderId]) {
           const folder = folderLookup[itemFolderId];
-          const matchingCat = categories.find(c => {
+          const matchingCats = categories.filter(c => {
             const catName = c.name.toLowerCase().trim();
             const folderName = folder.name.toLowerCase().trim();
             return folderName === catName || 
@@ -81,18 +81,19 @@ export async function syncRentmanToSupabase() {
                    folderName === `${catName} - ws` ||
                    folder.path.toLowerCase().includes(`/${catName}/`);
           });
-          if (matchingCat) categorySlug = matchingCat.slug;
+          matchingCats.forEach(c => categorySlugs.add(c.slug));
         }
 
         // Strategy B: Product Mapping fallback
-        if (!categorySlug) {
-          const itemNameLower = item.name.toLowerCase().trim();
-          const mappedCats = (wcData.productMapping as any)[itemNameLower];
-          if (mappedCats && mappedCats.length > 0) {
-            const firstMapped = categories.find(c => c.name === mappedCats[0]);
-            if (firstMapped) categorySlug = firstMapped.slug;
-          }
+        const itemNameLower = item.name.toLowerCase().trim();
+        const mappedCats = (wcData.productMapping as any)[itemNameLower];
+        if (mappedCats && mappedCats.length > 0) {
+          const matchingMapped = categories.filter(c => mappedCats.includes(c.name));
+          matchingMapped.forEach(c => categorySlugs.add(c.slug));
         }
+
+        // For backward compatibility during migration
+        const primaryCategory = Array.from(categorySlugs)[0] || null;
 
         // Resolve Image
         let imageUrl = '';
@@ -129,7 +130,8 @@ export async function syncRentmanToSupabase() {
           price: item.price || 0,
           description: item.shop_description_long || item.shop_description_short || item.description || '',
           image_url: imageUrl || '',
-          category_slug: categorySlug,
+          category_slug: primaryCategory,
+          category_slugs: Array.from(categorySlugs),
           is_featured: !!item.shop_featured,
           tags: item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [],
           stock_level: stockLevel,

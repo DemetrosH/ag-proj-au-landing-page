@@ -41,6 +41,7 @@ export interface Product {
   availability_status?: string;
   accessories?: Product[];
   specifications?: string;
+  category_slugs?: string[];
   seo_title?: string;
   seo_description?: string;
   seo_keywords?: string;
@@ -238,7 +239,7 @@ async function getProductsFromDb(options: {
       .select('*');
 
     if (options.categorySlug) {
-      query = query.eq('category_slug', options.categorySlug);
+      query = query.contains('category_slugs', [options.categorySlug]);
     }
     
     if (options.isFeatured) {
@@ -278,6 +279,7 @@ async function getProductsFromDb(options: {
         isFeatured: p.is_featured,
         stock_level: p.stock_level,
         availability_status: p.availability_status,
+        category_slugs: p.category_slugs,
         specifications: p.specifications,
         seo_title: p.seo_title,
         seo_description: p.seo_description,
