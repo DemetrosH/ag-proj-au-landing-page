@@ -379,8 +379,8 @@ export async function getFilesLookup(): Promise<FilesLookup> {
         offset += limit;
       }
       
-      // Safety break to prevent infinite loops (e.g. if limit is very high or API behaves weirdly)
-      if (offset > 20000) break; 
+      // Safety break to prevent infinite loops
+      if (offset > 100000) break; 
     }
     
     console.log(`[Rentman] Built files lookup with ${Object.keys(fileIdToUrl).length} images and ${Object.keys(itemIdToUrl).length} item fallbacks`);
@@ -396,8 +396,16 @@ export async function getFilesLookup(): Promise<FilesLookup> {
  */
 export function mapRentmanToProduct(item: any, categoryId: string, filesLookup: FilesLookup = { fileIdToUrl: {}, itemIdToUrl: {} }): Product {
   // Strategy 1: Primary Image field
-  const fileId = item.image ? item.image.split('/').pop() : null;
-  let imageUrl = fileId ? filesLookup.fileIdToUrl[fileId] : '';
+  let imageUrl = '';
+  if (item.image) {
+    const imgStr = String(item.image);
+    if (imgStr.startsWith('http')) {
+      imageUrl = imgStr;
+    } else {
+      const fileId = imgStr.split('/').pop();
+      imageUrl = fileId ? filesLookup.fileIdToUrl[fileId] : '';
+    }
+  }
 
   // Strategy 2: Fallback to linked files if primary is missing
   if (!imageUrl && item.id && filesLookup.itemIdToUrl[String(item.id)]) {

@@ -87,8 +87,16 @@ export async function syncRentmanToSupabase() {
         }
 
         // Resolve Image
-        const fileId = item.image ? item.image.split('/').pop() : null;
-        let imageUrl = fileId ? filesLookup.fileIdToUrl[fileId] : '';
+        let imageUrl = '';
+        if (item.image) {
+          const imgStr = String(item.image);
+          if (imgStr.startsWith('http')) {
+            imageUrl = imgStr;
+          } else {
+            const fileId = imgStr.split('/').pop();
+            imageUrl = fileId ? filesLookup.fileIdToUrl[fileId] : '';
+          }
+        }
 
         // Fallback to linked files if primary is missing
         if (!imageUrl && item.id && filesLookup.itemIdToUrl[String(item.id)]) {
