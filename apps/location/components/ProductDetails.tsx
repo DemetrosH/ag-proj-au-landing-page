@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useCart } from '../context/CartContext';
 import { Product } from '../lib/rentman';
 
+import { calculateRentalFactor, RENTAL_COEFFICIENTS } from '../lib/pricing';
+
 interface ProductDetailsProps {
   product: Product;
 }
@@ -15,7 +17,11 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const { addToCart } = useCart();
   const [added, setAdded] = React.useState(false);
 
-  const totalPrice = product.price * durationInDays;
+  const factor = calculateRentalFactor(durationInDays);
+  const totalPrice = Math.round(product.price * factor);
+  const savings = isDateSet && durationInDays > 1 
+    ? Math.round((product.price * durationInDays) - totalPrice) 
+    : 0;
 
   const handleAddToCart = () => {
     addToCart(product);
@@ -101,36 +107,77 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           />
 
           <div className="bg-brand-surface rounded-[2.5rem] p-10 mb-10 border border-brand-border/50">
-            <div className="flex justify-between items-end mb-8">
+            <div className="flex justify-between items-start mb-10">
               <div>
                 <span className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Prix de base</span>
                 <span className="text-4xl font-bold text-gray-900">{product.price}$ <span className="text-lg font-normal text-gray-400">/ jour</span></span>
               </div>
               <div className="text-right">
                 {isDateSet ? (
-                  <>
-                    <span className="block text-xs font-bold uppercase tracking-widest text-brand-gold mb-1">{durationInDays} jours</span>
-                    <span className="text-2xl font-bold text-brand-gold">Total: {totalPrice}$</span>
-                  </>
+                  <div className="flex flex-col items-end">
+                    <span className="bg-brand-gold/10 text-brand-gold text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full mb-2">
+                      {durationInDays} JOURS SÉLECTIONNÉS
+                    </span>
+                    <span className="text-4xl font-black text-brand-dark tracking-tighter">Total: {totalPrice}$</span>
+                    {savings > 0 && (
+                      <span className="text-sm font-bold text-green-600 mt-1 uppercase tracking-wider">
+                        Économie de {savings}$ incluse
+                      </span>
+                    )}
+                  </div>
                 ) : (
                   product.stock_level !== undefined && product.stock_level > 0 && (
-                    <>
-                      <span className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Disponibilité</span>
-                      <span className="text-sm font-bold uppercase tracking-wider text-green-600">
-                        En Stock
-                      </span>
-                    </>
+                    <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full border border-green-100">
+                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                      <span className="text-xs font-black uppercase tracking-widest text-green-700">En Stock</span>
+                    </div>
                   )
                 )}
               </div>
             </div>
 
+            {/* Pricing Coefficients Table */}
+            <div className="mb-10 pt-8 border-t border-brand-border/30">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-6">Tarification Dégressive</h4>
+              <div className="grid grid-cols-4 gap-4">
+                {RENTAL_COEFFICIENTS.map((coeff, idx) => {
+                  const isActive = isDateSet && durationInDays >= coeff.from && durationInDays <= coeff.to;
+                  return (
+                    <div 
+                      key={idx} 
+                      className={`relative flex flex-col p-4 rounded-2xl border transition-all duration-300 ${
+                        isActive 
+                        ? 'bg-brand-dark border-brand-dark shadow-xl scale-105' 
+                        : 'bg-white border-brand-border/50 opacity-60'
+                      }`}
+                    >
+                      <span className={`text-[10px] font-bold uppercase mb-1 ${isActive ? 'text-brand-orange' : 'text-gray-400'}`}>
+                        {coeff.from === coeff.to ? `${coeff.from} jour` : `${coeff.from}-${coeff.to} jrs`}
+                      </span>
+                      <span className={`text-lg font-black ${isActive ? 'text-white' : 'text-brand-dark'}`}>
+                        {coeff.factor}x
+                      </span>
+                      {isActive && (
+                        <div className="absolute -top-2 -right-2 bg-brand-orange text-white w-6 h-6 rounded-full flex items-center justify-center shadow-lg">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
             {!isDateSet && (
-              <div className="p-4 bg-brand-peach/30 rounded-xl mb-8 flex items-center gap-3 border border-brand-peach">
-                <svg className="w-5 h-5 text-brand-gold" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                </svg>
-                <p className="text-sm font-medium text-brand-gold">Sélectionnez vos dates pour voir le prix total.</p>
+              <div className="p-5 bg-brand-peach/20 rounded-2xl mb-8 flex items-center gap-4 border border-brand-peach/30">
+                <div className="w-10 h-10 rounded-full bg-brand-peach flex items-center justify-center text-brand-gold shrink-0">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <p className="text-sm font-bold text-brand-gold leading-tight uppercase tracking-tight">Sélectionnez vos dates pour débloquer les tarifs dégressifs.</p>
               </div>
             )}
 
