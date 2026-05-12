@@ -64,7 +64,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     name: product.name,
     image: product.image,
     description: product.description,
-    sku: product.id,
+    sku: product.product_sku || product.id,
+    brand: {
+      '@type': 'Brand',
+      name: product.product_brand || 'Artéfact Urbain',
+    },
     offers: {
       '@type': 'Offer',
       price: product.price,
