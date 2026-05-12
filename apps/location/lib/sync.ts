@@ -152,7 +152,7 @@ export async function syncRentmanToSupabase() {
       if (prodError) throw prodError;
     }
 
-    console.log('[Sync] Synchronization successful!');
+    console.log('[Sync] Synchronization successful! (Ver 1.2)');
     return { success: true, count: productsToUpsert.length };
   } catch (error) {
     console.error('[Sync] Synchronization failed:', error);
