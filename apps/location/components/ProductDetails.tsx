@@ -165,23 +165,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </button>
           </div>
 
-          {product.features.length > 0 && (
-            <div className="space-y-6">
-              <h3 className="text-lg font-bold uppercase tracking-widest">Caractéristiques</h3>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {product.features
-                  .filter(feature => !['location a', 'location b', 'location c', 'location-a', 'location-b', 'location-c', 'populaire', 'produits-vedette', 'uncategorized', 'has-accessories'].includes(feature.toLowerCase()))
-                  .map((feature, idx) => (
-                  <li key={idx} className="flex items-center gap-3 text-gray-600">
-                    <svg className="w-5 h-5 text-brand-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
 
           {product.specifications && (
             <div className="mt-12 pt-12 border-t border-brand-border/30">
