@@ -91,12 +91,13 @@ export function Header() {
   }, [searchQuery]);
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('fr-CA', { day: 'numeric', month: 'short' });
+    // Add T00:00:00 to force local timezone parsing
+    const date = new Date(dateStr + 'T00:00:00');
+    return date.toLocaleDateString('fr-CA', { day: 'numeric', month: 'short' }).toUpperCase();
   };
 
   const formatCompactDate = (dateStr: string) => {
-    const date = new Date(dateStr);
+    const date = new Date(dateStr + 'T00:00:00');
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     return `${day}/${month}`;
@@ -118,7 +119,7 @@ export function Header() {
   // If start date exists, max end date is start date + 6 days
   let maxEndDateStr = '';
   if (startDate) {
-    const d = new Date(startDate);
+    const d = new Date(startDate + 'T00:00:00');
     d.setDate(d.getDate() + 6);
     maxEndDateStr = getFormattedDateStr(d) || '';
   }
