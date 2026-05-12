@@ -429,7 +429,7 @@ export async function getFilesLookup(): Promise<FilesLookup> {
     return { fileIdToUrl, itemIdToUrl };
   } catch (error) {
     console.error('Failed to fetch Rentman files:', error);
-    return { fileIdToUrl: {}, itemIdToUrl: {} };
+    throw error; // Stop the sync if we can't get files
   }
 }
 

@@ -31,6 +31,10 @@ export async function syncRentmanToSupabase() {
     ]);
 
     console.log(`[Sync] Fetched ${allEquipment.length} items, ${folders.length} folders, and ${Object.keys(filesLookup.fileIdToUrl).length} images.`);
+    
+    if (allEquipment.length === 0) {
+      throw new Error('No equipment items returned from Rentman. Aborting sync to prevent data loss.');
+    }
 
     // 2. Fetch Availability for all items
     console.log('[Sync] Fetching availability for all items...');
