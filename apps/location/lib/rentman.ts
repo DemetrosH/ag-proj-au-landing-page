@@ -41,6 +41,12 @@ export interface Product {
   availability_status?: string;
   accessories?: Product[];
   specifications?: string;
+  seo_title?: string;
+  seo_description?: string;
+  seo_keywords?: string;
+  canonical_url?: string;
+  no_index?: boolean;
+  og_image?: string;
 }
 
 export interface Category {
@@ -50,6 +56,12 @@ export interface Category {
   description: string;
   previewImages?: string[];
   products?: Product[];
+  seo_title?: string;
+  seo_description?: string;
+  seo_keywords?: string;
+  canonical_url?: string;
+  no_index?: boolean;
+  og_image?: string;
 }
 
 export interface RentmanFolder {
@@ -112,15 +124,27 @@ async function getFolders(): Promise<RentmanFolder[]> {
  * Fetches all categories from the local sync data
  */
 export async function getCategories(): Promise<Category[]> {
+  const supabase = await createClient();
+  const { data: dbCats } = await supabase.from('categories').select('*');
+
   // Map slugs and names, filtering out meta categories if needed
   return wcData.categories
     .filter(cat => cat.name !== 'Uncategorized' && cat.name !== 'Populaire' && cat.name !== 'Produits vedette')
-    .map(cat => ({
-      id: String(cat.id),
-      name: cat.name.replace('&amp;', '&'),
-      slug: cat.slug,
-      description: cat.description
-    }));
+    .map(cat => {
+      const dbCat = dbCats?.find(c => c.slug === cat.slug);
+      return {
+        id: String(cat.id),
+        name: cat.name.replace('&amp;', '&'),
+        slug: cat.slug,
+        description: cat.description,
+        seo_title: dbCat?.seo_title,
+        seo_description: dbCat?.seo_description,
+        seo_keywords: dbCat?.seo_keywords,
+        canonical_url: dbCat?.canonical_url,
+        no_index: dbCat?.no_index,
+        og_image: dbCat?.og_image
+      };
+    });
 }
 
 /**
@@ -254,7 +278,13 @@ async function getProductsFromDb(options: {
         isFeatured: p.is_featured,
         stock_level: p.stock_level,
         availability_status: p.availability_status,
-        specifications: p.specifications
+        specifications: p.specifications,
+        seo_title: p.seo_title,
+        seo_description: p.seo_description,
+        seo_keywords: p.seo_keywords,
+        canonical_url: p.canonical_url,
+        no_index: p.no_index,
+        og_image: p.og_image
       }));
   } catch (e) {
     console.error('[Supabase] Fetch error:', e);

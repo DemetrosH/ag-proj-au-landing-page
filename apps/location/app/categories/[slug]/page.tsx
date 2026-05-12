@@ -6,6 +6,38 @@ import { URBA_ACCESS_RULES } from '../../../lib/access-control';
 import { CategoryProductList } from './CategoryProductList';
 import { CategorySEOContent } from './CategorySEOContent';
 import { NeonBanner } from './NeonBanner';
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const categories = await getCategories();
+  const category = categories.find(c => c.slug === slug);
+
+  if (!category) return { title: 'Catégorie non trouvée' };
+
+  const title = category.seo_title || `Location ${category.name} Québec | Artéfact Urbain`;
+  const description = category.seo_description || category.description?.substring(0, 160);
+  const image = category.og_image;
+
+  return {
+    title,
+    description,
+    keywords: category.seo_keywords,
+    alternates: {
+      canonical: category.canonical_url,
+    },
+    robots: {
+      index: !category.no_index,
+      follow: !category.no_index,
+    },
+    openGraph: {
+      title,
+      description,
+      images: image ? [image] : [],
+      type: 'website',
+    },
+  };
+}
 
 // Cache category pages for 1 hour
 export const revalidate = 3600;
