@@ -16,9 +16,18 @@ interface ProductDetailsProps {
 export function ProductDetails({ product }: ProductDetailsProps) {
   const { durationInDays, isDateSet } = useRental();
   const { addToCart } = useCart();
+  const [added, setAdded] = React.useState(false);
   const [quantity, setQuantity] = React.useState(1);
+  const [activeImage, setActiveImage] = React.useState(product.image);
 
   const maxStock = product.stock_level ?? 999;
+  const factor = calculateRentalFactor(durationInDays);
+  const totalPrice = Math.round(product.price * factor);
+
+  // Sync active image if product changes
+  React.useEffect(() => {
+    setActiveImage(product.image);
+  }, [product.id, product.image]);
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
