@@ -124,17 +124,17 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
-      className={`group bg-white border-t-8 ${borderColor} shadow-xl hover:shadow-2xl transition-all duration-500 rounded-b-[2rem] overflow-hidden flex flex-col h-full`}
+      className={`group bg-white border-t-8 ${borderColor} shadow-xl hover:shadow-2xl transition-all duration-500 rounded-b-[2rem] rounded-t-lg overflow-hidden flex flex-col h-full`}
     >
       {/* 2x2 Product Thumbnail Grid */}
-      <div className="grid grid-cols-2 bg-gray-50 aspect-square">
+      <div className="grid grid-cols-2 bg-white aspect-square border-b border-gray-100">
         {[0, 1, 2, 3].map((i) => {
           const product = displayProducts[i];
 
           return (
-            <div key={i} className="relative border-[0.5px] border-gray-100 flex items-center justify-center p-6 overflow-hidden hover:bg-gray-100 hover:shadow-inner transition-all duration-300">
+            <div key={i} className="relative border-[0.5px] border-gray-50 flex items-center justify-center p-6 overflow-hidden transition-all duration-500 group/item">
               {product && product.image ? (
-                <Link href={`/products/${product.slug}`} className="relative w-full h-full block">
+                <Link href={`/products/${product.slug}`} className="relative w-full h-full block transform group-hover/item:scale-110 transition-transform duration-500">
                   <Image 
                     src={product.image} 
                     alt={product.name}
@@ -154,7 +154,7 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
       </div>
 
       {/* Content */}
-      <div className="p-5 flex flex-col flex-grow">
+      <div className="p-5 flex flex-col flex-grow bg-gray-50 border-t border-gray-100">
         <h3 className="text-xl font-black text-brand-dark uppercase tracking-tight mb-2 group-hover:text-brand-orange transition-colors">
           {displayTitle}
         </h3>
@@ -165,7 +165,7 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
         
         <Link 
           href={`/categories/${category.slug}`}
-          className="flex items-center justify-between w-full p-3 rounded-lg bg-brand-dark text-white font-bold uppercase tracking-widest text-[10px] hover:bg-brand-orange transition-colors group/btn"
+          className="flex items-center justify-between w-full p-3 rounded-lg bg-brand-dark text-white font-bold uppercase tracking-widest text-[10px] hover:bg-brand-orange transition-colors group/btn shadow-md"
         >
           <span>Voir la sélection</span>
           <svg className="w-3 h-3 transform group-hover/btn:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">

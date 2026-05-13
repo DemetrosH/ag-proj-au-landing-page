@@ -16,8 +16,8 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
       viewport={{ once: true }}
       className={`relative w-full bg-[#050505] overflow-hidden flex h-full ${
         isVertical 
-          ? 'flex-col items-center justify-between py-12 px-6 text-center rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.5)]' 
-          : 'flex-col md:flex-row items-center justify-between p-8 md:p-20 rounded-[2rem] md:rounded-[3rem]'
+          ? 'flex-col items-center justify-between py-12 px-6 text-center rounded-b-[2.5rem] rounded-t-lg shadow-[0_0_50px_rgba(0,0,0,0.5)]' 
+          : 'flex-col md:flex-row items-center justify-between p-8 md:p-20 rounded-b-[2rem] md:rounded-b-[3rem] rounded-t-lg md:rounded-t-xl'
       } border border-white/10 group`}
     >
       {/* 1. Dynamic Mesh Background */}

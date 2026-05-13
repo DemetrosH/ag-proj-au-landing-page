@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRental } from '../context/RentalContext';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useCart } from '../context/CartContext';
 import { Product } from '../lib/rentman';
@@ -182,20 +183,35 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             )}
 
             {!added ? (
-              <button 
+              <motion.button 
                 onClick={handleAddToCart}
                 disabled={isDateSet && product.stock_level !== undefined && product.stock_level <= 0}
-                className={`w-full py-6 text-lg shadow-xl flex items-center justify-center gap-3 transition-all duration-300 rounded-2xl ${
+                whileHover="hover"
+                variants={{
+                  hover: { scale: 1.01, y: -2 }
+                }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                className={`w-full py-6 text-lg shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-gray-200 flex items-center justify-center gap-3 rounded-2xl group ${
                   isDateSet && product.stock_level !== undefined && product.stock_level <= 0
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'btn-primary shadow-brand-gold/20'
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-brand-dark hover:border-brand-orange/50 transition-colors'
                 }`}
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {isDateSet && product.stock_level !== undefined && product.stock_level <= 0 ? 'Indisponible' : 'Ajouter à la soumission'}
-              </button>
+                <motion.div
+                  variants={{
+                    hover: { rotate: 90 }
+                  }}
+                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </motion.div>
+                <span className="font-bold">
+                  {isDateSet && product.stock_level !== undefined && product.stock_level <= 0 ? 'Indisponible' : 'Ajouter à la soumission'}
+                </span>
+              </motion.button>
             ) : (
               <div className="space-y-4 animate-fade-in-up">
                 <div className="flex items-center gap-3 bg-green-500 text-white py-4 px-6 rounded-2xl shadow-xl shadow-green-500/20">

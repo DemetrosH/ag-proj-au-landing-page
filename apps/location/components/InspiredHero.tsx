@@ -1,8 +1,10 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { createClient } from '../lib/supabase/client';
+import { client as sanityClient } from '../lib/sanity';
 
 const features = [
   {
@@ -49,8 +51,71 @@ const features = [
 ];
 
 export function InspiredHero() {
+  const [heroProducts, setHeroProducts] = useState<any[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const fetchHeroProducts = async () => {
+      try {
+        // 1. Fetch Carousel Config from Sanity
+        const sanityConfig = await sanityClient.fetch(`*[_type == "heroCarousel"][0]`);
+        
+        let productsToFetch: { name?: string, rentmanId?: string, label?: string }[] = [];
+        
+        if (sanityConfig?.items?.length > 0) {
+          productsToFetch = sanityConfig.items;
+        } else {
+          // Hardcoded fallback matches the user's confirmed list
+          productsToFetch = [
+            { name: "machine à popcorn commerciale 12 oz", rentmanId: "5086", label: "Vedette" },
+            { name: "machine à slush (simple)", rentmanId: "7575", label: "Vedette" },
+            { name: "chapiteau 10 x 10 pi, rouge et blanc", rentmanId: "5464", label: "Vedette" },
+            { name: "KIT - Prise de parole (2 caisses de son, 2 pieds pour caisse de son, 1 micro, 1 pied de micro, console)", rentmanId: "7577", label: "Vedette" },
+            { name: "Scène portative – 48 x 48 po (stage)", rentmanId: "4766", label: "Vedette" },
+            { name: "Jeux de lancer de haches et fléchettes", rentmanId: "8034", label: "Vedette" }
+          ];
+        }
+
+        // 2. Fetch from Supabase with Category Data
+        const rentmanIds = productsToFetch.map(item => item.rentmanId).filter(Boolean);
+        const names = productsToFetch.map(item => item.name).filter(Boolean);
+
+        let { data: supabaseData, error } = await supabase
+          .from('products')
+          .select('*, categories (name, slug)')
+          .or(`rentman_id.in.(${rentmanIds.join(',')}),name.in.(${names.map(n => `"${n}"`).join(',')})`);
+
+        if (supabaseData) {
+          // Map back to include the Sanity labels
+          const finalProducts = productsToFetch.map(item => {
+            const match = supabaseData.find(p => 
+              (item.rentmanId && p.rentman_id === item.rentmanId) || 
+              (item.name && p.name === item.name)
+            );
+            return match ? { ...match, heroLabel: item.label || 'Vedette' } : null;
+          }).filter(Boolean);
+
+          setHeroProducts(finalProducts);
+        }
+      } catch (err) {
+        console.error("Hero product fetch error:", err);
+      }
+    };
+
+    fetchHeroProducts();
+  }, []);
+
+  useEffect(() => {
+    if (heroProducts.length === 0) return;
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % heroProducts.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [heroProducts]);
+
   return (
-    <section className="relative pt-32 pb-20 overflow-hidden bg-white">
+    <section className="relative pt-32 pb-20 overflow-x-clip bg-white">
       {/* Decorative background elements */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-brand-gray/50 -skew-x-6 translate-x-1/4 z-0" />
       
@@ -58,13 +123,14 @@ export function InspiredHero() {
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           
           {/* Left Column: Content */}
-          <div className="lg:w-1/2">
+          <div className="lg:w-1/2 relative z-20">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
+              className="relative z-20"
             >
-              <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-brand-dark uppercase tracking-tight md:tracking-tighter leading-[1.1] md:leading-[0.9] mb-8">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-brand-dark uppercase tracking-tight md:tracking-tighter leading-[1.1] md:leading-[0.9] mb-8 text-balance">
                 Votre Expertise, <br />
                 Notre <span className="text-brand-orange">Équipement</span>
               </h1>
@@ -101,49 +167,181 @@ export function InspiredHero() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-5">
-                <a href="#inventory" className="btn-orange text-sm uppercase tracking-widest text-center w-full sm:w-auto">
+                <Link href="/categories" className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-10 py-5 rounded-full hover:bg-brand-orange transition-all shadow-xl shadow-brand-dark/10 text-center text-xs">
                   Parcourir l'inventaire
-                </a>
-                <a href="/contact" className="btn-outline text-sm uppercase tracking-widest text-center w-full sm:w-auto">
+                </Link>
+                <Link href="/contact" className="bg-white border-2 border-brand-dark text-brand-dark font-black uppercase tracking-[0.2em] px-10 py-5 rounded-full hover:bg-brand-dark hover:text-white transition-all text-center text-xs">
                   Demander un devis
-                </a>
+                </Link>
               </div>
             </motion.div>
           </div>
           
           {/* Right Column: Visual Card */}
-          <div className="lg:w-1/2 relative">
+          <div className="lg:w-1/2 relative z-10 overflow-visible">
             <motion.div
               initial={{ opacity: 0, scale: 0.9, rotate: 2 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className="relative aspect-square md:aspect-video lg:aspect-[4/5] w-full max-w-lg mx-auto"
+              className="relative aspect-square md:aspect-video lg:aspect-[4/5] w-full max-w-lg mx-auto overflow-visible"
             >
-              {/* Main Gradient Card */}
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-cyan to-brand-cyan-light rounded-[3rem] shadow-2xl overflow-hidden">
-                <div className="absolute top-0 right-0 w-full h-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
-                
-                {/* Floating Image Elements (Mockups) */}
+              {/* Main Gradient Card - Animated Liquid Effect */}
+              <motion.div 
+                animate={{ 
+                  background: [
+                    "linear-gradient(to bottom right, #00B2CA, #00D2EA)",
+                    "linear-gradient(to bottom right, #00D2EA, #00B2CA)",
+                    "linear-gradient(to bottom right, #00B2CA, #00D2EA)"
+                  ]
+                }}
+                transition={{ 
+                  duration: 8, 
+                  repeat: Infinity, 
+                  ease: "linear" 
+                }}
+                className="absolute inset-0 rounded-[3rem] shadow-2xl overflow-hidden"
+              >
+                {/* Drifting Pattern */}
                 <motion.div 
-                  animate={{ y: [0, -20, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute top-1/4 left-1/2 -translate-x-1/2 w-4/5 h-1/2 z-20"
-                >
-                   {/* Placeholder for a featured equipment image */}
-                   <div className="w-full h-full bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-4 flex items-center justify-center">
-                     <div className="text-white font-black text-4xl opacity-50 uppercase tracking-widest rotate-12">
-                        Location
-                     </div>
-                   </div>
-                </motion.div>
-                
-                <div className="absolute bottom-12 left-12 right-12 z-30">
-                   <div className="glass-card p-8 rounded-3xl">
-                      <p className="text-brand-dark font-black uppercase tracking-widest text-xs mb-2">Service Clé en Main</p>
-                      <p className="text-gray-600 text-sm font-medium">Installation, transport et support technique pour tous vos événements.</p>
-                   </div>
+                  animate={{ 
+                    x: [0, -40, 0],
+                    y: [0, -40, 0]
+                  }}
+                  transition={{ 
+                    duration: 15, 
+                    repeat: Infinity, 
+                    ease: "linear" 
+                  }}
+                  className="absolute -inset-20 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] rounded-[3rem]" 
+                />
+
+
+
+                {/* Pulsing Corner Hazards */}
+                <div className="absolute top-0 left-0 w-24 h-24 opacity-30">
+                   <div className="w-full h-full" style={{ 
+                      backgroundImage: 'linear-gradient(135deg, #fff 25%, transparent 25%, transparent 50%, #fff 50%, #fff 75%, transparent 75%, transparent)',
+                      backgroundSize: '20px 20px'
+                   }} />
                 </div>
-              </div>
+                <div className="absolute bottom-0 right-0 w-32 h-32 opacity-30 rotate-180">
+                   <div className="w-full h-full" style={{ 
+                      backgroundImage: 'linear-gradient(135deg, #F7A831 25%, transparent 25%, transparent 50%, #F7A831 50%, #F7A831 75%, transparent 75%, transparent)',
+                      backgroundSize: '20px 20px'
+                   }} />
+                </div>
+
+                {/* Electric Neon Borders - Thick & Glowing */}
+                <motion.div 
+                  animate={{ 
+                    boxShadow: [
+                      "0 0 20px rgba(247,168,49,0.5), inset 0 0 20px rgba(247,168,49,0.5)",
+                      "0 0 40px rgba(247,168,49,0.8), inset 0 0 40px rgba(247,168,49,0.8)",
+                      "0 0 20px rgba(247,168,49,0.5), inset 0 0 20px rgba(247,168,49,0.5)"
+                    ]
+                  }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute inset-4 border-4 border-brand-orange rounded-[2.5rem] z-10"
+                />
+                
+                {/* Central Floating Product Carousel */}
+                <div className="absolute inset-0 z-20 flex items-center justify-center p-8">
+                  <motion.div
+                    animate={{ y: [0, -20, 0] }}
+                    transition={{ 
+                      duration: 6, 
+                      repeat: Infinity, 
+                      ease: "easeInOut" 
+                    }}
+                    className="w-full max-w-[280px] sm:max-w-xs bg-white rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.12)] p-6 border border-white/50 relative group"
+                  >
+                    {/* Status Badge */}
+                    {heroProducts.length > 0 && (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand-orange text-white text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full shadow-lg z-20">
+                        {heroProducts[currentIndex]?.heroLabel || 'Vedette'}
+                      </div>
+                    )}
+
+                    <AnimatePresence mode="wait">
+                      {heroProducts.length > 0 && (
+                        <motion.div
+                          key={heroProducts[currentIndex].id}
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 1.05 }}
+                          transition={{ duration: 0.6 }}
+                          className="relative z-30"
+                        >
+                          {/* Image Container */}
+                          <div className="aspect-square bg-white rounded-[2rem] overflow-hidden mb-4 p-4 flex items-center justify-center border border-brand-border/20">
+                            {heroProducts[currentIndex].image_url ? (
+                              <img 
+                                src={heroProducts[currentIndex].image_url} 
+                                alt={heroProducts[currentIndex].name} 
+                                className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-700"
+                              />
+                            ) : (
+                              <div className="text-[10px] text-gray-300 italic">Image indisponible</div>
+                            )}
+                          </div>
+
+                          {/* Info Section */}
+                          <div className="space-y-1.5 text-center">
+                            {/* Category Badge - Nuclear Click Fix */}
+                            <div className="min-h-[24px] relative z-40">
+                              {heroProducts[currentIndex].categories ? (
+                                <Link 
+                                  href={`/categories/${heroProducts[currentIndex].categories.slug}`}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="relative z-50 text-[9px] font-black bg-brand-orange/10 text-brand-orange px-3 py-1.5 rounded-md hover:bg-brand-orange hover:text-white transition-all uppercase tracking-widest inline-block cursor-pointer pointer-events-auto"
+                                >
+                                  {heroProducts[currentIndex].categories.name}
+                                </Link>
+                              ) : (
+                                <span className="text-[9px] font-black bg-gray-100 text-gray-400 px-2 py-0.5 rounded-md uppercase tracking-widest inline-block">
+                                  Location
+                                </span>
+                              )}
+                            </div>
+
+                            <h3 className="text-sm font-black text-brand-dark uppercase tracking-tight leading-tight line-clamp-2 min-h-[2.5rem]">
+                              {heroProducts[currentIndex].name}
+                            </h3>
+                            
+                            <div className="flex items-center justify-center gap-4 pt-1">
+                              <div className="text-lg font-black text-brand-dark">
+                                {heroProducts[currentIndex].price}$
+                                <span className="text-[10px] font-bold text-gray-400 ml-1">/ jour</span>
+                              </div>
+                              
+                              <Link 
+                                href={`/products/${heroProducts[currentIndex].rentman_id || heroProducts[currentIndex].id}`}
+                                className="w-10 h-10 rounded-full bg-brand-dark text-white flex items-center justify-center hover:bg-brand-orange transition-all shadow-xl group-hover:translate-x-1"
+                              >
+                                <span className="text-xl">→</span>
+                              </Link>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Navigation Dots */}
+                    <div className="flex justify-center gap-1.5 mt-6">
+                      {heroProducts.map((_, idx) => (
+                        <div 
+                          key={idx}
+                          className={`h-1 rounded-full transition-all duration-500 ${
+                            idx === currentIndex ? 'w-4 bg-brand-orange' : 'w-1 bg-gray-200'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                </div>
+
+
+              </motion.div>
               
               {/* Decorative side element - Hidden on mobile */}
               <div className="hidden lg:block absolute -bottom-6 -left-6 w-24 h-24 bg-brand-orange rounded-3xl z-0" />
