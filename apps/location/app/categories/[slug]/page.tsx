@@ -6,6 +6,7 @@ import { URBA_ACCESS_RULES } from '../../../lib/access-control';
 import { CategoryProductList } from './CategoryProductList';
 import { CategorySEOContent } from './CategorySEOContent';
 import { NeonBanner } from './NeonBanner';
+import { Footer } from '../../../components/Footer';
 import { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -128,6 +129,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
         <CategoryProductList products={products} />
       </main>
+      <Footer />
     </div>
   );
 }

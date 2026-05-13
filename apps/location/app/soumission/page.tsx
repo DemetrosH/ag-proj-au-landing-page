@@ -8,6 +8,7 @@ import { Header } from '../../components/Header';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { createClient } from '../../lib/supabase/client';
+import { Footer } from '../../components/Footer';
 
 function SoumissionContent() {
   const { items, removeFromCart, updateQuantity, totalPrice, clearCart, factor } = useCart();
@@ -622,6 +623,7 @@ function SoumissionContent() {
           </>
         )}
       </main>
+      <Footer />
     </div>
   );
 }

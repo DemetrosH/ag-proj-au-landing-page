@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Header } from '../../components/Header';
 import { ContactForm } from '../../components/ContactForm';
+import { Footer } from '../../components/Footer';
 import { getUserRole } from '../../lib/auth';
 import Link from 'next/link';
 
@@ -129,25 +130,7 @@ export default async function ContactPage() {
         </section>
       </main>
       
-      {/* Festive Minimalist Footer */}
-      <footer className="bg-white border-t border-brand-border py-16 mt-auto">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-400 font-medium">
-            <div className="mb-6 md:mb-0">
-              <span className="text-foreground font-bold tracking-tight">ARTÉFACT <span className="text-brand-gold">LOCATION</span></span>
-              <p className="mt-2 text-xs">Équipez vos événements de rêve.</p>
-            </div>
-            <div className="flex space-x-10 uppercase tracking-widest text-[10px]">
-              <a href="#" className="hover:text-brand-gold transition-colors">Conditions</a>
-              <a href="#" className="hover:text-brand-gold transition-colors">Confidentialité</a>
-              <a href="#" className="hover:text-brand-gold transition-colors">Support</a>
-            </div>
-          </div>
-          <div className="mt-12 pt-8 border-t border-brand-border/30 text-center text-[10px] text-gray-300 uppercase tracking-[0.2em]">
-            © {new Date().getFullYear()} Artéfact Urbain - Tous droits réservés
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

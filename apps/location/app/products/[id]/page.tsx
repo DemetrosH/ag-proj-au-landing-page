@@ -1,6 +1,7 @@
 import { getProductById, getAccessories } from '../../../lib/rentman';
 import { Header } from '../../../components/Header';
 import { ProductDetails } from '../../../components/ProductDetails';
+import { Footer } from '../../../components/Footer';
 import { getUserRole } from '../../../lib/auth';
 import { Metadata } from 'next';
 
@@ -99,6 +100,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       <main className="container mx-auto px-4 py-16">
         <ProductDetails product={productWithAccessories} />
       </main>
+      <Footer />
     </div>
   );
 }
