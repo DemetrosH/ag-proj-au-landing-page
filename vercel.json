@@ -12,7 +12,7 @@
   "crons": [
     {
       "path": "/api/sync?secret=artefact-sync-2024",
-      "schedule": "0 * * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
