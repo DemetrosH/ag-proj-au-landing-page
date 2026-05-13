@@ -37,31 +37,42 @@ export function InspiredCategoryGrid({ categories, configs = [], showTitle = tru
       )}
 
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 items-stretch">
-        {/* Render first 4 categories */}
-        {categories.slice(0, 4).map((category, index) => {
-          const normalizedCatName = category.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-          const config = configs.find(c => 
-            c.rentmanId === category.id || 
-            c.rentmanId === category.slug ||
-            (c.title && c.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === normalizedCatName)
-          );
-          return <CategoryCard key={category.id} category={category} config={config} index={index} />;
-        })}
-
-        {/* Inject Neon Banner - Spans 2 rows on Desktop */}
-        <div className="col-span-2 sm:col-span-1 sm:row-span-2 h-full">
+        {/* Neon Banner - Spans 2 rows on Desktop. Positioned after 4 items on mobile, 3 items on XL */}
+        <div className="col-span-2 sm:col-span-1 sm:row-span-2 h-full order-5 xl:order-4">
            <InspiredNeonBanner isVertical={true} />
         </div>
 
-        {/* Render remaining categories */}
-        {categories.slice(4).map((category, index) => {
+        {/* Render Categories with dynamic ordering */}
+        {categories.map((category, index) => {
           const normalizedCatName = category.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
           const config = configs.find(c => 
             c.rentmanId === category.id || 
             c.rentmanId === category.slug ||
             (c.title && c.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === normalizedCatName)
           );
-          return <CategoryCard key={category.id} category={category} config={config} index={index + 4} />;
+
+          // Order logic:
+          // index 0,1,2 -> order 1,2,3 (Always first)
+          // index 3 -> order 4 on mobile (before banner), order 5 on XL (after banner)
+          // index 4+ -> order 6+
+          const orderClass = index < 3 
+            ? "order-1" 
+            : index === 3 
+              ? "order-4 xl:order-5" 
+              : "order-6";
+
+          // Note: Tailwind order-X classes might not be fully generated if dynamic, 
+          // but we'll use a specific mapping or ensure they exist.
+          const specificOrder = index === 0 ? "order-1" : 
+                               index === 1 ? "order-2" : 
+                               index === 2 ? "order-3" : 
+                               index === 3 ? "order-4 xl:order-5" : `order-${index + 2}`;
+
+          return (
+            <div key={category.id} className={`${specificOrder} h-full`}>
+              <CategoryCard category={category} config={config} index={index} />
+            </div>
+          );
         })}
       </div>
     </div>
