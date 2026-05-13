@@ -3,7 +3,6 @@
  */
 
 const RENTMAN_BASE_URL = 'https://api.rentman.net';
-const RENTMAN_API_TOKEN = process.env.RENTMAN_API_TOKEN;
 
 // Import WooCommerce mapping data
 import wcData from '../data/wc-data.json';
@@ -77,7 +76,8 @@ export interface RentmanFolder {
  * Generic fetch wrapper for Rentman API
  */
 export async function rentmanFetch<T>(endpoint: string, options: any = {}): Promise<T> {
-  if (!RENTMAN_API_TOKEN || RENTMAN_API_TOKEN === 'YOUR_RENTMAN_API_TOKEN') {
+  const token = process.env.RENTMAN_API_TOKEN;
+  if (!token || token === 'YOUR_RENTMAN_API_TOKEN') {
     throw new Error('Rentman API Token is not configured');
   }
 
@@ -95,7 +95,7 @@ export async function rentmanFetch<T>(endpoint: string, options: any = {}): Prom
   const response = await fetch(url.toString(), {
     ...options,
     headers: {
-      'Authorization': `Bearer ${RENTMAN_API_TOKEN}`,
+      'Authorization': `Bearer ${token}`,
       'Accept': 'application/json',
       ...options.headers,
     },
@@ -112,7 +112,7 @@ export async function rentmanFetch<T>(endpoint: string, options: any = {}): Prom
 /**
  * Fetches all folders from Rentman
  */
-async function getFolders(): Promise<RentmanFolder[]> {
+export async function getFolders(): Promise<RentmanFolder[]> {
   try {
     return await rentmanFetch<RentmanFolder[]>('/folders', { params: { limit: 1000 } });
   } catch (error) {
@@ -122,10 +122,10 @@ async function getFolders(): Promise<RentmanFolder[]> {
 }
 
 /**
- * Fetches all categories from the local sync data
+ * Fetches categories from Supabase (not Rentman, as we map them manually)
  */
-export async function getCategories(): Promise<Category[]> {
-  const supabase = await createClient();
+export async function getCategories(providedSupabase?: any) {
+  const supabase = providedSupabase || await createClient();
   const { data: dbCats } = await supabase.from('categories').select('*');
 
   // Map slugs and names, filtering out meta categories if needed

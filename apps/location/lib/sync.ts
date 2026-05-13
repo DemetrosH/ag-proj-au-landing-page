@@ -2,6 +2,7 @@ import { createAdminClient } from './supabase/admin';
 import { 
   rentmanFetchAll,
   getFilesLookup, 
+  getFolders,
   getCategories,
   getEquipmentAvailability
 } from './rentman';
@@ -25,9 +26,9 @@ export async function syncRentmanToSupabase() {
     // 1. Fetch everything from Rentman in parallel
     const [allEquipment, folders, filesLookup, categories] = await Promise.all([
       rentmanFetchAll<any>('/equipment'),
-      rentmanFetchAll<any>('/folders'),
+      getFolders(),
       getFilesLookup(),
-      getCategories()
+      getCategories(supabase)
     ]);
 
     console.log(`[Sync] Fetched ${allEquipment.length} items, ${folders.length} folders, and ${Object.keys(filesLookup.fileIdToUrl).length} images.`);
