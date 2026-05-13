@@ -132,18 +132,12 @@ export function LandingPage({ categories, division, categoryConfigs = [] }: Land
               </p>
             </div>
             
-            <div className="relative z-10 flex flex-col sm:flex-row gap-6">
+            <div className="relative z-10">
                <a 
                 href="/contact" 
-                className="btn-orange text-sm uppercase tracking-widest px-12"
+                className="btn-orange text-sm uppercase tracking-widest px-12 block text-center"
               >
                 Contactez-nous
-              </a>
-              <a 
-                href="tel:+14180000000" 
-                className="flex items-center justify-center space-x-3 px-8 py-4 rounded-xl border-2 border-white/20 hover:bg-white/10 transition-colors font-bold uppercase tracking-widest text-xs"
-              >
-                <span>Appeler</span>
               </a>
             </div>
             
