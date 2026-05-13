@@ -49,6 +49,8 @@ export function Header() {
     const role: UserRole = user?.role || 'guest';
     const rules = URBA_ACCESS_RULES[role];
     
+    const preferredOrder = ['alimentaire', 'chapiteaux', 'enseigne-neon', 'sonorisation', 'eclairage'];
+    
     // Filter and format categories from sync data
     const activeCategories = wcData.categories
       .filter(cat => cat.name !== 'Uncategorized' && cat.name !== 'Populaire' && cat.name !== 'Produits vedette')
@@ -56,7 +58,15 @@ export function Header() {
       .map(cat => ({
         ...cat,
         name: cat.name.replace('&amp;', '&')
-      }));
+      }))
+      .sort((a, b) => {
+        const indexA = preferredOrder.indexOf(a.slug);
+        const indexB = preferredOrder.indexOf(b.slug);
+        if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        return a.name.localeCompare(b.name);
+      });
     setCategories(activeCategories);
   }, [user]);
 

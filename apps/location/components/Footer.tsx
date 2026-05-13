@@ -53,10 +53,10 @@ export function Footer() {
       title: "Catégories",
       links: [
         { label: "Alimentaire", href: "/categories/alimentaire" },
-        { label: "Sonorisation", href: "/categories/sonorisation" },
-        { label: "Éclairage", href: "/categories/eclairage" },
+        { label: "Chapiteaux", href: "/categories/chapiteaux" },
         { label: "Enseigne Néon", href: "/categories/enseigne-neon" },
-        { label: "Mobilier", href: "/categories/ameublements" }
+        { label: "Sonorisation", href: "/categories/sonorisation" },
+        { label: "Éclairage", href: "/categories/eclairage" }
       ]
     }
   ];
