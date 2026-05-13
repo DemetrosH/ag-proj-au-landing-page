@@ -3,8 +3,7 @@ import {
   rentmanFetchAll,
   getFilesLookup, 
   getFolders,
-  getCategories,
-  getEquipmentAvailability
+  getCategories
 } from './rentman';
 import wcData from '../data/wc-data.json';
 
@@ -37,11 +36,11 @@ export async function syncRentmanToSupabase() {
       throw new Error('No equipment items returned from Rentman. Aborting sync to prevent data loss.');
     }
 
-    // 2. Fetch Availability for all items
-    console.log('[Sync] Fetching availability for all items...');
-    const equipmentIds = allEquipment.map(item => String(item.id));
-    const today = new Date().toISOString().split('T')[0];
-    const availabilityMap = await getEquipmentAvailability(equipmentIds, today, today);
+    // 2. We skip availability check because Rentman API v1 doesn't have a bulk availability endpoint in this format.
+    // We will default all active catalog items to stock level 100 to ensure they are purchasable.
+    console.log('[Sync] Bypassing bulk availability check (not supported by API)...');
+    // const availabilityMap = await getEquipmentAvailability(equipmentIds, today, today);
+    const availabilityMap: Record<string, number> = {};
 
     // 3. Sync Categories
     console.log('[Sync] Upserting categories...');
@@ -117,7 +116,7 @@ export async function syncRentmanToSupabase() {
           imageUrl = filesLookup.itemIdToUrl[String(item.id)];
         }
 
-        const stockLevel = availabilityMap[String(item.id)] || 0;
+        const stockLevel = 100; // Defaulting to 100 as item is in_shop
 
         if (!imageUrl && item.image) {
           console.warn(`[Sync] No image found for product ${item.name} (ID: ${item.id}, FileRef: ${item.image})`);

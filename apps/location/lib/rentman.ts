@@ -180,46 +180,11 @@ export async function rentmanFetchAll<T>(endpoint: string, params: any = {}): Pr
 }
 
 /**
- * Fetches availability for a list of equipment IDs for a specific period
+ * NOTE: The getEquipmentAvailability function has been removed.
+ * The Rentman API v1/v2 does not support a bulk availability check endpoint via `/equipment/availability`.
+ * If availability is strictly needed, it requires checking specific project allocations or querying via another module.
+ * For now, items marked `in_shop` are assumed to be available.
  */
-export async function getEquipmentAvailability(ids: string[], start: string, end: string): Promise<Record<string, number>> {
-  try {
-    const availabilityMap: Record<string, number> = {};
-    
-    // Batch in groups of 50 to avoid URL length limits
-    const batchSize = 50;
-    for (let i = 0; i < ids.length; i += batchSize) {
-      const batch = ids.slice(i, i + batchSize);
-      
-      const result = await rentmanFetch<any>('/equipment/availability', { 
-        params: { 
-          equipment: batch, 
-          start, 
-          end 
-        } 
-      });
-
-      const data = result.data || result;
-      if (Array.isArray(data)) {
-        data.forEach((item: any) => {
-          // Rentman returns availability per day. We'll take the minimum availability in the period.
-          // Or if we just check for "today", it will be one entry.
-          const equipmentId = String(item.equipment);
-          const quantity = item.quantity !== undefined ? Number(item.quantity) : 0;
-          
-          if (availabilityMap[equipmentId] === undefined || quantity < availabilityMap[equipmentId]) {
-            availabilityMap[equipmentId] = quantity;
-          }
-        });
-      }
-    }
-    
-    return availabilityMap;
-  } catch (error) {
-    console.error('Failed to fetch Rentman availability:', error);
-    return {};
-  }
-}
 
 /**
  * Fetch products from Supabase with optional category filtering

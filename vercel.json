@@ -8,5 +8,11 @@
         "installCommand": "cd ../.. && npm install"
       }
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/sync?secret=artefact-sync-2024",
+      "schedule": "0 * * * *"
+    }
   ]
 }
