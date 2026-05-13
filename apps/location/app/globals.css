@@ -90,3 +90,17 @@
   background: radial-gradient(circle at top right, rgba(212, 175, 55, 0.05), transparent 40%),
               radial-gradient(circle at bottom left, rgba(255, 250, 240, 1), transparent 40%);
 }
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .mask-fade-right {
+    mask-image: linear-gradient(to right, black 90%, transparent 100%);
+  }
+}
