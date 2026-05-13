@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+bower_components/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+.nuxt/
+
+# Logs and temp files
+*.log
+.cache/
+.tmp/
+
+# Media and large assets
+*.mp4
+*.png
+*.jpg
+*.pdf
+
+# Version control
+.git/
+.svn/

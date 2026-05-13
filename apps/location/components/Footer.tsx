@@ -54,9 +54,17 @@ export function Footer() {
       links: [
         { label: "Alimentaire", href: "/categories/alimentaire" },
         { label: "Chapiteaux", href: "/categories/chapiteaux" },
-        { label: "Enseigne Néon", href: "/categories/enseigne-neon" },
+        { label: "Ameublements", href: "/categories/ameublements" },
+        { label: "Équipements électriques", href: "/categories/rallongesmultiprises" },
         { label: "Sonorisation", href: "/categories/sonorisation" },
-        { label: "Éclairage", href: "/categories/eclairage" }
+        { label: "Enseigne Néon", href: "/categories/enseigne-neon" },
+        { label: "Vidéo", href: "/categories/video" },
+        { label: "Scène", href: "/categories/scene" },
+        { label: "Éclairage", href: "/categories/eclairage" },
+        { label: "Signalétique", href: "/categories/signaletique" },
+        { label: "Jeux", href: "/categories/jeux" },
+        { label: "Blocs d'alimentation & batteries", href: "/categories/bloc-dalimentation-batteries" },
+        { label: "Poids & Supports", href: "/categories/poids-support" }
       ]
     }
   ];
