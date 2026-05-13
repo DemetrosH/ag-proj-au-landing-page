@@ -36,7 +36,7 @@ export function InspiredCategoryGrid({ categories, configs = [], showTitle = tru
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 items-stretch">
         {/* Render first 3 categories */}
         {categories.slice(0, 3).map((category, index) => {
           const normalizedCatName = category.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();

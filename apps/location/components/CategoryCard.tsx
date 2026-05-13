@@ -132,19 +132,19 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
           const product = displayProducts[i];
 
           return (
-            <div key={i} className="relative border-[0.5px] border-gray-50 flex items-center justify-center p-6 overflow-hidden transition-all duration-500 group/item">
+            <div key={i} className="relative border-[0.5px] border-gray-50 flex items-center justify-center p-2 sm:p-6 overflow-hidden transition-all duration-500 group/item">
               {product && product.image ? (
                 <Link href={`/products/${product.slug}`} className="relative w-full h-full block transform group-hover/item:scale-110 transition-transform duration-500">
                   <Image 
                     src={product.image} 
                     alt={product.name}
                     fill
-                    className="object-contain p-2"
-                    sizes="(max-width: 768px) 50vw, 15vw"
+                    className="object-contain p-1 sm:p-2"
+                    sizes="(max-width: 768px) 25vw, 15vw"
                   />
                 </Link>
               ) : (
-                <div className="text-gray-200 uppercase font-black text-[10px] tracking-widest text-center">
+                <div className="text-gray-200 uppercase font-black text-[8px] sm:text-[10px] tracking-widest text-center">
                   {displayTitle.split(' ')[0]}
                 </div>
               )}
@@ -154,21 +154,21 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
       </div>
 
       {/* Content */}
-      <div className="p-5 flex flex-col flex-grow bg-gray-50 border-t border-gray-100">
-        <h3 className="text-xl font-black text-brand-dark uppercase tracking-tight mb-2 group-hover:text-brand-orange transition-colors">
+      <div className="p-3 sm:p-5 flex flex-col flex-grow bg-gray-50 border-t border-gray-100">
+        <h3 className="text-sm sm:text-xl font-black text-brand-dark uppercase tracking-tight mb-1 sm:mb-2 group-hover:text-brand-orange transition-colors line-clamp-1">
           {displayTitle}
         </h3>
         
-        <p className="text-xs text-gray-500 font-medium mb-5 flex-grow line-clamp-2">
+        <p className="text-[10px] sm:text-xs text-gray-500 font-medium mb-3 sm:mb-5 flex-grow line-clamp-2">
           {displayDescription}
         </p>
         
         <Link 
           href={`/categories/${category.slug}`}
-          className="flex items-center justify-between w-full p-3 rounded-lg bg-brand-dark text-white font-bold uppercase tracking-widest text-[10px] hover:bg-brand-orange transition-colors group/btn shadow-md"
+          className="flex items-center justify-between w-full p-2 sm:p-3 rounded-lg bg-brand-dark text-white font-bold uppercase tracking-widest text-[8px] sm:text-[10px] hover:bg-brand-orange transition-colors group/btn shadow-md"
         >
-          <span>Voir la sélection</span>
-          <svg className="w-3 h-3 transform group-hover/btn:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <span>Voir</span>
+          <svg className="w-2 h-2 sm:w-3 sm:h-3 transform group-hover/btn:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
           </svg>
         </Link>
