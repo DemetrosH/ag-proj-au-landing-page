@@ -2,6 +2,7 @@ import { getHomeCategories, getEquipment } from '../../lib/rentman';
 import { getCategoryConfigs } from '../../lib/sanity';
 import { getUserRole } from '../../lib/auth';
 import { Header } from '../../components/Header';
+import { Footer } from '../../components/Footer';
 import { CategoryFilterLayout } from '../../components/CategoryFilterLayout';
 
 export const revalidate = 3600;
@@ -52,20 +53,7 @@ export default async function CategoriesPage() {
         />
       </main>
       
-      <footer className="bg-white border-t border-brand-border py-16 mt-32">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-400 font-medium">
-            <div className="mb-6 md:mb-0">
-              <span className="text-brand-dark font-bold tracking-tight">ARTÉFACT <span className="text-brand-orange font-black">LOCATION</span></span>
-            </div>
-            <div className="flex space-x-10 uppercase tracking-widest text-[10px]">
-              <a href="#" className="hover:text-brand-orange transition-colors">Conditions</a>
-              <a href="#" className="hover:text-brand-orange transition-colors">Confidentialité</a>
-              <a href="#" className="hover:text-brand-orange transition-colors">Support</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
