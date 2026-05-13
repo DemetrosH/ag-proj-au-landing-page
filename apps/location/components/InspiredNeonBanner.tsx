@@ -16,7 +16,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
       viewport={{ once: true }}
       className={`relative w-full bg-[#050505] overflow-hidden flex h-full ${
         isVertical 
-          ? 'flex-col items-center justify-between py-12 px-6 text-center rounded-b-[2.5rem] rounded-t-lg shadow-[0_0_50px_rgba(0,0,0,0.5)]' 
+          ? 'flex-col items-center justify-between py-8 px-4 sm:py-12 sm:px-6 text-center rounded-b-[2.5rem] rounded-t-lg shadow-[0_0_50px_rgba(0,0,0,0.5)]' 
           : 'flex-col md:flex-row items-center justify-between p-8 md:p-20 rounded-b-[2rem] md:rounded-b-[3rem] rounded-t-lg md:rounded-t-xl'
       } border border-white/10 group`}
     >
@@ -40,9 +40,26 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
 
       {/* 2. Massive Vertical Title */}
       {isVertical ? (
-        <div className="relative z-10 flex flex-col items-center justify-center space-y-12 flex-grow">
+        <div className="relative z-10 flex flex-col items-center justify-center space-y-6 sm:space-y-12 flex-grow">
+          {/* Mobile Horizontal Title */}
           <motion.div 
-            className="flex flex-col items-center"
+            className="sm:hidden text-center"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+          >
+             <h2 
+               className="text-white font-black uppercase tracking-[0.2em] text-3xl leading-none"
+               style={{
+                 textShadow: '0 0 15px rgba(236, 72, 153, 1), 0 0 30px rgba(236, 72, 153, 0.6)'
+               }}
+             >
+               Enseigne<br/>Néon
+             </h2>
+          </motion.div>
+
+          {/* Desktop Vertical Title */}
+          <motion.div 
+            className="hidden sm:flex flex-col items-center"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 1 }}
@@ -69,7 +86,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
              <div className="flex flex-col items-center leading-[0.75]">
                 {"NÉON".split('').map((char, i) => (
                   <motion.span 
-                    key={i} 
+                    key={char + i} 
                     animate={{ 
                       textShadow: [
                         '0 0 10px rgba(236,72,153,0.8), 0 0 20px rgba(236,72,153,0.4)',
