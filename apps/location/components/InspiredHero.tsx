@@ -89,6 +89,10 @@ export function InspiredHero() {
           .select('*, categories (name, slug)')
           .or(`rentman_id.in.(${rentmanIds.join(',')}),name.in.(${names.map(n => `"${n}"`).join(',')})`);
 
+        if (error) {
+          console.error("Supabase Error in Hero:", error);
+        }
+
         if (supabaseData && supabaseData.length > 0) {
           // Map back to include labels
           const finalProducts = productsToFetch.map(item => {
