@@ -88,13 +88,15 @@ export function Footer() {
             </p>
             <div className="flex gap-4">
               {[
-                { icon: <IconFacebook size={18} />, href: "#" },
-                { icon: <IconInstagram size={18} />, href: "#" },
-                { icon: <IconLinkedin size={18} />, href: "#" }
+                { icon: <IconFacebook size={18} />, href: "https://www.facebook.com/artefacturbain/" },
+                { icon: <IconInstagram size={18} />, href: "https://www.instagram.com/artefact.urbain/" },
+                { icon: <IconLinkedin size={18} />, href: "https://www.linkedin.com/company/artefacturbain/" }
               ].map((social, i) => (
                 <motion.a
                   key={i}
                   href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   whileHover={{ y: -3, backgroundColor: '#F7A831' }}
                   className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors"
                 >
@@ -137,24 +139,17 @@ export function Footer() {
                   <IconMapPin size={16} className="text-brand-orange" />
                 </div>
                 <div className="text-sm text-gray-400 font-medium">
-                  825 Boulevard Lebourgneuf, <br />
-                  Québec, QC G2J 0B9
+                  277 Boul. Bona-Dussault, <br />
+                  Saint-Marc-des-Carrières, <br />
+                  QC G0A 4B0
                 </div>
-              </li>
-              <li className="flex items-center gap-4">
-                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-                  <IconPhone size={16} className="text-brand-orange" />
-                </div>
-                <a href="tel:+14180000000" className="text-sm text-gray-400 font-bold hover:text-white transition-colors">
-                  (418) 000-0000
-                </a>
               </li>
               <li className="flex items-center gap-4">
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
                   <IconMail size={16} className="text-brand-orange" />
                 </div>
-                <a href="mailto:info@artefacturbain.ca" className="text-sm text-gray-400 font-bold hover:text-white transition-colors">
-                  info@artefacturbain.ca
+                <a href="mailto:location@artefacturbain.ca" className="text-sm text-gray-400 font-bold hover:text-white transition-colors">
+                  location@artefacturbain.ca
                 </a>
               </li>
             </ul>
@@ -177,9 +172,9 @@ export function Footer() {
             © {currentYear} Artéfact Urbain. Tous droits réservés.
           </div>
           <div className="flex gap-8 uppercase tracking-[0.2em] text-[10px] font-bold text-gray-500">
-            <Link href="#" className="hover:text-brand-orange transition-colors">Confidentialité</Link>
-            <Link href="#" className="hover:text-brand-orange transition-colors">Conditions</Link>
-            <Link href="#" className="hover:text-brand-orange transition-colors">Cookies</Link>
+            <Link href="/confidentialite" className="hover:text-brand-orange transition-colors">Confidentialité</Link>
+            <Link href="/conditions" className="hover:text-brand-orange transition-colors">Conditions</Link>
+            <Link href="/cookies" className="hover:text-brand-orange transition-colors">Cookies</Link>
           </div>
         </div>
       </div>
