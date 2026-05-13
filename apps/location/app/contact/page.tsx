@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Header } from '../../components/Header';
 import { ContactForm } from '../../components/ContactForm';
 import { Footer } from '../../components/Footer';
-import { getUserRole } from '../../lib/auth';
+import { getUserRole, getUserProfile } from '../../lib/auth';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -11,8 +11,10 @@ export const metadata: Metadata = {
 }
 
 export default async function ContactPage() {
-  const role = await getUserRole();
-  const isGuest = role === 'guest';
+  const profile = await getUserProfile();
+  const role = profile?.role || 'guest';
+  const isConnected = !!profile;
+  const isGuest = !isConnected; // Now isGuest means "not logged in"
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-poppins overflow-hidden">
@@ -100,7 +102,7 @@ export default async function ContactPage() {
                       <div className="bg-white border border-brand-border rounded-[3rem] p-12 shadow-2xl text-center max-w-sm">
                         <h3 className="text-2xl font-black uppercase tracking-tighter mb-4">Accès <span className="text-brand-orange">Réservé</span></h3>
                         <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-8 leading-relaxed">
-                          Vous devez être connecté à votre compte partenaire pour nous envoyer un message.
+                          Veuillez vous connecter à votre compte pour accéder au formulaire de contact.
                         </p>
                         <Link 
                           href="/login" 
