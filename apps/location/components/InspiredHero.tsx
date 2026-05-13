@@ -357,24 +357,29 @@ export function InspiredHero() {
               </motion.div>
               
               {/* Decorative side element with Logo */}
-              <motion.div 
-                animate={{ 
-                  y: [0, -10, 0],
-                  rotate: [0, 5, 0]
-                }}
-                transition={{ 
-                  duration: 5, 
-                  repeat: Infinity, 
-                  ease: "easeInOut" 
-                }}
-                className="hidden lg:flex absolute -bottom-6 -left-6 w-24 h-24 bg-white rounded-3xl z-30 shadow-2xl items-center justify-center p-4 border-4 border-brand-orange"
-              >
-                <img 
-                  src="/logo2-A.png" 
-                  alt="Artéfact Urbain" 
-                  className="w-full h-full object-contain" 
-                />
-              </motion.div>
+              <Link href="https://artefacturbain.ca" target="_blank" rel="noopener noreferrer">
+                <motion.div 
+                  animate={{ 
+                    y: [0, -10, 0],
+                    rotate: [0, 5, 0]
+                  }}
+                  whileHover={{ scale: 1.1, rotate: -5 }}
+                  transition={{ 
+                    animate: {
+                      duration: 5, 
+                      repeat: Infinity, 
+                      ease: "easeInOut" 
+                    }
+                  }}
+                  className="hidden lg:flex absolute -bottom-6 -left-6 w-24 h-24 bg-white rounded-3xl z-30 shadow-2xl items-center justify-center p-4 border-4 border-brand-orange cursor-pointer"
+                >
+                  <img 
+                    src="/logo2-A.png" 
+                    alt="Artéfact Urbain" 
+                    className="w-full h-full object-contain" 
+                  />
+                </motion.div>
+              </Link>
             </motion.div>
           </div>
           
