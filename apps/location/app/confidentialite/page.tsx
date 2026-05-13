@@ -78,7 +78,7 @@ export default function ConfidentialitePage() {
                 Pour toute question ou pour exercer vos droits d’accès, de rectification ou de retrait, veuillez contacter :
               </p>
               <p className="font-bold text-brand-dark">
-                Cathy Gilbert<br />
+                Emile Couture<br />
                 <a href="mailto:renseignements@artefacturbain.ca" className="text-brand-orange hover:underline">renseignements@artefacturbain.ca</a>
               </p>
             </section>
