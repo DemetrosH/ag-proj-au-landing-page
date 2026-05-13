@@ -1,6 +1,7 @@
 import { createAdminClient } from './supabase/admin';
 import { 
   rentmanFetchAll,
+  rentmanFetch,
   getFilesLookup, 
   getFolders,
   getCategories
@@ -37,8 +38,8 @@ export async function syncRentmanToSupabase() {
     }
 
     // 2. We skip availability check because Rentman API v1 doesn't have a bulk availability endpoint in this format.
-    // We will default all active catalog items to stock level 100 to ensure they are purchasable.
-    console.log('[Sync] Bypassing bulk availability check (not supported by API)...');
+    // We use the item's base quantity (total owned) as the stock level.
+    console.log('[Sync] Using base quantity as stock level...');
     // const availabilityMap = await getEquipmentAvailability(equipmentIds, today, today);
     const availabilityMap: Record<string, number> = {};
 
@@ -58,17 +59,41 @@ export async function syncRentmanToSupabase() {
 
     if (catError) throw catError;
 
-    // 4. Sync Products
-    console.log('[Sync] Processing products...');
+    const productsToProcess = allEquipment.filter(item => item.in_shop);
+    console.log(`[Sync] Fetching details for ${productsToProcess.length} in-shop products to get accurate stock levels...`);
     
+    // Fetch individual details in batches to avoid overwhelming the API
+    const fullProducts: any[] = [];
+    const batchSize = 5;
+    for (let i = 0; i < productsToProcess.length; i += batchSize) {
+      const batch = productsToProcess.slice(i, i + batchSize);
+      const details = await Promise.all(batch.map(async (item) => {
+        try {
+          // Use the rentmanFetch for singular item to get current_quantity
+          const detail = await rentmanFetch<any>(`/equipment/${item.id}`);
+          return { ...item, ...detail };
+        } catch (e) {
+          console.warn(`[Sync] Failed to fetch details for ${item.name} (${item.id}):`, e);
+          return item; // Fallback to bulk data
+        }
+      }));
+      fullProducts.push(...details);
+      
+      // Small delay to avoid rate limiting
+      if (i + batchSize < productsToProcess.length) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+      
+      console.log(`[Sync] Progress: ${Math.min(i + batchSize, productsToProcess.length)}/${productsToProcess.length}`);
+    }
+
     // Prepare folder lookup for faster category matching
     const folderLookup: Record<string, any> = {};
     folders.forEach(f => {
       folderLookup[String(f.id)] = f;
     });
 
-    const productsToUpsert = allEquipment
-      .filter(item => item.in_shop) // Only sync items marked for shop
+    const productsToUpsert = fullProducts
       .map(item => {
         // Resolve Category Slugs
         let categorySlugs = new Set<string>();
@@ -129,7 +154,7 @@ export async function syncRentmanToSupabase() {
           images = [imageUrl, ...images.filter(img => img !== imageUrl)];
         }
 
-        const stockLevel = 100; // Defaulting to 100 as item is in_shop
+        const stockLevel = item.current_quantity ?? 0; // Use Rentman quantity
 
         if (!imageUrl && item.image) {
           console.warn(`[Sync] No image found for product ${item.name} (ID: ${item.id}, FileRef: ${item.image})`);
