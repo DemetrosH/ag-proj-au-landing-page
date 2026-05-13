@@ -116,6 +116,19 @@ export async function syncRentmanToSupabase() {
           imageUrl = filesLookup.itemIdToUrl[String(item.id)];
         }
 
+        // Collect all images
+        let images: string[] = [];
+        if (item.id && filesLookup.itemIdToUrls[String(item.id)]) {
+          images = [...filesLookup.itemIdToUrls[String(item.id)]];
+        }
+        
+        // Ensure primary image is first
+        if (imageUrl && !images.includes(imageUrl)) {
+          images.unshift(imageUrl);
+        } else if (imageUrl && images.includes(imageUrl)) {
+          images = [imageUrl, ...images.filter(img => img !== imageUrl)];
+        }
+
         const stockLevel = 100; // Defaulting to 100 as item is in_shop
 
         if (!imageUrl && item.image) {
@@ -134,6 +147,7 @@ export async function syncRentmanToSupabase() {
           price: item.price || 0,
           description: item.shop_description_long || item.shop_description_short || item.description || '',
           image_url: imageUrl || '',
+          image_urls: images,
           category_slug: primaryCategory,
           category_slugs: Array.from(categorySlugs),
           is_featured: !!item.shop_featured,

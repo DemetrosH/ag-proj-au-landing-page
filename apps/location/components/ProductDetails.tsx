@@ -20,6 +20,14 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
   const factor = calculateRentalFactor(durationInDays);
   const totalPrice = Math.round(product.price * factor);
+  
+  // Gallery state
+  const [activeImage, setActiveImage] = React.useState(product.image);
+
+  // Sync active image if product changes
+  React.useEffect(() => {
+    setActiveImage(product.image);
+  }, [product.id, product.image]);
 
   const handleAddToCart = () => {
     addToCart(product);
@@ -80,19 +88,45 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             ← Retour à la catégorie
           </Link>
           
-          <div className="aspect-[4/5] bg-white rounded-[3rem] overflow-hidden border border-brand-border flex items-center justify-center p-12 relative">
-            {product.image ? (
-              <img 
-                src={product.image} 
-                alt={product.name} 
-                className="w-full h-full object-contain"
-              />
+          <div className="aspect-[4/5] bg-white rounded-[3rem] overflow-hidden border border-brand-border flex items-center justify-center p-12 relative shadow-2xl">
+            {activeImage ? (
+              <AnimatePresence mode="wait">
+                <motion.img 
+                  key={activeImage}
+                  src={activeImage} 
+                  alt={product.name} 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.05 }}
+                  transition={{ duration: 0.3 }}
+                  className="w-full h-full object-contain"
+                />
+              </AnimatePresence>
             ) : (
-              <svg className="w-40 h-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-40 h-40 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             )}
           </div>
+
+          {/* Thumbnail Gallery */}
+          {product.images && product.images.length > 1 && (
+            <div className="flex flex-wrap gap-4 mt-8 px-2 justify-center">
+              {product.images.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveImage(img)}
+                  className={`w-20 h-24 rounded-2xl overflow-hidden border-2 transition-all ${
+                    activeImage === img 
+                      ? 'border-brand-dark ring-4 ring-brand-dark/10 scale-105' 
+                      : 'border-brand-border hover:border-gray-400 opacity-60 hover:opacity-100'
+                  }`}
+                >
+                  <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right: Info & Pricing */}

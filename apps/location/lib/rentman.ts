@@ -34,6 +34,7 @@ export interface Product {
   price: number;
   description: string;
   image: string;
+  images: string[];
   features: string[];
   isFeatured: boolean;
   stock_level?: number;
@@ -338,6 +339,7 @@ export async function getHomeCategories(role: UserRole = 'guest'): Promise<Categ
 export interface FilesLookup {
   fileIdToUrl: Record<string, string>;
   itemIdToUrl: Record<string, string>;
+  itemIdToUrls: Record<string, string[]>;
 }
 
 /**
@@ -349,6 +351,7 @@ export async function getFilesLookup(): Promise<FilesLookup> {
   try {
     const fileIdToUrl: Record<string, string> = {};
     const itemIdToUrl: Record<string, string> = {};
+    const itemIdToUrls: Record<string, string[]> = {};
     const limit = 1000;
     let offset = 0;
     let hasMore = true;
@@ -378,6 +381,12 @@ export async function getFilesLookup(): Promise<FilesLookup> {
             if (itemId && !itemIdToUrl[itemId]) {
               itemIdToUrl[itemId] = file.url;
             }
+            if (itemId) {
+              if (!itemIdToUrls[itemId]) itemIdToUrls[itemId] = [];
+              if (!itemIdToUrls[itemId].includes(file.url)) {
+                itemIdToUrls[itemId].push(file.url);
+              }
+            }
           }
         }
       });
@@ -392,8 +401,8 @@ export async function getFilesLookup(): Promise<FilesLookup> {
       if (offset > 100000) break; 
     }
     
-    console.log(`[Rentman] Built files lookup with ${Object.keys(fileIdToUrl).length} images and ${Object.keys(itemIdToUrl).length} item fallbacks`);
-    return { fileIdToUrl, itemIdToUrl };
+    console.log(`[Rentman] Built files lookup with ${Object.keys(fileIdToUrl).length} images and ${Object.keys(itemIdToUrls).length} items with multiple images`);
+    return { fileIdToUrl, itemIdToUrl, itemIdToUrls };
   } catch (error) {
     console.error('Failed to fetch Rentman files:', error);
     throw error; // Stop the sync if we can't get files
@@ -403,7 +412,7 @@ export async function getFilesLookup(): Promise<FilesLookup> {
 /**
  * Maps a Rentman item to our local Product schema
  */
-export function mapRentmanToProduct(item: any, categoryId: string, filesLookup: FilesLookup = { fileIdToUrl: {}, itemIdToUrl: {} }): Product {
+export function mapRentmanToProduct(item: any, categoryId: string, filesLookup: FilesLookup = { fileIdToUrl: {}, itemIdToUrl: {}, itemIdToUrls: {} }): Product {
   // Strategy 1: Primary Image field
   let imageUrl = '';
   if (item.image) {
@@ -421,6 +430,20 @@ export function mapRentmanToProduct(item: any, categoryId: string, filesLookup: 
     imageUrl = filesLookup.itemIdToUrl[String(item.id)];
   }
 
+  // Strategy 3: Collect all images
+  let images: string[] = [];
+  if (item.id && filesLookup.itemIdToUrls[String(item.id)]) {
+    images = [...filesLookup.itemIdToUrls[String(item.id)]];
+  }
+  
+  // Ensure primary image is first in the list if it's not already there
+  if (imageUrl && !images.includes(imageUrl)) {
+    images.unshift(imageUrl);
+  } else if (imageUrl && images.includes(imageUrl)) {
+    // Move primary image to front
+    images = [imageUrl, ...images.filter(img => img !== imageUrl)];
+  }
+
   return {
     id: String(item.id),
     name: item.name,
@@ -429,6 +452,7 @@ export function mapRentmanToProduct(item: any, categoryId: string, filesLookup: 
     price: item.price || 0,
     description: item.shop_description_long || item.shop_description_short || item.description || '',
     image: imageUrl || '',
+    images: images,
     features: item.tags 
       ? item.tags.split(',')
           .map((t: string) => t.trim())
@@ -524,6 +548,7 @@ export async function getProductById(id: string, role: UserRole = 'guest'): Prom
       price: p.price,
       description: p.description,
       image: p.image_url,
+      images: p.image_urls || [p.image_url].filter(Boolean),
       features: (p.tags || []).filter((tag: string) => !['location a', 'location b', 'location c', 'location-a', 'location-b', 'location-c', 'populaire', 'produits-vedette', 'uncategorized', 'has-accessories'].includes(tag.toLowerCase())),
       isFeatured: p.is_featured,
       stock_level: p.stock_level,
