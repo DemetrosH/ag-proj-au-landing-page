@@ -356,8 +356,25 @@ export function InspiredHero() {
 
               </motion.div>
               
-              {/* Decorative side element - Hidden on mobile */}
-              <div className="hidden lg:block absolute -bottom-6 -left-6 w-24 h-24 bg-brand-orange rounded-3xl z-0" />
+              {/* Decorative side element with Logo */}
+              <motion.div 
+                animate={{ 
+                  y: [0, -10, 0],
+                  rotate: [0, 5, 0]
+                }}
+                transition={{ 
+                  duration: 5, 
+                  repeat: Infinity, 
+                  ease: "easeInOut" 
+                }}
+                className="hidden lg:flex absolute -bottom-6 -left-6 w-24 h-24 bg-brand-orange rounded-3xl z-30 shadow-2xl items-center justify-center p-4 border-4 border-white"
+              >
+                <img 
+                  src="/logo2-A.png" 
+                  alt="Artéfact Urbain" 
+                  className="w-full h-full object-contain brightness-0 invert" 
+                />
+              </motion.div>
             </motion.div>
           </div>
           
