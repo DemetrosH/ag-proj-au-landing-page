@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useCart } from '../../context/CartContext';
 import { useRental } from '../../context/RentalContext';
@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { createClient } from '../../lib/supabase/client';
 
-export default function SoumissionPage() {
+function SoumissionContent() {
   const { items, removeFromCart, updateQuantity, totalPrice, clearCart, factor } = useCart();
   const { startDate, endDate, durationInDays, isDateSet } = useRental();
   const [step, setStep] = React.useState<'cart' | 'checkout'>('cart');
@@ -623,5 +623,17 @@ export default function SoumissionPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function SoumissionPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="w-12 h-12 border-4 border-brand-orange border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <SoumissionContent />
+    </Suspense>
   );
 }
