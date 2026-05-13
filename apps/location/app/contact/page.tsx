@@ -85,7 +85,7 @@ export default async function ContactPage() {
                   <div className="relative z-10">
                     <h3 className="text-xl font-black uppercase tracking-tighter mb-2">Besoin d'aide ?</h3>
                     <p className="text-gray-400 text-xs font-medium mb-4">Notre équipe technique est disponible du lundi au vendredi.</p>
-                    <p className="text-brand-orange font-black text-lg">info@artefacturbain.ca</p>
+                    <p className="text-brand-orange font-black text-lg">location@artefacturbain.ca</p>
                   </div>
                 </div>
               </div>
