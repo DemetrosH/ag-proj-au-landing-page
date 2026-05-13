@@ -46,9 +46,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const addToCart = (product: Product, quantity = 1) => {
     setItems(prev => {
       const existing = prev.find(item => item.id === product.id);
+      const currentQty = existing ? existing.quantity : 0;
+      const newQty = currentQty + quantity;
+      
+      // Check against stock_level if available
+      if (product.stock_level !== undefined && newQty > product.stock_level) {
+        // Limit to max available
+        const allowedQty = product.stock_level;
+        if (allowedQty <= 0) return prev; // Don't add if out of stock
+        
+        if (existing) {
+          return prev.map(item => 
+            item.id === product.id ? { ...item, quantity: allowedQty } : item
+          );
+        }
+        return [...prev, { ...product, quantity: allowedQty }];
+      }
+
       if (existing) {
         return prev.map(item => 
-          item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
+          item.id === product.id ? { ...item, quantity: newQty } : item
         );
       }
       return [...prev, { ...product, quantity }];
@@ -64,9 +81,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       removeFromCart(productId);
       return;
     }
-    setItems(prev => 
-      prev.map(item => item.id === productId ? { ...item, quantity } : item)
-    );
+
+    setItems(prev => {
+      const item = prev.find(i => i.id === productId);
+      if (item && item.stock_level !== undefined && quantity > item.stock_level) {
+        quantity = item.stock_level;
+      }
+      return prev.map(item => item.id === productId ? { ...item, quantity } : item);
+    });
   };
 
   const clearCart = () => setItems([]);

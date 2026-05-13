@@ -39,10 +39,13 @@ export function CategoryProductList({ products }: CategoryProductListProps) {
           {/* Quick Add Button - MOVED OUTSIDE LINK */}
           <button 
             onClick={(e) => handleQuickAdd(e, product)}
+            disabled={product.stock_level !== undefined && product.stock_level <= 0}
             className={`absolute top-2 right-2 sm:top-6 sm:right-6 w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center z-50 transition-all shadow-2xl ${
               addedId === product.id 
               ? 'bg-green-500 text-white scale-110 opacity-100' 
-              : 'bg-white text-brand-dark hover:bg-brand-orange hover:text-white sm:opacity-0 group-hover:opacity-100 opacity-100'
+              : product.stock_level !== undefined && product.stock_level <= 0
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'
+                : 'bg-white text-brand-dark hover:bg-brand-orange hover:text-white sm:opacity-0 group-hover:opacity-100 opacity-100'
             }`}
             aria-label="Ajouter au panier"
           >

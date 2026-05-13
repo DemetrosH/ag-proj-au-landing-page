@@ -16,21 +16,12 @@ interface ProductDetailsProps {
 export function ProductDetails({ product }: ProductDetailsProps) {
   const { durationInDays, isDateSet } = useRental();
   const { addToCart } = useCart();
-  const [added, setAdded] = React.useState(false);
+  const [quantity, setQuantity] = React.useState(1);
 
-  const factor = calculateRentalFactor(durationInDays);
-  const totalPrice = Math.round(product.price * factor);
-  
-  // Gallery state
-  const [activeImage, setActiveImage] = React.useState(product.image);
-
-  // Sync active image if product changes
-  React.useEffect(() => {
-    setActiveImage(product.image);
-  }, [product.id, product.image]);
+  const maxStock = product.stock_level ?? 999;
 
   const handleAddToCart = () => {
-    addToCart(product);
+    addToCart(product, quantity);
     setAdded(true);
   };
 
@@ -207,19 +198,44 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               </div>
             )}
 
-            {isDateSet && product.stock_level !== undefined && product.stock_level <= 0 && (
-              <div className="p-4 bg-red-50 rounded-xl mb-8 flex items-center gap-3 border border-red-100">
-                <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-                <p className="text-sm font-medium text-red-600">Ce produit est indisponible pour les dates sélectionnées.</p>
+            {/* Quantity Selector */}
+            {!added && product.stock_level !== undefined && product.stock_level > 0 && (
+              <div className="flex flex-col gap-3 mb-8">
+                <div className="flex items-center justify-between px-6 py-4 bg-white border border-brand-border rounded-2xl">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Quantité</span>
+                  <div className="flex items-center gap-6">
+                    <button 
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="w-8 h-8 rounded-full border border-brand-border flex items-center justify-center hover:bg-brand-surface transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M20 12H4" />
+                      </svg>
+                    </button>
+                    <span className="text-lg font-black w-8 text-center">{quantity}</span>
+                    <button 
+                      onClick={() => setQuantity(Math.min(maxStock, quantity + 1))}
+                      className="w-8 h-8 rounded-full border border-brand-border flex items-center justify-center hover:bg-brand-surface transition-colors disabled:opacity-30"
+                      disabled={quantity >= maxStock}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                {product.stock_level !== undefined && (
+                  <p className="text-[10px] font-black uppercase tracking-widest text-right pr-4 text-gray-400">
+                    {product.stock_level} disponible(s)
+                  </p>
+                )}
               </div>
             )}
 
             {!added ? (
               <motion.button 
                 onClick={handleAddToCart}
-                disabled={isDateSet && product.stock_level !== undefined && product.stock_level <= 0}
+                disabled={product.stock_level !== undefined && product.stock_level <= 0}
                 whileHover="hover"
                 variants={{
                   hover: { scale: 1.01, y: -2 }
@@ -227,7 +243,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 className={`w-full py-6 text-lg shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-gray-200 flex items-center justify-center gap-3 rounded-2xl group ${
-                  isDateSet && product.stock_level !== undefined && product.stock_level <= 0
+                  product.stock_level !== undefined && product.stock_level <= 0
                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                     : 'bg-white text-brand-dark hover:border-brand-orange/50 transition-colors'
                 }`}
@@ -243,7 +259,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                   </svg>
                 </motion.div>
                 <span className="font-bold">
-                  {isDateSet && product.stock_level !== undefined && product.stock_level <= 0 ? 'Indisponible' : 'Ajouter à la soumission'}
+                  {product.stock_level !== undefined && product.stock_level <= 0 ? 'Indisponible' : 'Ajouter à la soumission'}
                 </span>
               </motion.button>
             ) : (
