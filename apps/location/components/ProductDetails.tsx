@@ -88,7 +88,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             ← Retour à la catégorie
           </Link>
           
-          <div className="aspect-[4/5] bg-white rounded-[3rem] overflow-hidden border border-brand-border flex items-center justify-center p-12 relative shadow-2xl">
+          <div className="aspect-[4/5] bg-white rounded-[2rem] overflow-hidden border border-brand-border flex items-center justify-center p-12 relative shadow-2xl">
             {activeImage ? (
               <AnimatePresence mode="wait">
                 <motion.img 
@@ -137,7 +137,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             dangerouslySetInnerHTML={{ __html: formatDescription(product.description) }}
           />
 
-          <div className="bg-brand-surface rounded-[2.5rem] p-10 mb-10 border border-brand-border/50">
+          <div className="bg-brand-surface rounded-[2rem] p-10 mb-10 border border-brand-border/50">
             <div className="flex justify-between items-start mb-10">
               <div>
                 <span className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Prix de base</span>
