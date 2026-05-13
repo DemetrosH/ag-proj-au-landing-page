@@ -50,7 +50,6 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
 
   // 1. Content Overrides
   const displayTitle = config?.title || category.name;
-  const displayDescription = config?.description || category.description || `Équipement professionnel de ${category.name.toLowerCase()} pour vos événements de toutes tailles.`;
 
   // 2. Featured Products Selection
   const availableProducts = [...(category.products || [])];
@@ -155,13 +154,11 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
 
       {/* Content */}
       <div className="p-3 sm:p-5 flex flex-col flex-grow bg-gray-50 border-t border-gray-100">
-        <h3 className="text-sm sm:text-xl font-black text-brand-dark uppercase tracking-tight mb-1 sm:mb-2 group-hover:text-brand-orange transition-colors line-clamp-1">
+        <h3 className="text-sm sm:text-xl font-black text-brand-dark uppercase tracking-tight mb-4 group-hover:text-brand-orange transition-colors line-clamp-1">
           {displayTitle}
         </h3>
         
-        <p className="text-[10px] sm:text-xs text-gray-500 font-medium mb-3 sm:mb-5 flex-grow line-clamp-2">
-          {displayDescription}
-        </p>
+        <div className="flex-grow" />
         
         <Link 
           href={`/categories/${category.slug}`}

@@ -124,9 +124,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
       <div className={`relative z-10 flex flex-col ${
         isVertical ? 'items-center text-center space-y-8 mt-12' : 'items-center md:items-end text-center md:text-right space-y-8'
       }`}>
-        <p className={`text-white font-bold tracking-tight uppercase ${isVertical ? 'text-[10px] opacity-60 leading-tight' : 'text-lg opacity-80'} max-w-[200px]`}>
-          Illuminez vos événements <br className="hidden md:block" /> avec nos créations sur mesure.
-        </p>
+        <div className="flex-grow" />
         
         <Link 
           href="/categories/enseigne-neon"
