@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Header } from '../../components/Header';
+import { ContactForm } from '../../components/ContactForm';
 import { getUserRole } from '../../lib/auth';
 import Link from 'next/link';
 
@@ -119,61 +120,7 @@ export default async function ContactPage() {
                     </p>
                   </div>
 
-                  <form className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Nom Complet</label>
-                        <input 
-                          type="text" 
-                          placeholder="Jean Tremblay"
-                          disabled={isGuest}
-                          className="w-full bg-white border border-brand-border rounded-full py-4 px-8 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Téléphone</label>
-                        <input 
-                          type="tel" 
-                          placeholder="(514) 000-0000"
-                          disabled={isGuest}
-                          className="w-full bg-white border border-brand-border rounded-full py-4 px-8 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Adresse Courriel</label>
-                      <input 
-                        type="email" 
-                        placeholder="jean@exemple.com"
-                        disabled={isGuest}
-                        className="w-full bg-white border border-brand-border rounded-full py-4 px-8 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Message</label>
-                      <textarea 
-                        rows={5}
-                        placeholder="Comment pouvons-nous vous aider ?"
-                        disabled={isGuest}
-                        className="w-full bg-white border border-brand-border rounded-[2rem] py-6 px-8 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all resize-none disabled:opacity-50"
-                      ></textarea>
-                    </div>
-
-                    <div className="pt-4">
-                      <button 
-                        type="button"
-                        disabled={isGuest}
-                        className="w-full bg-brand-dark text-white font-black uppercase tracking-[0.3em] py-6 rounded-full hover:bg-brand-orange transition-all shadow-xl flex items-center justify-center gap-4 group disabled:opacity-50"
-                      >
-                        Envoyer le message
-                        <svg className="w-6 h-6 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
-                      </button>
-                    </div>
-                  </form>
+                  <ContactForm isGuest={isGuest} />
                 </div>
               </div>
 

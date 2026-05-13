@@ -1,10 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useCart } from '../../context/CartContext';
 import { useRental } from '../../context/RentalContext';
 import { Header } from '../../components/Header';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { createClient } from '../../lib/supabase/client';
 
 export default function SoumissionPage() {
@@ -14,7 +16,20 @@ export default function SoumissionPage() {
   const [user, setUser] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(false);
   const [submitted, setSubmitted] = React.useState(false);
+  const [dateError, setDateError] = React.useState(false);
+  const searchParams = useSearchParams();
   const supabase = createClient();
+  
+  // Handle step from query param and scroll to top
+  useEffect(() => {
+    const stepParam = searchParams.get('step');
+    if (stepParam === 'checkout' && isDateSet && items.length > 0) {
+      setStep('checkout');
+    } else {
+      setStep('cart');
+    }
+    window.scrollTo(0, 0);
+  }, [searchParams, isDateSet, items.length]); // Removed 'step' from dependencies to avoid infinite loop when setting it internally
 
   // Form State
   const [formData, setFormData] = React.useState({
@@ -99,6 +114,11 @@ export default function SoumissionPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    if (!isDateSet) {
+      setDateError(true);
+      setTimeout(() => setDateError(false), 2000);
+      return;
+    }
 
     setLoading(true);
 
@@ -198,12 +218,16 @@ export default function SoumissionPage() {
               Votre soumission a été reçue. Notre équipe l'analysera et vous contactera dans les plus brefs délais.
             </p>
             <div className="flex flex-col gap-4">
-              <Link href="/profile" className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-10 py-5 rounded-full hover:bg-brand-orange transition-all shadow-xl block">
-                Suivre mes demandes
-              </Link>
-              <Link href="/" className="text-xs font-black text-gray-400 uppercase tracking-widest hover:text-brand-orange transition-colors">
-                Retour à l'accueil
-              </Link>
+              <motion.div whileHover={{ y: -2, scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Link href="/profile" className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-10 py-5 rounded-full hover:bg-brand-orange transition-all shadow-xl block">
+                  Suivre mes demandes
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ x: 5 }} whileTap={{ scale: 0.98 }}>
+                <Link href="/" className="text-xs font-black text-gray-400 uppercase tracking-widest hover:text-brand-orange transition-colors">
+                  Retour à l'accueil
+                </Link>
+              </motion.div>
             </div>
           </div>
         </main>
@@ -221,9 +245,11 @@ export default function SoumissionPage() {
           <div className="text-center py-32 bg-brand-surface rounded-[3rem] border border-brand-border">
             <h2 className="text-4xl font-black text-brand-dark uppercase tracking-tighter mb-4">Votre Panier est <span className="text-brand-orange">Vide</span></h2>
             <p className="text-sm text-gray-400 mb-10 font-bold uppercase tracking-widest">Ajoutez des articles pour commencer votre soumission.</p>
-            <Link href="/" className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-10 py-5 rounded-full hover:bg-brand-orange transition-all shadow-xl shadow-brand-dark/10 inline-block">
-              Parcourir l'équipement
-            </Link>
+            <motion.div whileHover={{ y: -2, scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link href="/" className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-10 py-5 rounded-full hover:bg-brand-orange transition-all shadow-xl shadow-brand-dark/10 inline-block">
+                Parcourir l'équipement
+              </Link>
+            </motion.div>
           </div>
         ) : (
           <>
@@ -239,7 +265,7 @@ export default function SoumissionPage() {
                   <div className="space-y-4">
                     {items.map((item) => (
                       <div key={item.id} className="flex items-center gap-6 p-6 border border-brand-border rounded-[2.5rem] bg-white hover:shadow-xl transition-all group">
-                        <div className="w-20 h-20 bg-brand-surface rounded-2xl flex items-center justify-center text-brand-gold/20 flex-shrink-0 overflow-hidden relative">
+                        <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center text-brand-gold/20 flex-shrink-0 overflow-hidden relative">
                           {item.image ? (
                             <img src={item.image} alt={item.name} className="w-full h-full object-contain p-2" />
                           ) : (
@@ -306,20 +332,37 @@ export default function SoumissionPage() {
                       </div>
                     </div>
 
-                    <button 
-                      onClick={() => setStep('checkout')}
-                      disabled={!isDateSet}
-                      className="w-full bg-brand-dark text-white font-black uppercase tracking-[0.3em] py-6 rounded-full hover:bg-brand-orange transition-all shadow-xl flex items-center justify-center gap-4 group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-brand-dark"
+                    <motion.div
+                      animate={dateError ? { x: [-10, 10, -10, 10, 0] } : {}}
+                      transition={{ duration: 0.4 }}
+                      whileHover={{ y: -2, scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      Continuer
-                      <svg className="w-6 h-6 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
-                    </button>
+                      <button 
+                        onClick={() => {
+                          if (!isDateSet) {
+                            setDateError(true);
+                            setTimeout(() => setDateError(false), 2000);
+                          } else {
+                            setStep('checkout');
+                          }
+                        }}
+                        className={`w-full text-white font-black uppercase tracking-[0.3em] py-6 rounded-full transition-all shadow-xl flex items-center justify-center gap-4 group ${
+                          !isDateSet && dateError ? 'bg-red-500 shadow-red-500/20' : 'bg-brand-dark hover:bg-brand-orange'
+                        }`}
+                      >
+                        Continuer
+                        <svg className="w-6 h-6 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                      </button>
+                    </motion.div>
 
-                    {!isDateSet && (
-                      <p className="text-[9px] text-brand-orange font-bold uppercase text-center mt-4">
-                        Veuillez choisir vos dates pour continuer
+                    {(!isDateSet || dateError) && (
+                      <p className={`text-[10px] font-black uppercase text-center mt-4 transition-all duration-300 ${
+                        dateError ? 'text-red-500 scale-110' : 'text-brand-orange'
+                      }`}>
+                        {dateError ? 'Veuillez choisir vos dates en haut !' : 'Veuillez choisir vos dates pour continuer'}
                       </p>
                     )}
                   </div>

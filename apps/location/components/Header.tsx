@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useRental } from '../context/RentalContext';
 import { useCart } from '../context/CartContext';
 // Import WooCommerce mapping data
@@ -15,6 +16,7 @@ export function Header() {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [dateError, setDateError] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
   
@@ -222,7 +224,7 @@ export function Header() {
                         setSearchQuery('');
                       }}
                     >
-                      <div className="w-12 h-12 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0 border border-brand-border">
+                      <div className="w-12 h-12 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-brand-border">
                         {result.image_url ? (
                           <img src={result.image_url} alt={result.name} className="w-full h-full object-contain" />
                         ) : (
@@ -252,7 +254,9 @@ export function Header() {
           {/* Account & Cart */}
           <div className="flex items-center space-x-3 sm:space-x-6">
             {/* Date Selector Trigger */}
-            <button 
+            <motion.button 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => {
                 setIsDatePickerOpen(!isDatePickerOpen);
                 if (!isDatePickerOpen) setIsMobileMenuOpen(false);
@@ -277,7 +281,7 @@ export function Header() {
                   </>
                 )}
               </span>
-            </button>
+            </motion.button>
 
             {user ? (
               <div className="hidden sm:block relative group">
@@ -290,18 +294,28 @@ export function Header() {
                   <span className="hidden sm:inline max-w-[100px] truncate">{user.email?.split('@')[0]}</span>
                 </button>
                 <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-brand-border shadow-2xl rounded-2xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                  <Link 
-                    href="/profile"
-                    className="w-full text-left px-4 py-2 text-xs font-bold uppercase tracking-widest text-brand-dark hover:bg-brand-surface rounded-xl transition-colors block"
+                  <motion.div
+                    whileHover={{ x: 4 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    Mon Profil
-                  </Link>
-                  <button 
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                    <Link 
+                      href="/profile"
+                      className="w-full text-left px-4 py-2 text-xs font-bold uppercase tracking-widest text-brand-dark hover:bg-brand-surface rounded-xl transition-colors block"
+                    >
+                      Mon Profil
+                    </Link>
+                  </motion.div>
+                  <motion.div
+                    whileHover={{ x: 4 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    Déconnexion
-                  </button>
+                    <button 
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                    >
+                      Déconnexion
+                    </button>
+                  </motion.div>
                 </div>
               </div>
             ) : (
@@ -346,7 +360,7 @@ export function Header() {
                     <div className="max-h-60 overflow-y-auto space-y-4 mb-6 pr-2 scrollbar-thin scrollbar-thumb-gray-100">
                       {items.map((item) => (
                         <div key={item.id} className="flex items-center gap-4 group/item">
-                          <div className="w-12 h-12 bg-brand-surface rounded-xl overflow-hidden border border-brand-border flex-shrink-0">
+                          <div className="w-12 h-12 bg-white rounded-xl overflow-hidden border border-brand-border flex-shrink-0">
                             {item.image ? (
                               <img src={item.image} alt={item.name} className="w-full h-full object-contain p-1" />
                             ) : (
@@ -369,18 +383,44 @@ export function Header() {
                     </div>
 
                     <div className="flex flex-col gap-3">
-                      <Link 
-                        href="/soumission"
-                        className="w-full bg-brand-dark text-white text-center py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-orange transition-all shadow-xl shadow-brand-dark/10"
+                      <motion.div
+                        animate={dateError ? { x: [-5, 5, -5, 5, 0] } : {}}
+                        transition={{ duration: 0.4 }}
+                        whileHover={{ y: -2, scale: 1.01 }}
+                        whileTap={{ scale: 0.98 }}
                       >
-                        Passer à la caisse
-                      </Link>
-                      <Link 
-                        href="/soumission"
-                        className="w-full bg-white border border-brand-border text-brand-dark text-center py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-surface transition-all"
+                        <button 
+                          onClick={() => {
+                            if (!isDateSet) {
+                              setDateError(true);
+                              setTimeout(() => setDateError(false), 2000);
+                            } else {
+                              window.location.href = '/soumission?step=checkout';
+                            }
+                          }}
+                          className={`w-full text-white text-center py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl ${
+                            dateError ? 'bg-red-500 shadow-red-500/20' : 'bg-brand-dark hover:bg-brand-orange shadow-brand-dark/10'
+                          }`}
+                        >
+                          Passer à la caisse
+                        </button>
+                      </motion.div>
+                      {dateError && (
+                        <p className="text-[9px] font-black text-red-500 uppercase text-center animate-pulse">
+                          Veuillez choisir vos dates !
+                        </p>
+                      )}
+                      <motion.div
+                        whileHover={{ y: -2, scale: 1.01 }}
+                        whileTap={{ scale: 0.98 }}
                       >
-                        Voir mon panier
-                      </Link>
+                        <Link 
+                          href="/soumission"
+                          className="w-full bg-white border border-brand-border text-brand-dark text-center py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-surface transition-all block"
+                        >
+                          Voir mon panier
+                        </Link>
+                      </motion.div>
                     </div>
                   </>
                 )}
@@ -510,7 +550,7 @@ export function Header() {
                         setSearchQuery('');
                       }}
                     >
-                      <div className="w-10 h-10 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0 border border-brand-border">
+                      <div className="w-10 h-10 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-brand-border">
                         {result.image_url ? (
                           <img src={result.image_url} alt={result.name} className="w-full h-full object-contain" />
                         ) : (

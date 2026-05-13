@@ -5,6 +5,7 @@ import {
   getOrCreateContactAndPerson,
   getOrCreateLocation
 } from '../../../../lib/rentman';
+import { sendQuoteConfirmationEmail } from '../../../../lib/mail';
 
 export async function POST(request: Request) {
   try {
@@ -119,11 +120,24 @@ export async function POST(request: Request) {
 
     await addEquipmentToProjectRequest(requestId, equipmentItems);
 
-    return NextResponse.json({ 
+    const response = NextResponse.json({ 
       success: true, 
       requestId,
       message: 'Rentman project request created successfully' 
     });
+
+    // Send confirmation email in the background (don't await to avoid blocking response)
+    sendQuoteConfirmationEmail({
+      to: email,
+      customerName: name,
+      requestId: String(requestId),
+      items: items,
+      totalPrice: totalPrice,
+      startDate: startDate,
+      endDate: endDate
+    }).catch(err => console.error('[Email Notification Error]:', err));
+
+    return response;
 
   } catch (error: any) {
     console.error('[Rentman API Error]:', error);

@@ -53,12 +53,12 @@ export function CategoryProductList({ products }: CategoryProductListProps) {
             href={`/products/${product.slug}`}
             className="block border border-brand-border rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-500 bg-white h-full"
           >
-            <div className="aspect-[4/3] bg-brand-surface relative overflow-hidden">
+            <div className="aspect-[4/3] bg-white relative overflow-hidden flex items-center justify-center p-8">
               {product.image ? (
                 <img 
                   src={product.image} 
                   alt={product.name} 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-brand-gold/10 group-hover:scale-110 transition-transform duration-700">

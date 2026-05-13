@@ -80,12 +80,12 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             ← Retour à la catégorie
           </Link>
           
-          <div className="aspect-[4/5] bg-brand-surface rounded-[3rem] overflow-hidden border border-brand-border flex items-center justify-center text-brand-gold/5 relative">
+          <div className="aspect-[4/5] bg-white rounded-[3rem] overflow-hidden border border-brand-border flex items-center justify-center p-12 relative">
             {product.image ? (
               <img 
                 src={product.image} 
                 alt={product.name} 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             ) : (
               <svg className="w-40 h-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
