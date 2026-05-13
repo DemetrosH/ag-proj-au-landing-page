@@ -149,7 +149,7 @@ export function CategoryFilterLayout({ categories, allProducts, categoryConfigs 
                     href={`/products/${product.slug}`}
                     className="block border border-brand-border rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-500 bg-white h-full"
                   >
-                    <div className="aspect-[4/3] bg-brand-surface relative overflow-hidden flex items-center justify-center p-4 sm:p-8">
+                    <div className="aspect-[4/3] bg-white relative overflow-hidden flex items-center justify-center p-4 sm:p-8">
                       {product.image ? (
                         <img 
                           src={product.image} 
