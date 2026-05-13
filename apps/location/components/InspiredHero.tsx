@@ -367,12 +367,12 @@ export function InspiredHero() {
                   repeat: Infinity, 
                   ease: "easeInOut" 
                 }}
-                className="hidden lg:flex absolute -bottom-6 -left-6 w-24 h-24 bg-brand-orange rounded-3xl z-30 shadow-2xl items-center justify-center p-4 border-4 border-white"
+                className="hidden lg:flex absolute -bottom-6 -left-6 w-24 h-24 bg-white rounded-3xl z-30 shadow-2xl items-center justify-center p-4 border-4 border-brand-orange"
               >
                 <img 
                   src="/logo2-A.png" 
                   alt="Artéfact Urbain" 
-                  className="w-full h-full object-contain brightness-0 invert" 
+                  className="w-full h-full object-contain" 
                 />
               </motion.div>
             </motion.div>
