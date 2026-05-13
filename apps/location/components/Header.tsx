@@ -177,10 +177,13 @@ export function Header() {
         <div className="h-20 flex items-center justify-between gap-1 sm:gap-8">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
-            <span className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900">
-              <span className="text-[#E7A128]">Artéfact</span> <span className="hidden sm:inline">Urbain</span>
-              <span className="hidden sm:inline-block ml-2 text-sm font-medium uppercase tracking-widest text-gray-400">Location</span>
-            </span>
+            <div className="flex items-center gap-3">
+              <img src="/logo2-A.png" alt="Artéfact Urbain" className="h-10 sm:h-12 w-auto object-contain" />
+              <div className="hidden sm:flex flex-col leading-none">
+                <span className="text-xl font-black text-brand-dark uppercase tracking-tighter">Location</span>
+                <span className="text-[8px] font-black text-brand-orange uppercase tracking-[0.2em]">Par Artéfact Urbain</span>
+              </div>
+            </div>
           </Link>
 
           <div 
