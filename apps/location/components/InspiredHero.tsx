@@ -57,37 +57,40 @@ export function InspiredHero() {
 
   useEffect(() => {
     const fetchHeroProducts = async () => {
+      // 0. Default Fallback List (Always ready)
+      const fallbackItems = [
+        { name: "machine à popcorn commerciale 12 oz", rentmanId: "5086", label: "Vedette" },
+        { name: "machine à slush (simple)", rentmanId: "7575", label: "Vedette" },
+        { name: "chapiteau 10 x 10 pi, rouge et blanc", rentmanId: "5464", label: "Vedette" },
+        { name: "KIT - Prise de parole (2 caisses de son, 2 pieds pour caisse de son, 1 micro, 1 pied de micro, console)", rentmanId: "7577", label: "Vedette" },
+        { name: "Scène portative – 48 x 48 po (stage)", rentmanId: "4766", label: "Vedette" },
+        { name: "Jeux de lancer de haches et fléchettes", rentmanId: "8034", label: "Vedette" }
+      ];
+
       try {
         // 1. Fetch Carousel Config from Sanity
-        const sanityConfig = await sanityClient.fetch(`*[_type == "heroCarousel"][0]`);
+        let productsToFetch = fallbackItems;
         
-        let productsToFetch: { name?: string, rentmanId?: string, label?: string }[] = [];
-        
-        if (sanityConfig?.items?.length > 0) {
-          productsToFetch = sanityConfig.items;
-        } else {
-          // Hardcoded fallback matches the user's confirmed list
-          productsToFetch = [
-            { name: "machine à popcorn commerciale 12 oz", rentmanId: "5086", label: "Vedette" },
-            { name: "machine à slush (simple)", rentmanId: "7575", label: "Vedette" },
-            { name: "chapiteau 10 x 10 pi, rouge et blanc", rentmanId: "5464", label: "Vedette" },
-            { name: "KIT - Prise de parole (2 caisses de son, 2 pieds pour caisse de son, 1 micro, 1 pied de micro, console)", rentmanId: "7577", label: "Vedette" },
-            { name: "Scène portative – 48 x 48 po (stage)", rentmanId: "4766", label: "Vedette" },
-            { name: "Jeux de lancer de haches et fléchettes", rentmanId: "8034", label: "Vedette" }
-          ];
+        try {
+          const sanityConfig = await sanityClient.fetch(`*[_type == "heroCarousel"][0]`);
+          if (sanityConfig?.items?.length > 0) {
+            productsToFetch = sanityConfig.items;
+          }
+        } catch (sErr) {
+          console.warn("Sanity fetch failed, using fallbacks:", sErr);
         }
-
+        
         // 2. Fetch from Supabase with Category Data
         const rentmanIds = productsToFetch.map(item => item.rentmanId).filter(Boolean);
         const names = productsToFetch.map(item => item.name).filter(Boolean);
 
-        let { data: supabaseData, error } = await supabase
+        const { data: supabaseData, error } = await supabase
           .from('products')
           .select('*, categories (name, slug)')
           .or(`rentman_id.in.(${rentmanIds.join(',')}),name.in.(${names.map(n => `"${n}"`).join(',')})`);
 
-        if (supabaseData) {
-          // Map back to include the Sanity labels
+        if (supabaseData && supabaseData.length > 0) {
+          // Map back to include labels
           const finalProducts = productsToFetch.map(item => {
             const match = supabaseData.find(p => 
               (item.rentmanId && p.rentman_id === item.rentmanId) || 
@@ -97,6 +100,11 @@ export function InspiredHero() {
           }).filter(Boolean);
 
           setHeroProducts(finalProducts);
+        } else {
+          // If Supabase failed or returned nothing, we still have zero products.
+          // In a real emergency, we could fetch ANY 6 products to avoid a blank screen
+          const { data: emergencyData } = await supabase.from('products').select('*, categories(name, slug)').limit(6);
+          if (emergencyData) setHeroProducts(emergencyData);
         }
       } catch (err) {
         console.error("Hero product fetch error:", err);
