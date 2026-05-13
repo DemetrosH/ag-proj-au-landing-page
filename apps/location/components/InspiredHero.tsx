@@ -212,7 +212,7 @@ export function InspiredHero() {
                   repeat: Infinity, 
                   ease: "linear" 
                 }}
-                className="absolute inset-0 rounded-[2.5rem] shadow-2xl overflow-hidden"
+                className="absolute inset-0 rounded-[3rem] shadow-2xl overflow-hidden"
               >
                 {/* Drifting Pattern */}
                 <motion.div 
@@ -225,7 +225,7 @@ export function InspiredHero() {
                     repeat: Infinity, 
                     ease: "linear" 
                   }}
-                  className="absolute -inset-20 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] rounded-[2.5rem]" 
+                  className="absolute -inset-20 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] rounded-[3rem]" 
                 />
 
 
@@ -254,7 +254,7 @@ export function InspiredHero() {
                     ]
                   }}
                   transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute inset-4 border-4 border-brand-orange rounded-[2rem] z-10"
+                  className="absolute inset-4 border-4 border-brand-orange rounded-[2.5rem] z-10"
                 />
                 
                 {/* Central Floating Product Carousel */}
@@ -266,7 +266,7 @@ export function InspiredHero() {
                       repeat: Infinity, 
                       ease: "easeInOut" 
                     }}
-                    className="w-full max-w-[280px] sm:max-w-xs bg-white rounded-[2rem] shadow-[0_30px_60px_rgba(0,0,0,0.12)] p-6 border border-white/50 relative group"
+                    className="w-full max-w-[280px] sm:max-w-xs bg-white rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.12)] p-6 border border-white/50 relative group"
                   >
                     {/* Status Badge */}
                     {heroProducts.length > 0 && (
@@ -286,7 +286,7 @@ export function InspiredHero() {
                           className="relative z-30"
                         >
                           {/* Image Container */}
-                          <div className="aspect-square bg-white rounded-[1.5rem] overflow-hidden mb-4 p-4 flex items-center justify-center border border-brand-border/20">
+                          <div className="aspect-square bg-white rounded-[2rem] overflow-hidden mb-4 p-4 flex items-center justify-center border border-brand-border/20">
                             {heroProducts[currentIndex].image_url ? (
                               <img 
                                 src={heroProducts[currentIndex].image_url} 
