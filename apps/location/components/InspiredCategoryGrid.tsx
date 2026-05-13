@@ -37,8 +37,8 @@ export function InspiredCategoryGrid({ categories, configs = [], showTitle = tru
       )}
 
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 items-stretch">
-        {/* Render first 3 categories */}
-        {categories.slice(0, 3).map((category, index) => {
+        {/* Render first 4 categories */}
+        {categories.slice(0, 4).map((category, index) => {
           const normalizedCatName = category.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
           const config = configs.find(c => 
             c.rentmanId === category.id || 
@@ -54,14 +54,14 @@ export function InspiredCategoryGrid({ categories, configs = [], showTitle = tru
         </div>
 
         {/* Render remaining categories */}
-        {categories.slice(3).map((category, index) => {
+        {categories.slice(4).map((category, index) => {
           const normalizedCatName = category.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
           const config = configs.find(c => 
             c.rentmanId === category.id || 
             c.rentmanId === category.slug ||
             (c.title && c.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === normalizedCatName)
           );
-          return <CategoryCard key={category.id} category={category} config={config} index={index + 3} />;
+          return <CategoryCard key={category.id} category={category} config={config} index={index + 4} />;
         })}
       </div>
     </div>
