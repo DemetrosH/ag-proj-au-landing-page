@@ -272,22 +272,53 @@ export async function getHomeCategories(role: UserRole = 'guest'): Promise<Categ
   
   // 1. Try DB first
   const dbProducts = await getProductsFromDb({ role });
-  if (dbProducts.length > 0) {
-    return allowedCategories.map(cat => {
+    const preferredOrder = [
+      'alimentaire', 
+      'chapiteaux', 
+      'ameublements', 
+      'rallongesmultiprises', 
+      'sonorisation', 
+      'enseigne-neon', 
+      'video', 
+      'scene', 
+      'eclairage', 
+      'signaletique', 
+      'jeux', 
+      'bloc-dalimentation-batteries', 
+      'poids-support'
+    ];
+
+    const results = allowedCategories.map(cat => {
       const categoryProducts = dbProducts.filter(p => p.categoryId === cat.slug);
       const previewImages = categoryProducts
         .map(p => p.image)
         .filter((img, i, self) => img && self.indexOf(img) === i)
         .slice(0, 4);
 
+      let name = cat.name;
+      if (cat.slug === 'rallongesmultiprises') name = 'Équipements électriques';
+      if (cat.slug === 'bloc-dalimentation-batteries') name = "Blocs d'alimentation & batteries";
+      if (cat.slug === 'poids-support') name = "Poids & Supports";
+
       return {
         ...cat,
+        name,
         productCount: categoryProducts.length,
         previewImages,
         products: categoryProducts.slice(0, 100)
       };
-    }).filter(cat => (cat as any).productCount > 0);
-  }
+    })
+    .filter(cat => (cat as any).productCount > 0)
+    .sort((a, b) => {
+      const indexA = preferredOrder.indexOf(a.slug);
+      const indexB = preferredOrder.indexOf(b.slug);
+      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+      return a.name.localeCompare(b.name);
+    });
+    
+    return results;
 
   // 2. Fallback to Rentman
   console.log('[Rentman] DB is empty, falling back to direct API...');
@@ -297,43 +328,63 @@ export async function getHomeCategories(role: UserRole = 'guest'): Promise<Categ
     getFilesLookup()
   ]);
 
-  const results = allowedCategories.map(cat => {
-    const targetFolderIds = folders
-      .filter(f => {
-        const folderName = f.name.toLowerCase().trim();
-        const catName = cat.name.toLowerCase().trim();
-        return folderName === catName || folderName === `${catName}-ws` || f.path.toLowerCase().includes(`/${catName}/`);
-      })
-      .map(f => String(f.id));
+    const results = allowedCategories.map(cat => {
+      const targetFolderIds = folders
+        .filter(f => {
+          const folderName = f.name.toLowerCase().trim();
+          const catName = cat.name.toLowerCase().trim();
+          return folderName === catName || folderName === `${catName}-ws` || f.path.toLowerCase().includes(`/${catName}/`);
+        })
+        .map(f => String(f.id));
 
-    const categoryProducts = allEquipment
-      .filter(item => {
-        if (!item.in_shop) return false;
-        const itemFolderId = item.folder ? item.folder.split('/').pop() : null;
-        if (itemFolderId && targetFolderIds.includes(String(itemFolderId))) return true;
-        const itemNameLower = item.name.toLowerCase().trim();
-        const mappedCategories = (wcData.productMapping as any)[itemNameLower];
-        const isInCategory = mappedCategories && mappedCategories.includes(cat.name);
-        if (!isInCategory) return false;
-        const itemTags = item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [];
-        return !itemTags.some((tag: string) => rules.hideTags.includes(tag));
-      })
-      .map(item => mapRentmanToProduct(item, cat.slug, filesLookup));
+      const categoryProducts = allEquipment
+        .filter(item => {
+          if (!item.in_shop) return false;
+          const itemFolderId = item.folder ? item.folder.split('/').pop() : null;
+          if (itemFolderId && targetFolderIds.includes(String(itemFolderId))) return true;
+          const itemNameLower = item.name.toLowerCase().trim();
+          const mappedCategories = (wcData.productMapping as any)[itemNameLower];
+          const isInCategory = mappedCategories && mappedCategories.includes(cat.name);
+          if (!isInCategory) return false;
+          const itemTags = item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [];
+          return !itemTags.some((tag: string) => rules.hideTags.includes(tag));
+        })
+        .map(item => mapRentmanToProduct(item, cat.slug, filesLookup));
 
-    const previewImages = categoryProducts
-      .map(p => p.image)
-      .filter((img, i, self) => img && self.indexOf(img) === i)
-      .slice(0, 4);
+      const previewImages = categoryProducts
+        .map(p => p.image)
+        .filter((img, i, self) => img && self.indexOf(img) === i)
+        .slice(0, 4);
 
-    return {
-      ...cat,
-      productCount: categoryProducts.length,
-      previewImages,
-      products: categoryProducts.slice(0, 10)
-    };
-  });
+      let name = cat.name;
+      if (cat.slug === 'rallongesmultiprises') name = 'Équipements électriques';
+      if (cat.slug === 'bloc-dalimentation-batteries') name = "Blocs d'alimentation & batteries";
+      if (cat.slug === 'poids-support') name = "Poids & Supports";
 
-  return results.filter(cat => (cat as any).productCount > 0);
+      return {
+        ...cat,
+        name,
+        productCount: categoryProducts.length,
+        previewImages,
+        products: categoryProducts.slice(0, 10)
+      };
+    })
+    .filter(cat => (cat as any).productCount > 0)
+    .sort((a, b) => {
+      const preferredOrder = [
+        'alimentaire', 'chapiteaux', 'ameublements', 'rallongesmultiprises', 
+        'sonorisation', 'enseigne-neon', 'video', 'scene', 'eclairage', 
+        'signaletique', 'jeux', 'bloc-dalimentation-batteries', 'poids-support'
+      ];
+      const indexA = preferredOrder.indexOf(a.slug);
+      const indexB = preferredOrder.indexOf(b.slug);
+      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+      return a.name.localeCompare(b.name);
+    });
+
+    return results;
 }
 
 export interface FilesLookup {

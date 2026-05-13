@@ -49,16 +49,38 @@ export function Header() {
     const role: UserRole = user?.role || 'guest';
     const rules = URBA_ACCESS_RULES[role];
     
-    const preferredOrder = ['alimentaire', 'chapiteaux', 'enseigne-neon', 'sonorisation', 'eclairage'];
+    const preferredOrder = [
+      'alimentaire', 
+      'chapiteaux', 
+      'ameublements', 
+      'rallongesmultiprises', 
+      'sonorisation', 
+      'enseigne-neon', 
+      'video', 
+      'scene', 
+      'eclairage', 
+      'signaletique', 
+      'jeux', 
+      'bloc-dalimentation-batteries', 
+      'poids-support'
+    ];
     
     // Filter and format categories from sync data
     const activeCategories = wcData.categories
       .filter(cat => cat.name !== 'Uncategorized' && cat.name !== 'Populaire' && cat.name !== 'Produits vedette')
       .filter(cat => !rules.hideCats.includes(cat.slug))
-      .map(cat => ({
-        ...cat,
-        name: cat.name.replace('&amp;', '&')
-      }))
+      .map(cat => {
+        let name = cat.name.replace('&amp;', '&');
+        // Rename specific categories to match user's requested list
+        if (cat.slug === 'rallongesmultiprises') name = 'Équipements électriques';
+        if (cat.slug === 'bloc-dalimentation-batteries') name = "Blocs d'alimentation & batteries";
+        if (cat.slug === 'poids-support') name = "Poids & Supports";
+        
+        return {
+          ...cat,
+          name
+        };
+      })
       .sort((a, b) => {
         const indexA = preferredOrder.indexOf(a.slug);
         const indexB = preferredOrder.indexOf(b.slug);

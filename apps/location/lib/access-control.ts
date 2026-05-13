@@ -8,7 +8,18 @@ export interface AccessRules {
 
 export const URBA_ACCESS_RULES: Record<UserRole, AccessRules> = {
   guest: {
-    hideCats: ['appareils', 'production-audiovideo', 'appareils-electronique', 'vehicule', 'divers'],
+    hideCats: [
+      'appareils-electronique', 
+      'communication', 
+      'divers', 
+      'populaire', 
+      'production-audiovideo', 
+      'produits-vedette', 
+      'projecteursaccessoires', 
+      'tapis', 
+      'uncategorized', 
+      'vehicule'
+    ],
     hideTags: ['location b', 'location c'],
     requiredTags: ['location a'],
   },
