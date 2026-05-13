@@ -11,7 +11,7 @@ import { URBA_ACCESS_RULES, UserRole } from '../lib/access-control';
 
 export function Header() {
   const { startDate, endDate, setDates, isDateSet } = useRental();
-  const { itemCount } = useCart();
+  const { itemCount, items, totalPrice, factor } = useCart();
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -262,7 +262,7 @@ export function Header() {
               } px-2 sm:px-4`}
             >
               <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" />
               </svg>
               <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider whitespace-nowrap">
                 {isDateSet ? (
@@ -313,16 +313,79 @@ export function Header() {
               </Link>
             )}
             
-            <Link href="/soumission" className="relative group">
-              <svg className="w-6 h-6 text-gray-600 group-hover:text-brand-gold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-brand-gold text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                  {itemCount}
-                </span>
-              )}
-            </Link>
+            <div className="relative group/cart">
+              <Link 
+                href="/soumission" 
+                className={`relative flex items-center justify-center p-2 rounded-full transition-all ${
+                  itemCount > 0 ? 'bg-brand-orange/10 text-brand-orange' : 'text-gray-600 hover:text-brand-gold'
+                }`}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                {itemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-brand-gold text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-lg border-2 border-white">
+                    {itemCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Cart Dropdown on Hover */}
+              <div className="absolute top-full right-0 mt-2 w-80 bg-white border border-brand-border shadow-2xl rounded-3xl p-6 opacity-0 invisible group-hover/cart:opacity-100 group-hover/cart:visible transition-all z-50 animate-fade-in-up before:absolute before:inset-x-0 before:-top-4 before:h-4 before:bg-transparent">
+                <div className="flex justify-between items-center mb-6">
+                  <h4 className="text-xs font-black uppercase tracking-[0.2em] text-brand-dark">Mon Panier</h4>
+                  <span className="text-[10px] font-bold text-gray-400 uppercase">{itemCount} Articles</span>
+                </div>
+
+                {items.length === 0 ? (
+                  <div className="py-8 text-center">
+                    <p className="text-xs text-gray-400 font-medium italic">Votre panier est vide</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="max-h-60 overflow-y-auto space-y-4 mb-6 pr-2 scrollbar-thin scrollbar-thumb-gray-100">
+                      {items.map((item) => (
+                        <div key={item.id} className="flex items-center gap-4 group/item">
+                          <div className="w-12 h-12 bg-brand-surface rounded-xl overflow-hidden border border-brand-border flex-shrink-0">
+                            {item.image ? (
+                              <img src={item.image} alt={item.name} className="w-full h-full object-contain p-1" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-[8px] text-gray-300 italic">No img</div>
+                            )}
+                          </div>
+                          <div className="flex-grow min-w-0">
+                            <p className="text-[11px] font-black text-brand-dark uppercase truncate">{item.name}</p>
+                            <p className="text-[10px] font-bold text-brand-orange">{item.quantity}x {Math.round(item.price * factor)}$</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="pt-4 border-t border-brand-border mb-6">
+                      <div className="flex justify-between items-end">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sous-total</span>
+                        <span className="text-xl font-black text-brand-dark">{totalPrice}$</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-3">
+                      <Link 
+                        href="/soumission"
+                        className="w-full bg-brand-dark text-white text-center py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-orange transition-all shadow-xl shadow-brand-dark/10"
+                      >
+                        Passer à la caisse
+                      </Link>
+                      <Link 
+                        href="/soumission"
+                        className="w-full bg-white border border-brand-border text-brand-dark text-center py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-surface transition-all"
+                      >
+                        Voir mon panier
+                      </Link>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
 
             {/* Mobile Menu Toggle */}
             <button 

@@ -19,14 +19,10 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
   const factor = calculateRentalFactor(durationInDays);
   const totalPrice = Math.round(product.price * factor);
-  const savings = isDateSet && durationInDays > 1 
-    ? Math.round((product.price * durationInDays) - totalPrice) 
-    : 0;
 
   const handleAddToCart = () => {
     addToCart(product);
     setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
   };
 
   const formatDescription = (text: string) => {
@@ -119,11 +115,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                       {durationInDays} JOURS SÉLECTIONNÉS
                     </span>
                     <span className="text-4xl font-black text-brand-dark tracking-tighter">Total: {totalPrice}$</span>
-                    {savings > 0 && (
-                      <span className="text-sm font-bold text-green-600 mt-1 uppercase tracking-wider">
-                        Économie de {savings}$ incluse
-                      </span>
-                    )}
                   </div>
                 ) : (
                   product.stock_level !== undefined && product.stock_level > 0 && (
@@ -190,26 +181,45 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               </div>
             )}
 
-            <button 
-              onClick={handleAddToCart}
-              disabled={isDateSet && product.stock_level !== undefined && product.stock_level <= 0}
-              className={`w-full py-5 text-lg shadow-xl flex items-center justify-center gap-3 transition-all duration-300 ${
-                added 
-                  ? 'bg-green-500 text-white shadow-green-200 rounded-2xl' 
-                  : isDateSet && product.stock_level !== undefined && product.stock_level <= 0
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed rounded-2xl'
+            {!added ? (
+              <button 
+                onClick={handleAddToCart}
+                disabled={isDateSet && product.stock_level !== undefined && product.stock_level <= 0}
+                className={`w-full py-6 text-lg shadow-xl flex items-center justify-center gap-3 transition-all duration-300 rounded-2xl ${
+                  isDateSet && product.stock_level !== undefined && product.stock_level <= 0
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : 'btn-primary shadow-brand-gold/20'
-              }`}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {added ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                ) : (
+                }`}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                )}
-              </svg>
-              {added ? 'Ajouté !' : isDateSet && product.stock_level !== undefined && product.stock_level <= 0 ? 'Indisponible' : 'Ajouter à la soumission'}
-            </button>
+                </svg>
+                {isDateSet && product.stock_level !== undefined && product.stock_level <= 0 ? 'Indisponible' : 'Ajouter à la soumission'}
+              </button>
+            ) : (
+              <div className="space-y-4 animate-fade-in-up">
+                <div className="flex items-center gap-3 bg-green-500 text-white py-4 px-6 rounded-2xl shadow-xl shadow-green-500/20">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="font-bold uppercase tracking-widest text-sm">Produit ajouté avec succès !</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Link 
+                    href="/soumission"
+                    className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] py-5 rounded-2xl hover:bg-brand-orange transition-all shadow-xl text-center text-xs"
+                  >
+                    Finaliser ma demande
+                  </Link>
+                  <button 
+                    onClick={() => setAdded(false)}
+                    className="bg-white border-2 border-brand-dark text-brand-dark font-black uppercase tracking-[0.2em] py-5 rounded-2xl hover:bg-brand-surface transition-all text-center text-xs"
+                  >
+                    Continuer mes achats
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
 

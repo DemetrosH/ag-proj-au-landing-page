@@ -8,41 +8,41 @@ const features = [
   {
     parts: [
       { text: "Scène", href: "/categories/scene" },
-      { text: " & ", href: null },
+      { text: "&", href: null },
       { text: "structure", href: "/categories/scene" }
     ]
   },
   {
     parts: [
       { text: "Ameublement", href: "/categories/ameublements" },
-      { text: " & ", href: null },
+      { text: "&", href: null },
       { text: "décor", href: "/categories/ameublements" }
     ]
   },
   {
     parts: [
       { text: "Sonorisation", href: "/categories/sonorisation" },
-      { text: " & ", href: null },
+      { text: "&", href: null },
       { text: "éclairage", href: "/categories/eclairage" }
     ]
   },
   {
     parts: [
       { text: "Vidéo", href: "/categories/video" },
-      { text: " & ", href: null },
+      { text: "&", href: null },
       { text: "technologie", href: "/categories/video" }
     ]
   },
   {
     parts: [
       { text: "Enseigne Néon", href: "/categories/enseigne-neon" },
-      { text: " sur mesure", href: null }
+      { text: "sur mesure", href: null }
     ]
   },
   {
     parts: [
       { text: "Chapiteaux", href: "/categories/chapiteaux" },
-      { text: " & ", href: null },
+      { text: "&", href: null },
       { text: "abris", href: "/categories/chapiteaux" }
     ]
   }
@@ -81,7 +81,7 @@ export function InspiredHero() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
-                    <div className="font-bold text-brand-dark uppercase text-[11px] tracking-widest flex flex-wrap">
+                    <div className="font-bold text-brand-dark uppercase text-[11px] tracking-widest flex flex-wrap gap-x-1">
                       {feature.parts.map((part, pi) => (
                         part.href ? (
                           <Link 
@@ -92,7 +92,7 @@ export function InspiredHero() {
                             {part.text}
                           </Link>
                         ) : (
-                          <span key={pi} className="text-gray-400">{part.text}</span>
+                          <span key={pi}>{part.text}</span>
                         )
                       ))}
                     </div>

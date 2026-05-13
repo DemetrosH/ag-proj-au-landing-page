@@ -93,10 +93,12 @@ export async function rentmanFetch<T>(endpoint: string, options: any = {}): Prom
   }
 
   const response = await fetch(url.toString(), {
+    method: options.method || 'GET',
     ...options,
     headers: {
       'Authorization': `Bearer ${token}`,
       'Accept': 'application/json',
+      'Content-Type': 'application/json',
       ...options.headers,
     },
   });
@@ -584,5 +586,273 @@ export async function getAccessories(id: string, role: UserRole = 'guest'): Prom
   } catch (error) {
     console.error(`Failed to fetch accessories for product ${id}:`, error);
     return [];
+  }
+}
+
+/**
+ * Create a new Project Request in Rentman.
+ * Accepts all writable fields from the Rentman ProjectRequest schema.
+ */
+export async function createProjectRequest(data: {
+  name: string;
+  usageperiod_start: string;
+  usageperiod_end: string;
+  planperiod_start: string;
+  planperiod_end: string;
+  contact_person_email: string;
+  contact_person_first_name?: string;
+  contact_person_lastname?: string;
+  contact_person_middle_name?: string;
+  contact_name?: string;
+  contact_phone?: string;
+  contact_mailing_street?: string;
+  contact_mailing_number?: string;
+  contact_mailing_city?: string;
+  contact_mailing_postalcode?: string;
+  contact_mailing_country?: string;
+  linked_contact?: string | null;
+  linked_contact_person?: string | null;
+  location_name?: string;
+  location_mailing_street?: string;
+  location_mailing_number?: string;
+  location_mailing_city?: string;
+  location_mailing_postalcode?: string;
+  location_mailing_country?: string;
+  location_phone?: string;
+  price?: number;
+  remark?: string;
+  language?: string;
+  external_reference?: number;
+  is_paid?: boolean;
+  in?: string | null;
+  out?: string | null;
+  [key: string]: any; // Allow additional fields
+}) {
+  return await rentmanFetch<any>('/projectrequests', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  });
+}
+
+/**
+ * Add equipment to a Project Request.
+ * Sets both `quantity` and `quantity_total` so that quantities
+ * carry through when converting the request to a project in Rentman.
+ */
+export async function addEquipmentToProjectRequest(requestId: string | number, items: {
+  name: string;
+  quantity: number;
+  equipmentId?: string | number;
+  price?: number;
+  order?: number;
+}[]) {
+  const results = [];
+  for (const item of items) {
+    try {
+      const payload: any = {
+        name: item.name,
+        quantity: item.quantity,
+        quantity_total: item.quantity,  // Must match quantity for proper conversion
+        unit_price: item.price || 0,
+        factor: '1',
+        discount: 0,
+        order: String(item.order ?? 0),
+        is_comment: false,
+        is_kit: false,
+      };
+
+      if (item.equipmentId) {
+        payload.linked_equipment = `/equipment/${item.equipmentId}`;
+      }
+
+      // IMPORTANT: Use the NESTED endpoint under the specific project request.
+      // The flat POST /projectrequestequipment does NOT exist in the Rentman API.
+      const res = await rentmanFetch<any>(`/projectrequests/${requestId}/projectrequestequipment`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      results.push(res);
+    } catch (error) {
+      console.error(`Failed to add equipment ${item.name} to project request ${requestId}:`, error);
+    }
+  }
+  return results;
+}
+
+/**
+ * Search for a contact by email
+ */
+export async function getContactByEmail(email: string): Promise<any | null> {
+  try {
+    const results = await rentmanFetch<any[]>('/contacts', {
+      params: { email_1: email, limit: 1 }
+    });
+    return results && results.length > 0 ? results[0] : null;
+  } catch (error) {
+    console.error(`Error searching contact by email ${email}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Search for a contact by name
+ */
+export async function getContactByName(name: string): Promise<any | null> {
+  try {
+    const results = await rentmanFetch<any[]>('/contacts', {
+      params: { name: name, limit: 1 }
+    });
+    return results && results.length > 0 ? results[0] : null;
+  } catch (error) {
+    console.error(`Error searching contact by name ${name}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Create a new Contact (Company or Private)
+ */
+export async function createContact(data: {
+  name: string;
+  type: 'company' | 'private';
+  email_1?: string;
+  phone_1?: string;
+  mailing_street?: string;
+  mailing_city?: string;
+  mailing_postalcode?: string;
+  mailing_country?: string;
+  [key: string]: any;
+}): Promise<any> {
+  return await rentmanFetch<any>('/contacts', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  });
+}
+
+/**
+ * Create a new Contact Person for a Company
+ */
+export async function createContactPerson(contactId: string | number, data: {
+  firstname: string;
+  lastname: string;
+  email?: string;
+  phone?: string;
+  [key: string]: any;
+}): Promise<any> {
+  return await rentmanFetch<any>(`/contacts/${contactId}/contactpersons`, {
+    method: 'POST',
+    body: JSON.stringify(data)
+  });
+}
+
+/**
+ * Get or Create a Contact and Person, then return the IDs to be linked
+ */
+export async function getOrCreateContactAndPerson(params: {
+  companyName?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  postalCode?: string;
+}) {
+  let contactId: string | number | null = null;
+  let personId: string | number | null = null;
+
+  try {
+    // 1. Search for existing contact by email
+    const existingContact = await getContactByEmail(params.email);
+    
+    if (existingContact) {
+      contactId = existingContact.id;
+      // If the contact found is a company, try to find/create the person
+      if (existingContact.type === 'company') {
+        const persons = await rentmanFetch<any[]>(`/contacts/${contactId}/contactpersons`);
+        const existingPerson = persons.find(p => p.email === params.email);
+        if (existingPerson) {
+          personId = existingPerson.id;
+        } else {
+          const newPerson = await createContactPerson(contactId, {
+            firstname: params.firstName,
+            lastname: params.lastName,
+            email: params.email,
+            phone: params.phone
+          });
+          personId = newPerson.id;
+        }
+      }
+    } else {
+      // 2. Create new contact
+      if (params.companyName) {
+        // Create Company
+        const newCompany = await createContact({
+          name: params.companyName,
+          type: 'company',
+          email_1: params.email,
+          phone_1: params.phone,
+          mailing_street: params.address,
+          mailing_city: params.city,
+          mailing_postalcode: params.postalCode
+        });
+        contactId = newCompany.id;
+
+        // Create Person linked to Company
+        const newPerson = await createContactPerson(contactId!, {
+          firstname: params.firstName,
+          lastname: params.lastName,
+          email: params.email,
+          phone: params.phone
+        });
+        personId = newPerson.id;
+      } else {
+        // Create Private person as a Contact
+        const newPrivate = await createContact({
+          name: `${params.firstName} ${params.lastName}`,
+          type: 'private',
+          email_1: params.email,
+          phone_1: params.phone,
+          mailing_street: params.address,
+          mailing_city: params.city,
+          mailing_postalcode: params.postalCode
+        });
+        contactId = newPrivate.id;
+      }
+    }
+  } catch (error) {
+    console.error('Error in getOrCreateContactAndPerson:', error);
+  }
+
+  return { contactId, personId };
+}
+
+/**
+ * Get or Create a Location (stored as a Company contact)
+ */
+export async function getOrCreateLocation(name: string, address: {
+  street?: string;
+  city?: string;
+  postalCode?: string;
+  country?: string;
+}) {
+  if (!name) return null;
+
+  try {
+    const existing = await getContactByName(name);
+    if (existing) return existing.id;
+
+    const newLoc = await createContact({
+      name: name,
+      type: 'company',
+      mailing_street: address.street,
+      mailing_city: address.city,
+      mailing_postalcode: address.postalCode,
+      mailing_country: address.country || 'Canada'
+    });
+    return newLoc.id;
+  } catch (error) {
+    console.error(`Error in getOrCreateLocation for ${name}:`, error);
+    return null;
   }
 }

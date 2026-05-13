@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product } from '../lib/rentman';
+import { useRental } from './RentalContext';
+import { calculateRentalFactor } from '../lib/pricing';
 
 interface CartItem extends Product {
   quantity: number;
@@ -15,12 +17,14 @@ interface CartContextType {
   clearCart: () => void;
   itemCount: number;
   totalPrice: number;
+  factor: number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const { durationInDays } = useRental();
 
   // Load cart from local storage
   useEffect(() => {
@@ -68,7 +72,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const clearCart = () => setItems([]);
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  
+  // Apply Degressive Pricing Factor to the total
+  const factor = calculateRentalFactor(durationInDays);
+  const baseTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const totalPrice = Math.round(baseTotal * factor);
 
   return (
     <CartContext.Provider value={{ 
@@ -78,7 +86,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       updateQuantity, 
       clearCart, 
       itemCount,
-      totalPrice
+      totalPrice,
+      factor
     }}>
       {children}
     </CartContext.Provider>

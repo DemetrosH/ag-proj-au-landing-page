@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { createClient } from '../../lib/supabase/client';
 
 export default function SoumissionPage() {
-  const { items, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart();
+  const { items, removeFromCart, updateQuantity, totalPrice, clearCart, factor } = useCart();
   const { startDate, endDate, durationInDays, isDateSet } = useRental();
   const [step, setStep] = React.useState<'cart' | 'checkout'>('cart');
   const [user, setUser] = React.useState<any>(null);
@@ -19,10 +19,21 @@ export default function SoumissionPage() {
   // Form State
   const [formData, setFormData] = React.useState({
     fullName: '',
+    companyName: '',
     phone: '',
     email: '',
+    address: '',
+    city: '',
+    postalCode: '',
+    locationName: '',
+    locationAddress: '',
+    locationCity: '',
+    locationPostalCode: '',
     eventDetails: ''
   });
+
+  const [suggestions, setSuggestions] = React.useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = React.useState(false);
 
   React.useEffect(() => {
     const fetchUser = async () => {
@@ -34,6 +45,47 @@ export default function SoumissionPage() {
     };
     fetchUser();
   }, []);
+
+  // Location Autocomplete
+  React.useEffect(() => {
+    const search = async () => {
+      if (formData.locationName.length < 3) {
+        setSuggestions([]);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/rentman/search-locations?q=${encodeURIComponent(formData.locationName)}`);
+        const json = await res.json();
+        setSuggestions(json.data || []);
+      } catch (err) {
+        console.error('Search error:', err);
+      }
+    };
+    const timer = setTimeout(search, 300);
+    return () => clearTimeout(timer);
+  }, [formData.locationName]);
+
+  const copyBillingAddress = () => {
+    setFormData(prev => ({
+      ...prev,
+      locationName: prev.companyName || prev.address,
+      locationAddress: prev.address,
+      locationCity: prev.city,
+      locationPostalCode: prev.postalCode
+    }));
+  };
+
+  const selectSuggestion = (s: any) => {
+    setFormData(prev => ({
+      ...prev,
+      locationName: s.name,
+      locationAddress: s.address,
+      locationCity: s.city,
+      locationPostalCode: s.postalCode
+    }));
+    setSuggestions([]);
+    setShowSuggestions(false);
+  };
 
   const handleRemove = (id: string) => {
     removeFromCart(id);
@@ -55,8 +107,16 @@ export default function SoumissionPage() {
       .insert({
         user_id: user.id,
         full_name: formData.fullName,
+        company_name: formData.companyName,
         phone: formData.phone,
         email: formData.email,
+        address: formData.address,
+        city: formData.city,
+        postal_code: formData.postalCode,
+        location_name: formData.locationName,
+        location_address: formData.locationAddress,
+        location_city: formData.locationCity,
+        location_postal_code: formData.locationPostalCode,
         event_details: formData.eventDetails,
         items: items,
         total_price: finalTotal,
@@ -66,14 +126,59 @@ export default function SoumissionPage() {
 
     if (error) {
       alert("Erreur lors de l'envoi : " + error.message);
-    } else {
-      setSubmitted(true);
-      clearCart();
+      setLoading(false);
+      return;
     }
+
+    // 2. Create Rentman Project Request
+    try {
+      const nameParts = formData.fullName.split(' ');
+      const firstName = nameParts[0];
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+
+      const rentmanRes = await fetch('/api/rentman/create-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.fullName,
+          companyName: formData.companyName,
+          firstName,
+          lastName,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          postalCode: formData.postalCode,
+          locationName: formData.locationName,
+          // Passing specific location address if provided, otherwise route handles fallback
+          locationAddress: formData.locationAddress,
+          locationCity: formData.locationCity,
+          locationPostalCode: formData.locationPostalCode,
+          startDate,
+          endDate,
+          items: items.map(item => ({
+            id: item.id,
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price
+          })),
+          details: formData.eventDetails
+        })
+      });
+
+      if (!rentmanRes.ok) {
+        console.warn('[Rentman] Failed to create project request, but Supabase record was saved.');
+      }
+    } catch (err) {
+      console.error('[Rentman Integration Error]:', err);
+    }
+
+    setSubmitted(true);
+    clearCart();
     setLoading(false);
   };
 
-  const finalTotal = totalPrice * (durationInDays || 1);
+  const finalTotal = totalPrice;
 
   if (submitted) {
     return (
@@ -145,7 +250,7 @@ export default function SoumissionPage() {
                         </div>
                         <div className="flex-grow">
                           <h3 className="text-lg font-black text-brand-dark uppercase tracking-tight">{item.name}</h3>
-                          <p className="text-brand-orange font-black text-sm">{item.price}$ <span className="text-[9px] font-bold text-gray-400 uppercase">/ jour</span></p>
+                          <p className="text-brand-orange font-black text-sm">{Math.round(item.price * factor)}$ <span className="text-[9px] font-bold text-gray-400 uppercase">/ total</span></p>
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="flex items-center border border-brand-border rounded-full px-4 py-1.5 bg-gray-50">
@@ -262,7 +367,7 @@ export default function SoumissionPage() {
                   <form onSubmit={handleSubmit} className="space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Nom Complet</label>
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Nom Complet (Contact Principal)</label>
                         <input 
                           type="text" 
                           placeholder="Jean Tremblay"
@@ -270,7 +375,33 @@ export default function SoumissionPage() {
                           value={formData.fullName}
                           onChange={(e) => setFormData({...formData, fullName: e.target.value})}
                           disabled={!user || loading}
-                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50"
+                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Nom de l'entreprise (Optionnel)</label>
+                        <input 
+                          type="text" 
+                          placeholder="Artéfact Urbain Inc."
+                          value={formData.companyName}
+                          onChange={(e) => setFormData({...formData, companyName: e.target.value})}
+                          disabled={!user || loading}
+                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Adresse Courriel</label>
+                        <input 
+                          type="email" 
+                          placeholder="jean@exemple.com"
+                          required
+                          value={formData.email}
+                          onChange={(e) => setFormData({...formData, email: e.target.value})}
+                          disabled={!user || loading}
+                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
                         />
                       </div>
                       <div className="space-y-3">
@@ -282,33 +413,148 @@ export default function SoumissionPage() {
                           value={formData.phone}
                           onChange={(e) => setFormData({...formData, phone: e.target.value})}
                           disabled={!user || loading}
-                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50"
+                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
                         />
                       </div>
                     </div>
-                    
+
                     <div className="space-y-3">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Adresse Courriel</label>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Adresse de facturation (Rue et numéro)</label>
                       <input 
-                        type="email" 
-                        placeholder="jean@exemple.com"
+                        type="text" 
+                        placeholder="1234 Rue Saint-Denis"
                         required
-                        value={formData.email}
-                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        value={formData.address}
+                        onChange={(e) => setFormData({...formData, address: e.target.value})}
                         disabled={!user || loading}
-                        className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50"
+                        className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
                       />
                     </div>
 
-                    <div className="space-y-3">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Détails de l'événement (Lieu, besoins...)</label>
+                    <div className="grid grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Ville</label>
+                        <input 
+                          type="text" 
+                          placeholder="Montréal"
+                          required
+                          value={formData.city}
+                          onChange={(e) => setFormData({...formData, city: e.target.value})}
+                          disabled={!user || loading}
+                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Code Postal</label>
+                        <input 
+                          type="text" 
+                          placeholder="H2X 3K5"
+                          required
+                          value={formData.postalCode}
+                          onChange={(e) => setFormData({...formData, postalCode: e.target.value})}
+                          disabled={!user || loading}
+                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-6 pt-10 border-t border-brand-border">
+                      <div className="flex justify-between items-center mb-2">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-orange ml-6">Lieu de l'événement</label>
+                        <button 
+                          type="button"
+                          onClick={copyBillingAddress}
+                          className="text-[9px] font-black text-gray-400 uppercase tracking-widest hover:text-brand-orange transition-colors flex items-center gap-2"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                          </svg>
+                          Même que l'adresse de facturation
+                        </button>
+                      </div>
+
+                      <div className="relative">
+                        <input 
+                          type="text" 
+                          placeholder="Nom du lieu (ex: Le Studio, Parc Lafontaine, Chez moi...)"
+                          required
+                          value={formData.locationName}
+                          onFocus={() => setShowSuggestions(true)}
+                          onChange={(e) => {
+                            setFormData({...formData, locationName: e.target.value});
+                            setShowSuggestions(true);
+                          }}
+                          disabled={!user || loading}
+                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-bold focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                        />
+                        
+                        {showSuggestions && suggestions.length > 0 && (
+                          <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-brand-border rounded-3xl shadow-2xl z-30 overflow-hidden">
+                            {suggestions.map((s) => (
+                              <button
+                                key={s.id}
+                                type="button"
+                                onClick={() => selectSuggestion(s)}
+                                className="w-full text-left px-8 py-4 hover:bg-brand-surface border-b border-brand-border last:border-none transition-colors group"
+                              >
+                                <div className="text-sm font-black text-brand-dark uppercase tracking-tight group-hover:text-brand-orange">{s.name}</div>
+                                <div className="text-[10px] text-gray-400 font-bold uppercase">{s.address}, {s.city}</div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Adresse de livraison (Si différente)</label>
+                        <input 
+                          type="text" 
+                          placeholder="Rue et numéro"
+                          required
+                          value={formData.locationAddress}
+                          onChange={(e) => setFormData({...formData, locationAddress: e.target.value})}
+                          disabled={!user || loading}
+                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Ville</label>
+                          <input 
+                            type="text" 
+                            placeholder="Montréal"
+                            required
+                            value={formData.locationCity}
+                            onChange={(e) => setFormData({...formData, locationCity: e.target.value})}
+                            disabled={!user || loading}
+                            className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                          />
+                        </div>
+                        <div className="space-y-3">
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Code Postal</label>
+                          <input 
+                            type="text" 
+                            placeholder="H2H 1V3"
+                            required
+                            value={formData.locationPostalCode}
+                            onChange={(e) => setFormData({...formData, locationPostalCode: e.target.value})}
+                            disabled={!user || loading}
+                            className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 pt-6 border-t border-brand-border">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Instructions de livraison ou besoins particuliers</label>
                       <textarea 
-                        rows={6}
-                        placeholder="Où se déroule votre événement ? Avez-vous des besoins particuliers pour la livraison ?"
+                        rows={3}
+                        placeholder="Ex: Code de porte, étage, ascenseur..."
                         value={formData.eventDetails}
                         onChange={(e) => setFormData({...formData, eventDetails: e.target.value})}
                         disabled={!user || loading}
-                        className="w-full bg-white border border-brand-border rounded-[3rem] py-8 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all resize-none disabled:opacity-50"
+                        className="w-full bg-white border border-brand-border rounded-[2.5rem] py-6 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all resize-none disabled:opacity-50 scroll-mt-40"
                       ></textarea>
                     </div>
 
