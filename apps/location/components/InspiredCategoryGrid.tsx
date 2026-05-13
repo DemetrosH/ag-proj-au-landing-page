@@ -37,12 +37,12 @@ export function InspiredCategoryGrid({ categories, configs = [], showTitle = tru
       )}
 
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 items-stretch">
-        {/* Neon Banner - Spans 2 rows on Desktop. Positioned after 4 items on mobile, 3 items on XL */}
+        {/* Neon Banner - Spans 2 rows on Desktop. Positioned after 4 items on mobile, 4th position on XL */}
         <div className="col-span-2 sm:col-span-1 xl:row-span-2 h-full order-5 xl:order-4 xl:col-span-1">
            <InspiredNeonBanner isVertical={true} />
         </div>
 
-        {/* Render Categories with dynamic ordering and spans */}
+        {/* Render Categories */}
         {categories.map((category, index) => {
           const normalizedCatName = category.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
           const config = configs.find(c => 
@@ -51,25 +51,26 @@ export function InspiredCategoryGrid({ categories, configs = [], showTitle = tru
             (c.title && c.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === normalizedCatName)
           );
 
-          // Order and Span logic for XL:
-          // index 0 -> Col 1+2, Row 1+2 (order-1)
-          // index 1 -> Col 3, Row 1 (order-2)
-          // index 2 -> Col 3, Row 2 (order-3)
-          // index 3+ -> follows after banner
+          // Mobile: 
+          // index 0,1,2,3 -> order 1,2,3,4
+          // Banner -> order 5
+          // index 4+ -> order 6+
           
+          // XL (Desktop):
+          // index 0,1,2 -> order 1,2,3 (AND span 2 rows to match banner height)
+          // Banner -> order 4 (AND span 2 rows)
+          // index 3+ -> order 5+ (standard 1 row, 4 per row)
+
           let specificOrder = "";
           let spanClass = "h-full";
 
-          if (index === 0) {
-            specificOrder = "order-1 xl:col-span-2 xl:row-span-2";
-          } else if (index === 1) {
-            specificOrder = "order-2 xl:order-2";
-          } else if (index === 2) {
-            specificOrder = "order-3 xl:order-3";
+          if (index < 3) {
+            specificOrder = `order-${index + 1} xl:order-${index + 1}`;
+            spanClass = "h-full xl:row-span-2"; // First 3 cards take 2 rows on XL
           } else if (index === 3) {
-            specificOrder = "order-4 xl:order-5"; // After banner on XL
+            specificOrder = "order-4 xl:order-5"; // Cat 4 is after banner on XL
           } else {
-            specificOrder = `order-${index + 2}`;
+            specificOrder = `order-${index + 2} xl:order-${index + 2}`;
           }
 
           return (
