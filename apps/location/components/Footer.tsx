@@ -4,15 +4,37 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { 
-  Facebook, 
-  Instagram, 
-  Linkedin, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  ArrowRight,
-  ExternalLink
+  ArrowRight
 } from 'lucide-react';
+
+// Custom SVG Icons for better compatibility
+const IconFacebook = ({ size = 24 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+);
+
+const IconInstagram = ({ size = 24 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+);
+
+const IconLinkedin = ({ size = 24 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+);
+
+const IconMail = ({ size = 24 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+);
+
+const IconPhone = ({ size = 24 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.81 12.81 0 0 0 .62 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.62A2 2 0 0 1 22 16.92z"/></svg>
+);
+
+const IconMapPin = ({ size = 24 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+);
+
+const IconExternalLink = ({ size = 24 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+);
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -66,9 +88,9 @@ export function Footer() {
             </p>
             <div className="flex gap-4">
               {[
-                { icon: <Facebook size={18} />, href: "#" },
-                { icon: <Instagram size={18} />, href: "#" },
-                { icon: <Linkedin size={18} />, href: "#" }
+                { icon: <IconFacebook size={18} />, href: "#" },
+                { icon: <IconInstagram size={18} />, href: "#" },
+                { icon: <IconLinkedin size={18} />, href: "#" }
               ].map((social, i) => (
                 <motion.a
                   key={i}
@@ -112,7 +134,7 @@ export function Footer() {
             <ul className="space-y-6">
               <li className="flex items-start gap-4">
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-                  <MapPin size={16} className="text-brand-orange" />
+                  <IconMapPin size={16} className="text-brand-orange" />
                 </div>
                 <div className="text-sm text-gray-400 font-medium">
                   825 Boulevard Lebourgneuf, <br />
@@ -121,7 +143,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-4">
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-                  <Phone size={16} className="text-brand-orange" />
+                  <IconPhone size={16} className="text-brand-orange" />
                 </div>
                 <a href="tel:+14180000000" className="text-sm text-gray-400 font-bold hover:text-white transition-colors">
                   (418) 000-0000
@@ -129,7 +151,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-4">
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-                  <Mail size={16} className="text-brand-orange" />
+                  <IconMail size={16} className="text-brand-orange" />
                 </div>
                 <a href="mailto:info@artefacturbain.ca" className="text-sm text-gray-400 font-bold hover:text-white transition-colors">
                   info@artefacturbain.ca
@@ -142,7 +164,7 @@ export function Footer() {
                 target="_blank"
                 className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-colors"
               >
-                Visiter artefacturbain.ca <ExternalLink size={12} />
+                Visiter artefacturbain.ca <IconExternalLink size={12} />
               </Link>
             </div>
           </div>
