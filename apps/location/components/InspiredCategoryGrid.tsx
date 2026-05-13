@@ -49,7 +49,7 @@ export function InspiredCategoryGrid({ categories, configs = [], showTitle = tru
         })}
 
         {/* Inject Neon Banner - Spans 2 rows on Desktop */}
-        <div className="col-span-1 sm:row-span-2 h-full">
+        <div className="col-span-2 sm:col-span-1 sm:row-span-2 h-full">
            <InspiredNeonBanner isVertical={true} />
         </div>
 
