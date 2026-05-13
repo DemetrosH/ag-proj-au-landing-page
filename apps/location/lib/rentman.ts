@@ -270,24 +270,25 @@ export async function getHomeCategories(role: UserRole = 'guest'): Promise<Categ
   const categories = await getCategories();
   const allowedCategories = categories.filter(cat => !rules.hideCats.includes(cat.slug));
   
+  const preferredOrder = [
+    'alimentaire', 
+    'chapiteaux', 
+    'ameublements', 
+    'rallongesmultiprises', 
+    'sonorisation', 
+    'enseigne-neon', 
+    'video', 
+    'scene', 
+    'eclairage', 
+    'signaletique', 
+    'jeux', 
+    'bloc-dalimentation-batteries', 
+    'poids-support'
+  ];
+
   // 1. Try DB first
   const dbProducts = await getProductsFromDb({ role });
-    const preferredOrder = [
-      'alimentaire', 
-      'chapiteaux', 
-      'ameublements', 
-      'rallongesmultiprises', 
-      'sonorisation', 
-      'enseigne-neon', 
-      'video', 
-      'scene', 
-      'eclairage', 
-      'signaletique', 
-      'jeux', 
-      'bloc-dalimentation-batteries', 
-      'poids-support'
-    ];
-
+  if (dbProducts.length > 0) {
     const results = allowedCategories.map(cat => {
       const categoryProducts = dbProducts.filter(p => p.categoryId === cat.slug);
       const previewImages = categoryProducts
@@ -319,6 +320,7 @@ export async function getHomeCategories(role: UserRole = 'guest'): Promise<Categ
     });
     
     return results;
+  }
 
   // 2. Fallback to Rentman
   console.log('[Rentman] DB is empty, falling back to direct API...');
@@ -371,11 +373,6 @@ export async function getHomeCategories(role: UserRole = 'guest'): Promise<Categ
     })
     .filter(cat => (cat as any).productCount > 0)
     .sort((a, b) => {
-      const preferredOrder = [
-        'alimentaire', 'chapiteaux', 'ameublements', 'rallongesmultiprises', 
-        'sonorisation', 'enseigne-neon', 'video', 'scene', 'eclairage', 
-        'signaletique', 'jeux', 'bloc-dalimentation-batteries', 'poids-support'
-      ];
       const indexA = preferredOrder.indexOf(a.slug);
       const indexB = preferredOrder.indexOf(b.slug);
       if (indexA !== -1 && indexB !== -1) return indexA - indexB;
