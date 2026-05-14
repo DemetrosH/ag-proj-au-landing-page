@@ -218,8 +218,8 @@ function SoumissionContent() {
     return (
       <div className="min-h-screen bg-white">
         <Header />
-        <main className="container mx-auto px-4 py-32 text-center">
-          <div className="max-w-2xl mx-auto bg-brand-surface rounded-[4rem] p-20 border border-brand-border shadow-2xl shadow-brand-dark/5">
+        <main className="container mx-auto px-4 py-16 md:py-32 text-center">
+          <div className="max-w-2xl mx-auto bg-brand-surface rounded-[2rem] md:rounded-[4rem] p-8 md:p-20 border border-brand-border shadow-2xl shadow-brand-dark/5">
             <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-10 text-white shadow-xl shadow-green-500/20">
               <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -278,8 +278,8 @@ function SoumissionContent() {
 
                   <div className="space-y-4">
                     {items.map((item) => (
-                      <div key={item.id} className="flex items-center gap-6 p-6 border border-brand-border rounded-[2.5rem] bg-white hover:shadow-xl transition-all group">
-                        <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center text-brand-gold/20 flex-shrink-0 overflow-hidden relative">
+                      <div key={item.id} className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 p-4 sm:p-6 border border-brand-border rounded-[1.5rem] sm:rounded-[2.5rem] bg-white hover:shadow-xl transition-all group text-center sm:text-left">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center text-brand-gold/20 flex-shrink-0 overflow-hidden relative">
                           {item.image ? (
                             <img src={item.image} alt={item.name} className="w-full h-full object-contain p-2" />
                           ) : (
@@ -288,11 +288,11 @@ function SoumissionContent() {
                             </svg>
                           )}
                         </div>
-                        <div className="flex-grow">
-                          <h3 className="text-lg font-black text-brand-dark uppercase tracking-tight">{item.name}</h3>
+                        <div className="flex-grow w-full sm:w-auto">
+                          <h3 className="text-base sm:text-lg font-black text-brand-dark uppercase tracking-tight">{item.name}</h3>
                           <p className="text-brand-orange font-black text-sm">{Math.round(item.price * factor)}$ <span className="text-[9px] font-bold text-gray-400 uppercase">/ total</span></p>
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-center sm:justify-end border-t sm:border-t-0 border-gray-100 pt-4 sm:pt-0 mt-2 sm:mt-0">
                           <div className="flex items-center border border-brand-border rounded-full px-4 py-1.5 bg-gray-50">
                             <button onClick={() => handleQuantity(item.id, item.quantity - 1)} className="p-1 hover:text-brand-orange transition-colors">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -337,7 +337,7 @@ function SoumissionContent() {
 
                 {/* Summary */}
                 <div className="lg:w-1/3">
-                  <div className="bg-brand-surface rounded-[3rem] p-10 border border-brand-border sticky top-32">
+                  <div className="bg-brand-surface rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 border border-brand-border sticky top-32">
                     <h3 className="text-2xl font-black text-brand-dark uppercase tracking-tight mb-8">Récapitulatif</h3>
                     
                     <div className="space-y-6 mb-8">
@@ -405,7 +405,7 @@ function SoumissionContent() {
                   Retour au panier
                 </button>
 
-                <div className="bg-brand-surface rounded-[4rem] p-8 md:p-20 border border-brand-border shadow-2xl shadow-brand-dark/5 relative overflow-hidden">
+                <div className="bg-brand-surface rounded-[2rem] md:rounded-[4rem] p-5 sm:p-8 md:p-20 border border-brand-border shadow-2xl shadow-brand-dark/5 relative overflow-hidden">
                   {!user && (
                     <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-20 flex items-center justify-center p-8">
                       <div className="bg-white border border-brand-border rounded-[3rem] p-12 shadow-2xl text-center max-w-sm">
@@ -424,10 +424,10 @@ function SoumissionContent() {
                   )}
 
                   <div className="mb-12 text-center">
-                    <h2 className="text-5xl font-black text-brand-dark uppercase tracking-tighter mb-4">
+                    <h2 className="text-3xl sm:text-5xl font-black text-brand-dark uppercase tracking-tighter mb-4">
                       Finaliser ma <span className="text-brand-orange">Soumission</span>
                     </h2>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em]">
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em] px-4">
                       Dernière étape ! Nous avons besoin de vos coordonnées.
                     </p>
                   </div>
@@ -443,7 +443,7 @@ function SoumissionContent() {
                           value={formData.fullName}
                           onChange={(e) => setFormData({...formData, fullName: e.target.value})}
                           disabled={!user || loading}
-                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                          className="w-full bg-white border border-brand-border rounded-full py-4 sm:py-5 px-6 sm:px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
                         />
                       </div>
                       <div className="space-y-3">
@@ -454,7 +454,7 @@ function SoumissionContent() {
                           value={formData.companyName}
                           onChange={(e) => setFormData({...formData, companyName: e.target.value})}
                           disabled={!user || loading}
-                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                          className="w-full bg-white border border-brand-border rounded-full py-4 sm:py-5 px-6 sm:px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
                         />
                       </div>
                     </div>
@@ -469,7 +469,7 @@ function SoumissionContent() {
                           value={formData.email}
                           onChange={(e) => setFormData({...formData, email: e.target.value})}
                           disabled={!user || loading}
-                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                          className="w-full bg-white border border-brand-border rounded-full py-4 sm:py-5 px-6 sm:px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
                         />
                       </div>
                       <div className="space-y-3">
@@ -481,7 +481,7 @@ function SoumissionContent() {
                           value={formData.phone}
                           onChange={(e) => setFormData({...formData, phone: e.target.value})}
                           disabled={!user || loading}
-                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                          className="w-full bg-white border border-brand-border rounded-full py-4 sm:py-5 px-6 sm:px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
                         />
                       </div>
                     </div>
@@ -509,7 +509,7 @@ function SoumissionContent() {
                           value={formData.city}
                           onChange={(e) => setFormData({...formData, city: e.target.value})}
                           disabled={!user || loading}
-                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                          className="w-full bg-white border border-brand-border rounded-full py-4 sm:py-5 px-6 sm:px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
                         />
                       </div>
                       <div className="space-y-3">
@@ -521,7 +521,7 @@ function SoumissionContent() {
                           value={formData.postalCode}
                           onChange={(e) => setFormData({...formData, postalCode: e.target.value})}
                           disabled={!user || loading}
-                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                          className="w-full bg-white border border-brand-border rounded-full py-4 sm:py-5 px-6 sm:px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
                         />
                       </div>
                     </div>
@@ -582,7 +582,7 @@ function SoumissionContent() {
                           value={formData.locationAddress}
                           onChange={(e) => setFormData({...formData, locationAddress: e.target.value})}
                           disabled={!user || loading}
-                          className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                          className="w-full bg-white border border-brand-border rounded-full py-4 sm:py-5 px-6 sm:px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
                         />
                       </div>
 
@@ -596,7 +596,7 @@ function SoumissionContent() {
                             value={formData.locationCity}
                             onChange={(e) => setFormData({...formData, locationCity: e.target.value})}
                             disabled={!user || loading}
-                            className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                            className="w-full bg-white border border-brand-border rounded-full py-4 sm:py-5 px-6 sm:px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
                           />
                         </div>
                         <div className="space-y-3">
@@ -608,7 +608,7 @@ function SoumissionContent() {
                             value={formData.locationPostalCode}
                             onChange={(e) => setFormData({...formData, locationPostalCode: e.target.value})}
                             disabled={!user || loading}
-                            className="w-full bg-white border border-brand-border rounded-full py-5 px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
+                            className="w-full bg-white border border-brand-border rounded-full py-4 sm:py-5 px-6 sm:px-10 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50 scroll-mt-40"
                           />
                         </div>
                       </div>
