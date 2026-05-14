@@ -106,7 +106,8 @@ export function CategoryProductList({ products }: CategoryProductListProps) {
             </div>
           </Link>
         </div>
-      ))}
+      );
+    })}
     </div>
   );
 }

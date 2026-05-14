@@ -203,8 +203,9 @@ export function CategoryFilterLayout({ categories, allProducts, categoryConfigs 
                       </div>
                     </div>
                   </Link>
-                </motion.div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
           </motion.div>
         ) : (
