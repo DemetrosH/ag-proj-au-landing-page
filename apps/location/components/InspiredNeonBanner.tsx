@@ -16,7 +16,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
       viewport={{ once: true }}
       className={`relative w-full bg-[#050505] overflow-hidden flex h-full ${
         isVertical 
-          ? 'flex-col items-center justify-between py-8 px-4 sm:py-12 sm:px-6 text-center rounded-[1.75rem] shadow-[0_0_50px_rgba(0,0,0,0.5)]' 
+          ? 'flex-col items-center justify-between py-6 px-4 sm:py-8 sm:px-6 text-center rounded-[1.75rem] shadow-[0_0_50px_rgba(0,0,0,0.5)]' 
           : 'flex-col md:flex-row items-center justify-between p-8 md:p-20 rounded-[2rem]'
       } border border-white/10 group`}
     >
@@ -68,7 +68,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
             transition={{ duration: 1 }}
           >
              {/* Stacking letters with specialized font-weight and glow */}
-             <div className="flex flex-col items-center leading-[0.75] mb-8">
+             <div className="flex flex-col items-center leading-[0.75] mb-4">
                 {"ENSEIGNE".split('').map((char, i) => (
                   <motion.span 
                     key={i} 
@@ -86,7 +86,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
                   </motion.span>
                 ))}
              </div>
-             <div className="flex flex-col items-center leading-[0.75] mb-12">
+             <div className="flex flex-col items-center leading-[0.75] mb-6">
                 {"NÉON".split('').map((char, i) => (
                   <motion.span 
                     key={char + i} 
@@ -131,7 +131,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
  
       {/* 3. Refined Bottom Content */}
       <div className={`relative z-10 flex flex-col ${
-        isVertical ? 'items-center text-center space-y-8 mt-12' : 'items-center md:items-end text-center md:text-right space-y-8'
+         isVertical ? 'items-center text-center space-y-4 mt-6' : 'items-center md:items-end text-center md:text-right space-y-8'
       }`}>
         <div className="flex-grow" />
         
