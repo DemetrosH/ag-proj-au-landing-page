@@ -230,59 +230,61 @@ export default function ProfilePage() {
                               <div>
                                 <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-orange mb-4">Détails de l'équipement</h4>
                                 <div className="bg-white border border-brand-border rounded-[1.5rem] overflow-hidden">
-                                  <table className="w-full text-left">
-                                    <thead>
-                                      <tr className="bg-brand-surface border-b border-brand-border">
-                                        <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400">Article</th>
-                                        <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400 text-center">Qté</th>
-                                        <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400 text-right">Prix</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-brand-border">
-                                      {s.items?.map((item: any, i: number) => (
-                                        <tr key={i} className="group/row hover:bg-gray-50 transition-colors">
-                                          <td className="px-6 py-4">
-                                            <div className="flex items-center gap-4">
-                                              <div className="w-10 h-10 rounded-lg border border-brand-border bg-white flex items-center justify-center p-1">
-                                                {item.image ? (
-                                                  <img src={item.image} alt="" className="max-w-full max-h-full object-contain" />
-                                                ) : (
-                                                  <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                  </svg>
-                                                )}
-                                              </div>
-                                              <span className="text-sm font-bold text-brand-dark line-clamp-1">{item.name}</span>
+                                  {/* Header (Hidden on small mobile) */}
+                                  <div className="hidden sm:grid grid-cols-12 bg-brand-surface border-b border-brand-border px-6 py-4">
+                                    <div className="col-span-7 text-[9px] font-black uppercase tracking-widest text-gray-400">Article</div>
+                                    <div className="col-span-2 text-[9px] font-black uppercase tracking-widest text-gray-400 text-center">Qté</div>
+                                    <div className="col-span-3 text-[9px] font-black uppercase tracking-widest text-gray-400 text-right">Prix</div>
+                                  </div>
+
+                                  <div className="divide-y divide-brand-border">
+                                    {s.items?.map((item: any, i: number) => (
+                                      <div key={i} className="px-4 sm:px-6 py-4 hover:bg-gray-50 transition-colors">
+                                        <div className="grid grid-cols-12 items-center gap-4">
+                                          <div className="col-span-12 sm:col-span-7 flex items-center gap-4">
+                                            <div className="w-12 h-12 sm:w-10 sm:h-10 rounded-lg border border-brand-border bg-white flex items-center justify-center p-1 shrink-0">
+                                              {item.image ? (
+                                                <img src={item.image} alt="" className="max-w-full max-h-full object-contain" />
+                                              ) : (
+                                                <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                              )}
                                             </div>
-                                          </td>
-                                          <td className="px-6 py-4 text-center">
+                                            <span className="text-sm font-bold text-brand-dark leading-tight">{item.name}</span>
+                                          </div>
+                                          <div className="col-span-6 sm:col-span-2 text-left sm:text-center">
+                                            <span className="sm:hidden text-[8px] font-black uppercase text-gray-300 block mb-1">Qté</span>
                                             <span className="text-sm font-black text-brand-dark">x{item.quantity}</span>
-                                          </td>
-                                          <td className="px-6 py-4 text-right">
+                                          </div>
+                                          <div className="col-span-6 sm:col-span-3 text-right">
+                                            <span className="sm:hidden text-[8px] font-black uppercase text-gray-300 block mb-1">Total</span>
                                             <span className="text-sm font-black text-brand-dark">{Math.round((item.price || 0) * (item.quantity || 1))}$</span>
-                                          </td>
-                                        </tr>
-                                      ))}
-                                    </tbody>
-                                    <tfoot>
-                                      <tr className="bg-brand-surface/30">
-                                        <td colSpan={2} className="px-6 py-3 text-right text-[9px] font-black uppercase tracking-widest text-gray-400">Sous-total</td>
-                                        <td className="px-6 py-3 text-right text-xs font-black text-brand-dark">{meta.subtotal}$</td>
-                                      </tr>
-                                      <tr className="bg-brand-surface/30">
-                                        <td colSpan={2} className="px-6 py-3 text-right text-[9px] font-black uppercase tracking-widest text-gray-400">TPS (5%)</td>
-                                        <td className="px-6 py-3 text-right text-xs font-black text-brand-dark">{meta.tps}$</td>
-                                      </tr>
-                                      <tr className="bg-brand-surface/30">
-                                        <td colSpan={2} className="px-6 py-3 text-right text-[9px] font-black uppercase tracking-widest text-gray-400">TVQ (9.975%)</td>
-                                        <td className="px-6 py-3 text-right text-xs font-black text-brand-dark">{meta.tvq}$</td>
-                                      </tr>
-                                      <tr className="bg-brand-surface">
-                                        <td colSpan={2} className="px-6 py-5 text-right text-xs font-black uppercase tracking-widest text-brand-orange">Total final</td>
-                                        <td className="px-6 py-5 text-right text-xl font-black text-brand-dark">{s.total_price}$</td>
-                                      </tr>
-                                    </tfoot>
-                                  </table>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+
+                                  {/* Totals Summary */}
+                                  <div className="bg-brand-surface/30 p-6 space-y-3">
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Sous-total</span>
+                                      <span className="text-sm font-black text-brand-dark">{meta.subtotal}$</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">TPS (5%)</span>
+                                      <span className="text-sm font-black text-brand-dark">{meta.tps}$</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">TVQ (9.975%)</span>
+                                      <span className="text-sm font-black text-brand-dark">{meta.tvq}$</span>
+                                    </div>
+                                    <div className="pt-4 mt-4 border-t border-brand-border flex justify-between items-center">
+                                      <span className="text-[10px] font-black uppercase tracking-widest text-brand-orange">Total final</span>
+                                      <span className="text-2xl font-black text-brand-dark">{s.total_price}$</span>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
 
