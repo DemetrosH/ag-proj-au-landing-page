@@ -123,15 +123,15 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
-      className={`group bg-white border-t-8 ${borderColor} shadow-xl hover:shadow-2xl transition-all duration-500 rounded-b-[2rem] rounded-t-lg overflow-hidden flex flex-col h-full`}
+      className={`group bg-white border-t-8 ${borderColor} shadow-xl hover:shadow-2xl transition-all duration-500 rounded-b-[2rem] rounded-t-lg overflow-hidden flex flex-col`}
     >
       {/* 2x2 Product Thumbnail Grid */}
-      <div className="grid grid-cols-2 bg-white aspect-square border-b border-gray-100">
+      <div className="grid grid-cols-2 bg-white aspect-square border-b border-gray-200">
         {[0, 1, 2, 3].map((i) => {
           const product = displayProducts[i];
 
           return (
-            <div key={i} className="relative border-[0.5px] border-gray-50 flex items-center justify-center p-2 sm:p-6 overflow-hidden transition-all duration-500 group/item">
+            <div key={i} className="relative border-[0.5px] border-gray-200 flex items-center justify-center p-2 sm:p-6 overflow-hidden transition-all duration-500 group/item">
               {product && product.image ? (
                 <Link href={`/products/${product.slug}`} className="relative w-full h-full block transform group-hover/item:scale-110 transition-transform duration-500">
                   <Image 
@@ -153,7 +153,7 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
       </div>
 
       {/* Content */}
-      <div className="p-3 sm:p-5 flex flex-col flex-grow bg-gray-50 border-t border-gray-100">
+      <div className="p-3 sm:p-5 flex flex-col flex-grow bg-gray-50 border-t border-gray-200">
         <h3 className="text-sm sm:text-xl font-black text-brand-dark uppercase tracking-tight mb-4 group-hover:text-brand-orange transition-colors line-clamp-1">
           {displayTitle}
         </h3>
