@@ -23,12 +23,14 @@ export function CategoryFilterLayout({ categories, allProducts, categoryConfigs 
 
   // Filter products based on category and search query
   const filteredProducts = useMemo(() => {
-    return allProducts.filter(product => {
-      const matchesCategory = selectedCategory === 'all' || product.categoryId === selectedCategory || product.category_slugs?.includes(selectedCategory);
-      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          product.description.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
+    return allProducts
+      .filter(product => {
+        const matchesCategory = selectedCategory === 'all' || product.categoryId === selectedCategory || product.category_slugs?.includes(selectedCategory);
+        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            product.description.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesCategory && matchesSearch;
+      })
+      .sort((a, b) => (b.price || 0) - (a.price || 0));
   }, [allProducts, selectedCategory, searchQuery]);
 
   const handleQuickAdd = (e: React.MouseEvent, product: Product) => {
