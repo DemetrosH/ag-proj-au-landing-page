@@ -326,7 +326,9 @@ export function Header() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   </div>
-                  <span className="hidden sm:inline max-w-[100px] truncate uppercase tracking-widest text-[10px]">Espace Pro</span>
+                  <span className="hidden sm:inline max-w-[100px] truncate uppercase tracking-widest text-[10px]">
+                    {user.role === 'guest' ? 'Mon Profil' : 'Espace Pro'}
+                  </span>
                 </button>
                 <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-brand-border shadow-2xl rounded-2xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                   <motion.div
@@ -354,17 +356,12 @@ export function Header() {
                 </div>
               </div>
             ) : (
-              <div className="hidden sm:flex items-center space-x-4">
-                <Link href="/devenir-partenaire" className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-brand-orange transition-colors">
-                  Devenir Partenaire
-                </Link>
-                <Link href="/login" className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.2em] bg-brand-dark text-white px-5 py-2.5 rounded-full hover:bg-brand-orange transition-all shadow-lg shadow-brand-dark/10">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                  <span>Connexion Pro</span>
-                </Link>
-              </div>
+              <Link href="/login" className="hidden sm:flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.2em] bg-brand-dark text-white px-6 py-2.5 rounded-full hover:bg-brand-orange transition-all shadow-lg shadow-brand-dark/10">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span>Connexion</span>
+              </Link>
             )}
             
             <div className="relative group/cart">
@@ -656,7 +653,9 @@ export function Header() {
                     <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    <span className="text-lg font-black uppercase tracking-tighter">Mon Espace Pro</span>
+                    <span className="text-lg font-black uppercase tracking-tighter">
+                      {user.role === 'guest' ? 'Mon Profil' : 'Espace Pro'}
+                    </span>
                   </Link>
                   <button 
                     onClick={handleLogout}
@@ -669,28 +668,16 @@ export function Header() {
                   </button>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  <Link 
-                    href="/devenir-partenaire" 
-                    className="flex items-center space-x-3 text-brand-orange"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    <span className="text-lg font-black uppercase tracking-tighter">Devenir Partenaire</span>
-                  </Link>
-                  <Link 
-                    href="/login" 
-                    className="flex items-center space-x-3 text-brand-dark"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    <span className="text-lg font-black uppercase tracking-tighter">Connexion Pro</span>
-                  </Link>
-                </div>
+                <Link 
+                  href="/login" 
+                  className="flex items-center space-x-3 text-brand-dark"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  <span className="text-lg font-black uppercase tracking-tighter">Connexion</span>
+                </Link>
               )}
             </div>
 

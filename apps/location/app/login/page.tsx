@@ -67,10 +67,10 @@ export default function LoginPage() {
           {/* Brand Header */}
           <div className="text-center mb-12">
             <h1 className="text-5xl font-black uppercase tracking-tighter mb-4">
-              Espace <span className="text-brand-orange">Partenaire</span>
+              Connexion <span className="text-brand-orange">Client</span>
             </h1>
             <p className="text-sm text-gray-400 font-bold uppercase tracking-widest leading-relaxed">
-              Connectez-vous pour accéder à votre catalogue personnalisé et gérer vos soumissions.
+              Connectez-vous pour gérer vos soumissions et accéder à vos services.
             </p>
           </div>
 
@@ -167,23 +167,23 @@ export default function LoginPage() {
           {/* Request Account Section */}
           <div className="mt-12 text-center">
             <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-4">
-              Pas encore de compte partenaire ?
+              Professionnel de l'événementiel ?
             </p>
             <div className="flex flex-col space-y-4 items-center">
               <Link 
-                href="/signup"
-                className="text-sm font-black uppercase tracking-[0.1em] text-brand-orange hover:text-brand-dark transition-colors"
+                href="/devenir-partenaire"
+                className="text-sm font-black uppercase tracking-[0.1em] text-brand-orange hover:text-brand-dark transition-colors inline-flex items-center space-x-2"
               >
-                Créer un compte
-              </Link>
-              <Link 
-                href="/contact"
-                className="text-xs font-bold uppercase tracking-[0.1em] text-gray-400 hover:text-brand-orange transition-colors inline-flex items-center space-x-2"
-              >
-                <span>Demander un accès B2B</span>
+                <span>Demander un accès partenaire</span>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
+              </Link>
+              <Link 
+                href="/signup"
+                className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 hover:text-brand-dark transition-colors"
+              >
+                Créer un compte client
               </Link>
             </div>
           </div>
