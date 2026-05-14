@@ -45,6 +45,7 @@ function SoumissionContent() {
     locationAddress: '',
     locationCity: '',
     locationPostalCode: '',
+    locationId: '', // Added to track Rentman ID
     eventDetails: ''
   });
 
@@ -83,13 +84,20 @@ function SoumissionContent() {
   }, [formData.locationName]);
 
   const copyBillingAddress = () => {
-    setFormData(prev => ({
-      ...prev,
-      locationName: prev.companyName || prev.address,
-      locationAddress: prev.address,
-      locationCity: prev.city,
-      locationPostalCode: prev.postalCode
-    }));
+    setFormData(prev => {
+      // If there's a company name, use it. Otherwise, use a descriptive name or just the address.
+      // We avoid using the person's name as a location name if possible.
+      const suggestedLocationName = prev.companyName || prev.address || 'Adresse de facturation';
+      
+      return {
+        ...prev,
+        locationName: suggestedLocationName,
+        locationAddress: prev.address,
+        locationCity: prev.city,
+        locationPostalCode: prev.postalCode,
+        locationId: '' // Clear ID as this is a manual copy
+      };
+    });
   };
 
   const selectSuggestion = (s: any) => {
@@ -98,7 +106,8 @@ function SoumissionContent() {
       locationName: s.name,
       locationAddress: s.address,
       locationCity: s.city,
-      locationPostalCode: s.postalCode
+      locationPostalCode: s.postalCode,
+      locationId: s.id // Store the Rentman ID
     }));
     setSuggestions([]);
     setShowSuggestions(false);
@@ -215,6 +224,7 @@ function SoumissionContent() {
           city: formData.city,
           postalCode: formData.postalCode,
           locationName: formData.locationName,
+          locationId: formData.locationId,
           // Passing specific location address if provided, otherwise route handles fallback
           locationAddress: formData.locationAddress,
           locationCity: formData.locationCity,

@@ -24,6 +24,7 @@ export async function POST(request: Request) {
       postalCode,
       country,
       locationName,
+      locationId: providedLocationId, // Extract from body
       items, 
       details 
     } = body;
@@ -46,13 +47,16 @@ export async function POST(request: Request) {
     });
 
     // 2. Get or Create Location in Rentman database
-    console.log('[Rentman API] Ensuring location exists...', { locationName });
-    const rentmanLocationId = await getOrCreateLocation(locationName, {
-      street: address, // Defaulting to client address if no specific location address provided
-      city,
-      postalCode,
-      country
-    });
+    let rentmanLocationId = providedLocationId;
+    if (!rentmanLocationId && locationName) {
+      console.log('[Rentman API] Ensuring location exists...', { locationName });
+      rentmanLocationId = await getOrCreateLocation(locationName, {
+        street: body.locationAddress || address,
+        city: body.locationCity || city,
+        postalCode: body.locationPostalCode || postalCode,
+        country: body.locationCountry || country
+      });
+    }
 
     // Rentman expects ISO strings with timezone offset
     const tz = '-04:00'; // Default to EDT for Artéfact Urbain
@@ -62,16 +66,15 @@ export async function POST(request: Request) {
       sum + ((item.quantity || 1) * (item.price || 0)), 0);
 
     // 3. Build a COMPLETE project request with LINKED entities
-    // Note: Public API only supports 'linked_contact'. 
-    // 'linked_location' and 'linked_contact_person' must be connected manually in the UI
-    // but having the contact linked already saves a lot of time.
     const projectRequestData = {
       name: `Soumission: ${name}`,
 
-      // Linked Database Entity (Bypasses the "Connect Client" step)
+      // Linked Database Entities (Bypasses the "Connect" screens in Rentman)
       linked_contact: contactId ? `/contacts/${contactId}` : null,
+      linked_contact_person: personId ? `/contacts/${contactId}/contactpersons/${personId}` : null,
+      linked_location: rentmanLocationId ? `/contacts/${rentmanLocationId}` : null,
 
-      // Fallback text info (Populates the left side of the "Connect" screen)
+      // Fallback text info
       contact_name: companyName || '',
       contact_person_first_name: firstName || '',
       contact_person_lastname: lastName || '',
@@ -98,7 +101,8 @@ export async function POST(request: Request) {
 
     console.log('[Rentman API] Creating linked project request...', { 
       contactId,
-      locationName
+      personId,
+      locationId: rentmanLocationId
     });
     
     const result = await createProjectRequest(projectRequestData);
