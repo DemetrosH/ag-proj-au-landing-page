@@ -65,17 +65,31 @@ export async function POST(request: Request) {
     const totalPrice = items.reduce((sum: number, item: any) => 
       sum + ((item.quantity || 1) * (item.price || 0)), 0);
 
-    // 3. Build a COMPLETE project request with LINKED entities
-    // Note: Public API only supports 'linked_contact'. 
-    // 'linked_location' and 'linked_contact_person' must be connected manually in the UI
-    // but having the contact linked already saves a lot of time.
+    // 3. Ensure a Default Location exists to bypass the "Connect Location" step
+    const defaultLocationName = "Lieu à confirmer";
+    const defaultLocationId = await getOrCreateLocation(defaultLocationName, {});
+
+    // Move real location info to remarks
+    const realLocationNotes = `
+[LIEU DE LIVRAISON]
+Nom: ${locationName || 'N/A'}
+Adresse: ${body.locationAddress || 'Même que facturation'}
+Ville: ${body.locationCity || ''}
+Code Postal: ${body.locationPostalCode || ''}
+----------------------------------
+`;
+
+    // 4. Build a COMPLETE project request with LINKED entities
     const projectRequestData = {
       name: `Soumission: ${name}`,
 
       // Linked Database Entity (Bypasses the "Connect Client" step)
       linked_contact: contactId ? `/contacts/${contactId}` : null,
+      
+      // Attempt to link location (Bypasses the "Connect Location" step)
+      linked_location: defaultLocationId ? `/contacts/${defaultLocationId}` : null,
 
-      // Fallback text info (Populates the left side of the "Connect" screen)
+      // Fallback text info
       contact_name: companyName || '',
       contact_person_first_name: firstName || '',
       contact_person_lastname: lastName || '',
@@ -86,7 +100,8 @@ export async function POST(request: Request) {
       contact_mailing_postalcode: postalCode || '',
       contact_mailing_country: country || 'Canada',
 
-      location_name: locationName || '',
+      // Using the exact name of the default location helps Rentman auto-link
+      location_name: defaultLocationName,
 
       // Dates
       usageperiod_start: `${startDate}T10:00:00${tz}`,
@@ -96,7 +111,7 @@ export async function POST(request: Request) {
 
       // Price & Details
       price: totalPrice,
-      remark: details || '',
+      remark: realLocationNotes + (details || ''),
       language: 'fr',
     };
 
