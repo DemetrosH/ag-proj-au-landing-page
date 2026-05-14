@@ -86,8 +86,8 @@ Code Postal: ${body.locationPostalCode || ''}
       // Linked Database Entity (Bypasses the "Connect Client" step)
       linked_contact: contactId ? `/contacts/${contactId}` : null,
       
-      // Attempt to link location (Bypasses the "Connect Location" step)
-      linked_location: defaultLocationId ? `/contacts/${defaultLocationId}` : null,
+      // Note: linked_location is not supported in the public API, 
+      // but setting location_name to an EXACT match often triggers auto-linking.
 
       // Fallback text info
       contact_name: companyName || '',

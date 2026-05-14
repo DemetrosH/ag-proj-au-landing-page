@@ -105,7 +105,9 @@ export async function rentmanFetch<T>(endpoint: string, options: any = {}): Prom
   });
 
   if (!response.ok) {
-    throw new Error(`Rentman API Error: ${response.status}`);
+    const errorBody = await response.text();
+    console.error(`[Rentman API Error Body]: ${errorBody}`);
+    throw new Error(`Rentman API Error: ${response.status} - ${errorBody}`);
   }
 
   const result = await response.json();
