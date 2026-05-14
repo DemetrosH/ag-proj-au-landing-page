@@ -40,7 +40,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
 
       {/* 2. Massive Vertical Title */}
       {isVertical ? (
-        <div className="relative z-10 flex flex-col items-center justify-center space-y-4 sm:space-y-8 flex-grow">
+        <div className="relative z-10 flex flex-col items-center justify-center space-y-2 sm:space-y-4">
           {/* Mobile Horizontal Title */}
           <motion.div 
             className="sm:hidden text-center"
@@ -80,7 +80,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
                       ]
                     }}
                     transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
-                    className="text-white font-black text-4xl sm:text-5xl md:text-6xl select-none"
+                    className="text-white font-black text-3xl sm:text-4xl md:text-5xl select-none"
                   >
                     {char}
                   </motion.span>
@@ -98,7 +98,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
                       ]
                     }}
                     transition={{ duration: 2, repeat: Infinity, delay: (i + 8) * 0.1 }}
-                    className="text-white font-black text-4xl sm:text-5xl md:text-6xl select-none"
+                    className="text-white font-black text-3xl sm:text-4xl md:text-5xl select-none"
                   >
                     {char}
                   </motion.span>
