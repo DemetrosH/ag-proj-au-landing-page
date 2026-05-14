@@ -29,19 +29,21 @@ export async function POST(request: Request) {
           // If we found the request, we can map its status
           // In some versions, 'status' is a number, in others it might be a string
           if (rentmanData) {
-             const rStatus = rentmanData.status;
+             const rStatusRaw = rentmanData.status;
+             const rStatus = typeof rStatusRaw === 'string' ? rStatusRaw.toLowerCase() : rStatusRaw;
+             console.log(`[Sync Debug] Rentman ID ${rid} raw status:`, rStatusRaw);
              
-             if (rStatus === 1 || rStatus === 'Inquiry') {
-               status = 'inquiry';
-             } else if (rStatus === 2 || rStatus === 'Draft') {
-               status = 'draft';
-             } else if (rStatus === 3 || rStatus === 'Pending') {
+             if (rStatus === 1 || rStatus === 'inquiry' || rStatus === 'open') {
                status = 'pending';
-             } else if (rStatus === 4 || rStatus === 'Confirmed' || rStatus === 'Accepted' || rStatus === 'Confirmed (Draft)') {
+             } else if (rStatus === 2 || rStatus === 'draft') {
+               status = 'pending';
+             } else if (rStatus === 3 || rStatus === 'pending') {
+               status = 'pending';
+             } else if (rStatus === 4 || rStatus === 'confirmed' || rStatus === 'accepted' || rStatus === 'confirmed (draft)') {
                status = 'confirmed';
-             } else if (rStatus === 8 || rStatus === 'Cancelled' || rStatus === 'Denied') {
+             } else if (rStatus === 8 || rStatus === 'cancelled' || rStatus === 'denied' || rStatus === 'refused') {
                status = 'denied';
-             } else if (rStatus === 'Converted' || rStatus === 'Accepted') {
+             } else if (rStatus === 'converted' || rStatus === 'accepted') {
                status = 'confirmed';
              }
           }

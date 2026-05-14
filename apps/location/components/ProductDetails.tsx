@@ -252,7 +252,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                     </p>
                   )}
                   {product.stock_level !== undefined && (
-                    <p className={`text-[10px] font-black uppercase tracking-widest ml-auto ${availableSessionStock <= 0 ? 'text-red-500' : 'text-gray-400'}`}>
+                    <p className={`text-sm font-black uppercase tracking-widest ml-auto ${availableSessionStock <= 0 ? 'text-red-500' : 'text-brand-gold'}`}>
                       {availableSessionStock} disponible(s)
                     </p>
                   )}
