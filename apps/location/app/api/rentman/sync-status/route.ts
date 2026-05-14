@@ -29,13 +29,20 @@ export async function POST(request: Request) {
           // If we found the request, we can map its status
           // In some versions, 'status' is a number, in others it might be a string
           if (rentmanData) {
-             // Basic mapping example (adjust if needed)
-             if (rentmanData.status === 1 || rentmanData.status === 'Accepted') {
-               status = 'accepted';
-             } else if (rentmanData.status === 2 || rentmanData.status === 'Denied') {
+             const rStatus = rentmanData.status;
+             
+             if (rStatus === 1 || rStatus === 'Inquiry') {
+               status = 'inquiry';
+             } else if (rStatus === 2 || rStatus === 'Draft') {
+               status = 'draft';
+             } else if (rStatus === 3 || rStatus === 'Pending') {
+               status = 'pending';
+             } else if (rStatus === 4 || rStatus === 'Confirmed' || rStatus === 'Confirmed (Draft)') {
+               status = 'confirmed';
+             } else if (rStatus === 8 || rStatus === 'Cancelled' || rStatus === 'Denied') {
                status = 'denied';
-             } else if (rentmanData.status === 3 || rentmanData.status === 'Converted') {
-               status = 'converted';
+             } else if (rStatus === 'Converted') {
+               status = 'confirmed';
              }
           }
 
