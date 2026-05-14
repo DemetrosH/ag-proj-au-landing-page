@@ -59,7 +59,7 @@
   }
 
   .prose-brand li {
-    @apply relative pl-6 flex items-start gap-2;
+    @apply relative pl-6;
   }
 
   .prose-brand li::before {
