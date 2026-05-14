@@ -66,15 +66,16 @@ export async function POST(request: Request) {
       sum + ((item.quantity || 1) * (item.price || 0)), 0);
 
     // 3. Build a COMPLETE project request with LINKED entities
+    // Note: Public API only supports 'linked_contact'. 
+    // 'linked_location' and 'linked_contact_person' must be connected manually in the UI
+    // but having the contact linked already saves a lot of time.
     const projectRequestData = {
       name: `Soumission: ${name}`,
 
-      // Linked Database Entities (Bypasses the "Connect" screens in Rentman)
+      // Linked Database Entity (Bypasses the "Connect Client" step)
       linked_contact: contactId ? `/contacts/${contactId}` : null,
-      linked_contact_person: personId ? `/contacts/${contactId}/contactpersons/${personId}` : null,
-      linked_location: rentmanLocationId ? `/contacts/${rentmanLocationId}` : null,
 
-      // Fallback text info
+      // Fallback text info (Populates the left side of the "Connect" screen)
       contact_name: companyName || '',
       contact_person_first_name: firstName || '',
       contact_person_lastname: lastName || '',
@@ -101,8 +102,7 @@ export async function POST(request: Request) {
 
     console.log('[Rentman API] Creating linked project request...', { 
       contactId,
-      personId,
-      locationId: rentmanLocationId
+      locationName
     });
     
     const result = await createProjectRequest(projectRequestData);
