@@ -409,16 +409,24 @@ function SoumissionContent() {
                   {!user && (
                     <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-20 flex items-center justify-center p-8">
                       <div className="bg-white border border-brand-border rounded-[3rem] p-12 shadow-2xl text-center max-w-sm">
-                        <h3 className="text-2xl font-black uppercase tracking-tighter mb-4">Accès <span className="text-brand-orange">Réservé</span></h3>
+                        <h3 className="text-2xl font-black uppercase tracking-tighter mb-4">Espace <span className="text-brand-orange">Partenaire</span></h3>
                         <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-8 leading-relaxed">
-                          Vous devez être connecté à votre compte partenaire pour finaliser cette soumission.
+                          Vous devez être connecté à votre compte professionnel pour finaliser cette soumission.
                         </p>
-                        <Link 
-                          href="/login" 
-                          className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-8 py-4 rounded-full hover:bg-brand-orange transition-all shadow-xl block"
-                        >
-                          Se Connecter
-                        </Link>
+                        <div className="flex flex-col gap-4">
+                          <Link 
+                            href="/login" 
+                            className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-8 py-4 rounded-full hover:bg-brand-orange transition-all shadow-xl block"
+                          >
+                            Connexion Pro
+                          </Link>
+                          <Link 
+                            href="/devenir-partenaire" 
+                            className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-brand-orange transition-colors"
+                          >
+                            Demander un accès
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   )}

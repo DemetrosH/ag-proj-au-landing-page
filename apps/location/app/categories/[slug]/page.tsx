@@ -53,11 +53,16 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
     return (
       <div className="min-h-screen flex items-center justify-center bg-white p-4">
         <div className="text-center">
-          <h1 className="text-4xl font-black uppercase tracking-tighter mb-4">Accès <span className="text-brand-orange">Restreint</span></h1>
-          <p className="text-sm text-gray-400 font-bold uppercase tracking-widest mb-8">Connectez-vous avec un compte partenaire pour voir cet équipement.</p>
-          <Link href="/login" className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-8 py-4 rounded-full hover:bg-brand-orange transition-all shadow-xl">
-            Se connecter
-          </Link>
+          <h1 className="text-4xl font-black uppercase tracking-tighter mb-4">Accès <span className="text-brand-orange">Partenaire</span></h1>
+          <p className="text-sm text-gray-400 font-bold uppercase tracking-widest mb-8">Cet équipement est réservé à nos partenaires professionnels.</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+            <Link href="/login" className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-8 py-4 rounded-full hover:bg-brand-orange transition-all shadow-xl">
+              Connexion Pro
+            </Link>
+            <Link href="/devenir-partenaire" className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-brand-orange transition-colors">
+              Demander un accès
+            </Link>
+          </div>
         </div>
       </div>
     );
