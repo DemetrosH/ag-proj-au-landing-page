@@ -166,25 +166,35 @@ export default function LoginPage() {
 
           {/* Request Account Section */}
           <div className="mt-12 text-center">
-            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-4">
-              Professionnel de l'événementiel ?
-            </p>
-            <div className="flex flex-col space-y-6 items-center">
-              <Link 
-                href="/signup"
-                className="text-sm font-black uppercase tracking-[0.2em] text-brand-dark hover:text-brand-orange transition-colors"
-              >
-                Créer un compte client
-              </Link>
-              <Link 
-                href="/devenir-partenaire"
-                className="text-[11px] font-bold uppercase tracking-[0.1em] text-brand-gold hover:text-brand-dark transition-colors inline-flex items-center space-x-2"
-              >
-                <span>Demander un accès partenaire</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
+            <div className="flex flex-col space-y-8 items-center">
+              <div className="flex flex-col space-y-3">
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">
+                  Pas encore de compte ?
+                </p>
+                <Link 
+                  href="/signup"
+                  className="text-sm font-black uppercase tracking-[0.2em] text-brand-dark hover:text-brand-orange transition-colors"
+                >
+                  Créer un compte client
+                </Link>
+              </div>
+
+              <div className="w-8 h-px bg-brand-border"></div>
+
+              <div className="flex flex-col space-y-3">
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">
+                  Professionnel de l'événementiel ?
+                </p>
+                <Link 
+                  href="/devenir-partenaire"
+                  className="text-[11px] font-bold uppercase tracking-[0.1em] text-brand-gold hover:text-brand-dark transition-colors inline-flex items-center justify-center space-x-2"
+                >
+                  <span>Demander un accès partenaire</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
