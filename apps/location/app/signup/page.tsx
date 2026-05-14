@@ -39,7 +39,7 @@ export default function SignupPage() {
         router.refresh()
       } else {
         // Confirmation email sent
-        setMessage('Un courriel de confirmation a été envoyé. Veuillez vérifier votre boîte de réception.')
+        setMessage('Un courriel de confirmation a été envoyé. Veuillez vérifier votre boîte de réception (et vos spams).')
         setLoading(false)
       }
     }
