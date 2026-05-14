@@ -252,13 +252,32 @@ function SoumissionContent() {
       const rentmanResult = await rentmanRes.json();
 
       if (rentmanRes.ok && rentmanResult.requestId) {
+        const rid = String(rentmanResult.requestId);
         // 3. Update Supabase with the Rentman Request ID
-        await supabase
+        // Try direct column first
+        const { error: updateError } = await supabase
           .from('soumissions')
-          .update({ rentman_id: String(rentmanResult.requestId) })
+          .update({ rentman_id: rid })
           .eq('id', supabaseRecordId);
         
-        console.log('[Integration] Linked Rentman ID:', rentmanResult.requestId);
+        // Fallback: If column missing, store in event_details metadata
+        if (updateError && updateError.message?.includes('column')) {
+          console.warn('[Supabase] Missing rentman_id column, saving to metadata fallback.');
+          const { data: current } = await supabase.from('soumissions').select('event_details').eq('id', supabaseRecordId).single();
+          if (current) {
+             const parts = current.event_details.split('--- METADATA ---');
+             const details = parts[0];
+             const meta = parts[1] ? JSON.parse(parts[1]) : {};
+             meta.rentman_id = rid;
+             
+             await supabase
+               .from('soumissions')
+               .update({ event_details: `${details}\n\n--- METADATA ---\n${JSON.stringify(meta)}` })
+               .eq('id', supabaseRecordId);
+          }
+        }
+        
+        console.log('[Integration] Linked Rentman ID:', rid);
       } else {
         console.warn('[Rentman] Failed to create project request, but Supabase record was saved.');
       }

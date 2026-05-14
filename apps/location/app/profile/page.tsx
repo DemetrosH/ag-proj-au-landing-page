@@ -41,13 +41,25 @@ export default function ProfilePage() {
         .order('created_at', { ascending: false });
       
       const orders = soumissionsData || [];
+      const ordersWithMetadata = orders.map(s => {
+        let meta = { rentman_id: s.rentman_id };
+        if (s.event_details?.includes('--- METADATA ---')) {
+          try {
+            const jsonPart = s.event_details.split('--- METADATA ---')[1].trim();
+            const parsed = JSON.parse(jsonPart);
+            meta = { ...meta, ...parsed };
+          } catch (e) {}
+        }
+        return { ...s, effectiveRentmanId: meta.rentman_id };
+      });
+
       setSoumissions(orders);
       setLoading(false);
 
       // --- SYNC STATUS FROM RENTMAN ---
-      const rentmanIds = orders
-        .filter(s => s.rentman_id && (s.status === 'pending' || !s.status))
-        .map(s => s.rentman_id);
+      const rentmanIds = ordersWithMetadata
+        .filter(s => s.effectiveRentmanId && (s.status === 'pending' || !s.status))
+        .map(s => s.effectiveRentmanId);
 
       if (rentmanIds.length > 0) {
         try {
@@ -60,8 +72,13 @@ export default function ProfilePage() {
           
           if (statuses) {
             setSoumissions(prev => prev.map(s => {
-              if (s.rentman_id && statuses[s.rentman_id]) {
-                return { ...s, status: statuses[s.rentman_id] };
+              // We need to check both direct ID and metadata ID
+              const matchingStatus = Object.entries(statuses).find(([rid]) => 
+                s.rentman_id === rid || s.event_details?.includes(`"rentman_id":"${rid}"`)
+              );
+              
+              if (matchingStatus) {
+                return { ...s, status: matchingStatus[1] as string };
               }
               return s;
             }));
@@ -152,11 +169,12 @@ export default function ProfilePage() {
                     delivery_method: s.delivery_method || 'pickup',
                     subtotal: s.subtotal || s.total_price || 0,
                     tps: s.tps || 0,
-                    tvq: s.tvq || 0
+                    tvq: s.tvq || 0,
+                    rentman_id: s.rentman_id || null
                   };
 
                   // If columns are missing, try to parse from event_details
-                  if (!s.delivery_method && s.event_details?.includes('--- METADATA ---')) {
+                  if (s.event_details?.includes('--- METADATA ---')) {
                     try {
                       const jsonPart = s.event_details.split('--- METADATA ---')[1].trim();
                       const parsed = JSON.parse(jsonPart);
@@ -165,6 +183,9 @@ export default function ProfilePage() {
                       console.error('Failed to parse metadata', e);
                     }
                   }
+
+                  // Use the merged rentman_id
+                  const effectiveRentmanId = meta.rentman_id;
 
                   // Clean event details for display
                   const displayDetails = s.event_details?.split('--- METADATA ---')[0].trim();

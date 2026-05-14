@@ -47,11 +47,20 @@ export async function POST(request: Request) {
           }
 
           // Update Supabase in the background if status changed
-          // This ensures the DB stays semi-synced
-          await supabase
+          // We try both the direct column and the metadata fallback
+          const { error: updateErr } = await supabase
             .from('soumissions')
             .update({ status: status })
             .eq('rentman_id', String(rid));
+
+          if (updateErr && updateErr.message?.includes('column')) {
+            // Fallback: search for the record where event_details contains the rentman_id
+            // This is a bit slower but ensures sync works without the column
+            await supabase
+              .from('soumissions')
+              .update({ status: status })
+              .filter('event_details', 'ilike', `%"rentman_id":"${rid}"%`);
+          }
 
           return { id: rid, status };
         } catch (err) {
