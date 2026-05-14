@@ -13,7 +13,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { addToCart } = useCart();
+  const { addToCart, getItemQuantity } = useCart();
   const { isDateSet } = useRental();
   const [added, setAdded] = React.useState(false);
 
@@ -21,10 +21,14 @@ export function ProductCard({ product }: ProductCardProps) {
     e.preventDefault();
     e.stopPropagation();
     
-    addToCart(product);
+    const currentInCart = getItemQuantity(product.id);
+    const available = product.stock_level !== undefined ? product.stock_level - currentInCart : 999;
 
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
+    if (available > 0) {
+      addToCart(product);
+      setAdded(true);
+      setTimeout(() => setAdded(false), 2000);
+    }
   };
 
   return (
@@ -35,22 +39,42 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="aspect-[3/4] bg-white border border-gray-100 rounded-2xl overflow-hidden mb-4 relative transition-all duration-500 hover:shadow-2xl hover:shadow-gray-200/50 hover:-translate-y-1">
         
         {/* Quick Add Button */}
-        {(!isDateSet || (product.stock_level !== undefined && product.stock_level > 0)) ? (
-          <button 
-            onClick={handleQuickAdd}
-            className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center z-30 transition-all shadow-lg ${
-              added 
-              ? 'bg-green-500 text-white scale-110' 
-              : 'bg-white text-brand-dark hover:bg-brand-orange hover:text-white group-hover:scale-100 scale-90 opacity-0 group-hover:opacity-100'
-            }`}
-          >
-            {added ? <Check size={18} strokeWidth={3} /> : <Plus size={20} strokeWidth={3} />}
-          </button>
-        ) : (
-          <div className="absolute top-3 right-3 px-2 py-1 bg-red-100 text-red-600 text-[10px] font-bold rounded uppercase z-30 shadow-sm border border-red-200">
-            Épuisé
-          </div>
-        )}
+        {(() => {
+          const currentInCart = getItemQuantity(product.id);
+          const available = product.stock_level !== undefined ? product.stock_level - currentInCart : 999;
+          const isOutOfStock = product.stock_level !== undefined && product.stock_level <= 0;
+          const isLimitReached = product.stock_level !== undefined && available <= 0 && !isOutOfStock;
+
+          if (isOutOfStock) {
+            return (
+              <div className="absolute top-3 right-3 px-2 py-1 bg-red-100 text-red-600 text-[10px] font-bold rounded uppercase z-30 shadow-sm border border-red-200">
+                Épuisé
+              </div>
+            );
+          }
+
+          return (
+            <button 
+              onClick={handleQuickAdd}
+              disabled={available <= 0}
+              className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center z-30 transition-all shadow-lg ${
+                added 
+                ? 'bg-green-500 text-white scale-110 opacity-100' 
+                : available <= 0
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'
+                  : 'bg-white text-brand-dark hover:bg-brand-orange hover:text-white group-hover:scale-100 scale-90 sm:opacity-0 group-hover:opacity-100 opacity-100'
+              }`}
+            >
+              {added ? (
+                <Check size={18} strokeWidth={3} />
+              ) : isLimitReached ? (
+                <span className="text-[10px] font-black leading-none">MAX</span>
+              ) : (
+                <Plus size={20} strokeWidth={3} />
+              )}
+            </button>
+          );
+        })()}
 
         {/* Clean background to ensure no delineation */}
         <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>

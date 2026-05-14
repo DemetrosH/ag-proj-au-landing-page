@@ -17,7 +17,7 @@ interface CategoryFilterLayoutProps {
 export function CategoryFilterLayout({ categories, allProducts, categoryConfigs = [] }: CategoryFilterLayoutProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const { addToCart } = useCart();
+  const { addToCart, getItemQuantity } = useCart();
   const [addedId, setAddedId] = useState<string | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -34,9 +34,15 @@ export function CategoryFilterLayout({ categories, allProducts, categoryConfigs 
   const handleQuickAdd = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product);
-    setAddedId(product.id);
-    setTimeout(() => setAddedId(null), 2000);
+    
+    const currentInCart = getItemQuantity(product.id);
+    const available = product.stock_level !== undefined ? product.stock_level - currentInCart : 999;
+    
+    if (available > 0) {
+      addToCart(product);
+      setAddedId(product.id);
+      setTimeout(() => setAddedId(null), 2000);
+    }
   };
 
   const scroll = (direction: 'left' | 'right') => {
@@ -123,30 +129,42 @@ export function CategoryFilterLayout({ categories, allProducts, categoryConfigs 
             className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8"
           >
             <AnimatePresence mode='popLayout'>
-              {filteredProducts.map((product) => (
-                <motion.div
-                  key={product.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3 }}
-                  className="relative group h-full"
-                >
-                  {/* Quick Add Button */}
-                  <button 
-                    onClick={(e) => handleQuickAdd(e, product)}
-                    disabled={product.stock_level !== undefined && product.stock_level <= 0}
-                    className={`absolute top-2 right-2 sm:top-6 sm:right-6 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center z-10 transition-all shadow-2xl ${
-                      addedId === product.id 
-                      ? 'bg-green-500 text-white scale-110 opacity-100' 
-                      : product.stock_level !== undefined && product.stock_level <= 0
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'
-                        : 'bg-white text-brand-dark hover:bg-brand-orange hover:text-white sm:opacity-0 group-hover:opacity-100 opacity-100'
-                    }`}
+              {filteredProducts.map((product) => {
+                const currentInCart = getItemQuantity(product.id);
+                const available = product.stock_level !== undefined ? product.stock_level - currentInCart : 999;
+                const isOutOfStock = product.stock_level !== undefined && product.stock_level <= 0;
+                const isLimitReached = product.stock_level !== undefined && available <= 0 && !isOutOfStock;
+
+                return (
+                  <motion.div
+                    key={product.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3 }}
+                    className="relative group h-full"
                   >
-                    {addedId === product.id ? <Check size={16} strokeWidth={3} /> : <Plus size={20} strokeWidth={3} />}
-                  </button>
+                    {/* Quick Add Button */}
+                    <button 
+                      onClick={(e) => handleQuickAdd(e, product)}
+                      disabled={available <= 0}
+                      className={`absolute top-2 right-2 sm:top-6 sm:right-6 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center z-10 transition-all shadow-2xl ${
+                        addedId === product.id 
+                        ? 'bg-green-500 text-white scale-110 opacity-100' 
+                        : available <= 0
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'
+                          : 'bg-white text-brand-dark hover:bg-brand-orange hover:text-white sm:opacity-0 group-hover:opacity-100 opacity-100'
+                      }`}
+                    >
+                      {addedId === product.id ? (
+                        <Check size={16} strokeWidth={3} />
+                      ) : isLimitReached ? (
+                        <span className="text-[10px] font-black leading-none">MAX</span>
+                      ) : (
+                        <Plus size={20} strokeWidth={3} />
+                      )}
+                    </button>
 
                   <Link 
                     href={`/products/${product.slug}`}

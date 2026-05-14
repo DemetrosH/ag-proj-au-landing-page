@@ -40,7 +40,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
 
       {/* 2. Massive Vertical Title */}
       {isVertical ? (
-        <div className="relative z-10 flex flex-col items-center justify-center space-y-6 sm:space-y-12 flex-grow">
+        <div className="relative z-10 flex flex-col items-center justify-center space-y-4 sm:space-y-8 flex-grow">
           {/* Mobile Horizontal Title */}
           <motion.div 
             className="sm:hidden text-center"
@@ -48,15 +48,18 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
             whileInView={{ opacity: 1 }}
           >
              <h2 
-               className="text-white font-black uppercase tracking-[0.2em] text-3xl leading-none"
+               className="text-white font-black uppercase tracking-[0.2em] text-3xl leading-none mb-2"
                style={{
                  textShadow: '0 0 15px rgba(236, 72, 153, 1), 0 0 30px rgba(236, 72, 153, 0.6)'
                }}
              >
                Enseigne<br/>Néon
              </h2>
+             <p className="text-[10px] text-pink-500/80 font-bold uppercase tracking-widest max-w-[180px] mx-auto">
+               Illuminez vos événements avec nos créations sur mesure.
+             </p>
           </motion.div>
-
+ 
           {/* Desktop Vertical Title */}
           <motion.div 
             className="hidden sm:flex flex-col items-center"
@@ -83,7 +86,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
                   </motion.span>
                 ))}
              </div>
-             <div className="flex flex-col items-center leading-[0.75]">
+             <div className="flex flex-col items-center leading-[0.75] mb-12">
                 {"NÉON".split('').map((char, i) => (
                   <motion.span 
                     key={char + i} 
@@ -101,6 +104,9 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
                   </motion.span>
                 ))}
              </div>
+             <p className="text-[10px] text-pink-500 font-bold uppercase tracking-[0.3em] max-w-[120px] mx-auto leading-relaxed opacity-80">
+               Illuminez vos événements avec nos créations sur mesure.
+             </p>
           </motion.div>
         </div>
       ) : (
@@ -114,12 +120,15 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
           >
             Enseigne<br/>Néon
           </h2>
-          <div className="mt-6 flex justify-center md:justify-start space-x-3">
+          <p className="mt-6 text-sm md:text-xl text-pink-500 font-bold uppercase tracking-[0.3em] opacity-80 max-w-md">
+            Illuminez vos événements avec nos créations sur mesure.
+          </p>
+          <div className="mt-8 flex justify-center md:justify-start space-x-3">
              {[1,2,3].map(i => <div key={i} className="h-1.5 w-12 bg-pink-500 rounded-full shadow-[0_0_15px_rgba(236,72,153,1)]" />)}
           </div>
         </div>
       )}
-
+ 
       {/* 3. Refined Bottom Content */}
       <div className={`relative z-10 flex flex-col ${
         isVertical ? 'items-center text-center space-y-8 mt-12' : 'items-center md:items-end text-center md:text-right space-y-8'

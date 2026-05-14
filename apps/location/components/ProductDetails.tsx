@@ -15,23 +15,34 @@ interface ProductDetailsProps {
 
 export function ProductDetails({ product }: ProductDetailsProps) {
   const { durationInDays, isDateSet } = useRental();
-  const { addToCart } = useCart();
+  const { addToCart, getItemQuantity } = useCart();
   const [added, setAdded] = React.useState(false);
   const [quantity, setQuantity] = React.useState(1);
   const [activeImage, setActiveImage] = React.useState(product.image);
 
-  const maxStock = product.stock_level ?? 999;
+  const currentInCart = getItemQuantity(product.id);
+  const availableSessionStock = product.stock_level !== undefined ? Math.max(0, product.stock_level - currentInCart) : 999;
+  const maxStock = availableSessionStock;
+  
   const factor = calculateRentalFactor(durationInDays);
   const totalPrice = Math.round(product.price * factor);
 
   // Sync active image if product changes
   React.useEffect(() => {
     setActiveImage(product.image);
-  }, [product.id, product.image]);
+    // Reset quantity if it exceeds new max
+    if (quantity > availableSessionStock && availableSessionStock > 0) {
+      setQuantity(availableSessionStock);
+    } else if (availableSessionStock <= 0) {
+      setQuantity(0);
+    }
+  }, [product.id, product.image, availableSessionStock]);
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
-    setAdded(true);
+    if (quantity > 0) {
+      addToCart(product, quantity);
+      setAdded(true);
+    }
   };
 
   const formatDescription = (text: string) => {
@@ -208,24 +219,25 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             )}
 
             {/* Quantity Selector */}
-            {!added && product.stock_level !== undefined && product.stock_level > 0 && (
+            {!added && (
               <div className="flex flex-col gap-3 mb-8">
                 <div className="flex items-center justify-between px-6 py-4 bg-white border border-brand-border rounded-2xl">
                   <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Quantité</span>
                   <div className="flex items-center gap-6">
                     <button 
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="w-8 h-8 rounded-full border border-brand-border flex items-center justify-center hover:bg-brand-surface transition-colors"
+                      className="w-8 h-8 rounded-full border border-brand-border flex items-center justify-center hover:bg-brand-surface transition-colors disabled:opacity-30"
+                      disabled={quantity <= 1 || availableSessionStock <= 0}
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M20 12H4" />
                       </svg>
                     </button>
-                    <span className="text-lg font-black w-8 text-center">{quantity}</span>
+                    <span className="text-lg font-black w-8 text-center">{availableSessionStock > 0 ? quantity : 0}</span>
                     <button 
                       onClick={() => setQuantity(Math.min(maxStock, quantity + 1))}
                       className="w-8 h-8 rounded-full border border-brand-border flex items-center justify-center hover:bg-brand-surface transition-colors disabled:opacity-30"
-                      disabled={quantity >= maxStock}
+                      disabled={quantity >= maxStock || availableSessionStock <= 0}
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
@@ -233,42 +245,53 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                     </button>
                   </div>
                 </div>
-                {product.stock_level !== undefined && (
-                  <p className="text-[10px] font-black uppercase tracking-widest text-right pr-4 text-gray-400">
-                    {product.stock_level} disponible(s)
-                  </p>
-                )}
+                <div className="flex justify-between items-center px-4">
+                  {currentInCart > 0 && (
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-brand-orange">
+                      {currentInCart} déjà au panier
+                    </p>
+                  )}
+                  {product.stock_level !== undefined && (
+                    <p className={`text-[10px] font-black uppercase tracking-widest ml-auto ${availableSessionStock <= 0 ? 'text-red-500' : 'text-gray-400'}`}>
+                      {availableSessionStock} disponible(s)
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 
             {!added ? (
               <motion.button 
                 onClick={handleAddToCart}
-                disabled={product.stock_level !== undefined && product.stock_level <= 0}
-                whileHover="hover"
+                disabled={availableSessionStock <= 0}
+                whileHover={availableSessionStock > 0 ? "hover" : ""}
                 variants={{
                   hover: { scale: 1.01, y: -2 }
                 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 className={`w-full py-6 text-lg shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-gray-200 flex items-center justify-center gap-3 rounded-2xl group ${
-                  product.stock_level !== undefined && product.stock_level <= 0
+                  availableSessionStock <= 0
                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                     : 'bg-white text-brand-dark hover:border-brand-orange/50 transition-colors'
                 }`}
               >
-                <motion.div
-                  variants={{
-                    hover: { rotate: 90 }
-                  }}
-                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </motion.div>
+                {availableSessionStock > 0 && (
+                  <motion.div
+                    variants={{
+                      hover: { rotate: 90 }
+                    }}
+                    transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </motion.div>
+                )}
                 <span className="font-bold">
-                  {product.stock_level !== undefined && product.stock_level <= 0 ? 'Indisponible' : 'Ajouter à la soumission'}
+                  {availableSessionStock <= 0 
+                    ? (currentInCart > 0 ? 'Limite atteinte' : 'Indisponible') 
+                    : 'Ajouter à la soumission'}
                 </span>
               </motion.button>
             ) : (

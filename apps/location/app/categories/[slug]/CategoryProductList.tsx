@@ -11,17 +11,21 @@ interface CategoryProductListProps {
 }
 
 export function CategoryProductList({ products }: CategoryProductListProps) {
-  const { addToCart } = useCart();
+  const { addToCart, getItemQuantity } = useCart();
   const [addedId, setAddedId] = React.useState<string | null>(null);
 
   const handleQuickAdd = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
     e.stopPropagation();
     
-    addToCart(product);
-
-    setAddedId(product.id);
-    setTimeout(() => setAddedId(null), 2000);
+    const currentInCart = getItemQuantity(product.id);
+    const available = product.stock_level !== undefined ? product.stock_level - currentInCart : 999;
+    
+    if (available > 0) {
+      addToCart(product);
+      setAddedId(product.id);
+      setTimeout(() => setAddedId(null), 2000);
+    }
   };
 
   if (products.length === 0) {
@@ -34,23 +38,35 @@ export function CategoryProductList({ products }: CategoryProductListProps) {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
-      {products.map((product) => (
-        <div key={product.id} className="relative group h-full">
-          {/* Quick Add Button - MOVED OUTSIDE LINK */}
-          <button 
-            onClick={(e) => handleQuickAdd(e, product)}
-            disabled={product.stock_level !== undefined && product.stock_level <= 0}
-            className={`absolute top-2 right-2 sm:top-6 sm:right-6 w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center z-50 transition-all shadow-2xl ${
-              addedId === product.id 
-              ? 'bg-green-500 text-white scale-110 opacity-100' 
-              : product.stock_level !== undefined && product.stock_level <= 0
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'
-                : 'bg-white text-brand-dark hover:bg-brand-orange hover:text-white sm:opacity-0 group-hover:opacity-100 opacity-100'
-            }`}
-            aria-label="Ajouter au panier"
-          >
-            {addedId === product.id ? <Check size={16} strokeWidth={3} className="sm:w-6 sm:h-6" /> : <Plus size={20} strokeWidth={3} className="sm:w-7 sm:h-7" />}
-          </button>
+      {products.map((product) => {
+        const currentInCart = getItemQuantity(product.id);
+        const available = product.stock_level !== undefined ? product.stock_level - currentInCart : 999;
+        const isOutOfStock = product.stock_level !== undefined && product.stock_level <= 0;
+        const isLimitReached = product.stock_level !== undefined && available <= 0 && !isOutOfStock;
+
+        return (
+          <div key={product.id} className="relative group h-full">
+            {/* Quick Add Button - MOVED OUTSIDE LINK */}
+            <button 
+              onClick={(e) => handleQuickAdd(e, product)}
+              disabled={available <= 0}
+              className={`absolute top-2 right-2 sm:top-6 sm:right-6 w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center z-50 transition-all shadow-2xl ${
+                addedId === product.id 
+                ? 'bg-green-500 text-white scale-110 opacity-100' 
+                : available <= 0
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'
+                  : 'bg-white text-brand-dark hover:bg-brand-orange hover:text-white sm:opacity-0 group-hover:opacity-100 opacity-100'
+              }`}
+              aria-label="Ajouter au panier"
+            >
+              {addedId === product.id ? (
+                <Check size={16} strokeWidth={3} className="sm:w-6 sm:h-6" />
+              ) : isLimitReached ? (
+                <span className="text-[10px] sm:text-xs font-black leading-none">MAX</span>
+              ) : (
+                <Plus size={20} strokeWidth={3} className="sm:w-7 sm:h-7" />
+              )}
+            </button>
 
           <Link 
             href={`/products/${product.slug}`}
