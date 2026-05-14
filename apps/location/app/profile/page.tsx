@@ -117,6 +117,29 @@ export default function ProfilePage() {
               <div className="space-y-6">
                 {soumissions.map((s) => {
                   const isExpanded = expandedId === s.id;
+                  
+                  // Extract metadata with fallback parsing
+                  let meta = {
+                    delivery_method: s.delivery_method || 'pickup',
+                    subtotal: s.subtotal || s.total_price || 0,
+                    tps: s.tps || 0,
+                    tvq: s.tvq || 0
+                  };
+
+                  // If columns are missing, try to parse from event_details
+                  if (!s.delivery_method && s.event_details?.includes('--- METADATA ---')) {
+                    try {
+                      const jsonPart = s.event_details.split('--- METADATA ---')[1].trim();
+                      const parsed = JSON.parse(jsonPart);
+                      meta = { ...meta, ...parsed };
+                    } catch (e) {
+                      console.error('Failed to parse metadata', e);
+                    }
+                  }
+
+                  // Clean event details for display
+                  const displayDetails = s.event_details?.split('--- METADATA ---')[0].trim();
+
                   return (
                     <div 
                       key={s.id} 
@@ -139,6 +162,9 @@ export default function ProfilePage() {
                                 'bg-red-50 text-red-600 border-red-100'
                               }`}>
                                 {s.status}
+                              </span>
+                              <span className="text-[9px] font-black uppercase tracking-widest text-brand-orange bg-brand-orange/5 px-2 py-1 rounded-md">
+                                {meta.delivery_method === 'pickup' ? 'Ramassage' : 'Livraison'}
                               </span>
                             </div>
                             <h3 className="text-xl font-black text-brand-dark uppercase tracking-tight mb-4">
@@ -208,7 +234,7 @@ export default function ProfilePage() {
                                       <tr className="bg-brand-surface border-b border-brand-border">
                                         <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400">Article</th>
                                         <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400 text-center">Qté</th>
-                                        <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400 text-right">Total</th>
+                                        <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400 text-right">Prix</th>
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-brand-border">
@@ -232,14 +258,26 @@ export default function ProfilePage() {
                                             <span className="text-sm font-black text-brand-dark">x{item.quantity}</span>
                                           </td>
                                           <td className="px-6 py-4 text-right">
-                                            <span className="text-sm font-black text-brand-orange">{Math.round((item.price || 0) * (item.quantity || 1))}$</span>
+                                            <span className="text-sm font-black text-brand-dark">{Math.round((item.price || 0) * (item.quantity || 1))}$</span>
                                           </td>
                                         </tr>
                                       ))}
                                     </tbody>
                                     <tfoot>
-                                      <tr className="bg-brand-surface/50">
-                                        <td colSpan={2} className="px-6 py-5 text-right text-xs font-black uppercase tracking-widest text-gray-400">Total estimé</td>
+                                      <tr className="bg-brand-surface/30">
+                                        <td colSpan={2} className="px-6 py-3 text-right text-[9px] font-black uppercase tracking-widest text-gray-400">Sous-total</td>
+                                        <td className="px-6 py-3 text-right text-xs font-black text-brand-dark">{meta.subtotal}$</td>
+                                      </tr>
+                                      <tr className="bg-brand-surface/30">
+                                        <td colSpan={2} className="px-6 py-3 text-right text-[9px] font-black uppercase tracking-widest text-gray-400">TPS (5%)</td>
+                                        <td className="px-6 py-3 text-right text-xs font-black text-brand-dark">{meta.tps}$</td>
+                                      </tr>
+                                      <tr className="bg-brand-surface/30">
+                                        <td colSpan={2} className="px-6 py-3 text-right text-[9px] font-black uppercase tracking-widest text-gray-400">TVQ (9.975%)</td>
+                                        <td className="px-6 py-3 text-right text-xs font-black text-brand-dark">{meta.tvq}$</td>
+                                      </tr>
+                                      <tr className="bg-brand-surface">
+                                        <td colSpan={2} className="px-6 py-5 text-right text-xs font-black uppercase tracking-widest text-brand-orange">Total final</td>
                                         <td className="px-6 py-5 text-right text-xl font-black text-brand-dark">{s.total_price}$</td>
                                       </tr>
                                     </tfoot>
@@ -250,7 +288,12 @@ export default function ProfilePage() {
                               {/* 2. Event Info Grid */}
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="bg-white border border-brand-border p-6 rounded-[1.5rem]">
-                                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-orange mb-3">Lieu de l'événement</h4>
+                                  <div className="flex justify-between items-start mb-3">
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-orange">Logistique</h4>
+                                    <span className="text-[9px] font-black uppercase tracking-widest px-2 py-1 bg-brand-surface rounded-md border border-brand-border">
+                                      {meta.delivery_method === 'pickup' ? 'Ramassage' : 'Livraison'}
+                                    </span>
+                                  </div>
                                   <p className="text-sm font-bold text-brand-dark">{s.location_name || 'Non spécifié'}</p>
                                   {s.location_address && (
                                     <p className="text-xs text-gray-400 mt-1">{s.location_address}, {s.location_city}</p>
@@ -259,7 +302,7 @@ export default function ProfilePage() {
                                 <div className="bg-white border border-brand-border p-6 rounded-[1.5rem]">
                                   <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-orange mb-3">Détails / Remarques</h4>
                                   <p className="text-xs text-gray-500 italic leading-relaxed">
-                                    {s.event_details || 'Aucune remarque particulière.'}
+                                    {displayDetails || 'Aucune remarque particulière.'}
                                   </p>
                                 </div>
                               </div>

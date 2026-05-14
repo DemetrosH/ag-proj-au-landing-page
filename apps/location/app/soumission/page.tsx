@@ -137,27 +137,57 @@ function SoumissionContent() {
       return;
     }
 
-    const { error } = await supabase
+    // Prepare submission data
+    const submissionData: any = {
+      user_id: user.id,
+      full_name: formData.fullName,
+      company_name: formData.companyName,
+      phone: formData.phone,
+      email: formData.email,
+      address: formData.address,
+      city: formData.city,
+      postal_code: formData.postalCode,
+      location_name: formData.locationName,
+      location_address: formData.locationAddress,
+      location_city: formData.locationCity,
+      location_postal_code: formData.locationPostalCode,
+      event_details: formData.eventDetails,
+      items: items,
+      total_price: finalTotal,
+      start_date: startDate,
+      end_date: endDate,
+      // New metadata fields
+      delivery_method: deliveryMethod,
+      subtotal: subtotal,
+      tps: tps,
+      tvq: tvq
+    };
+
+    let { error } = await supabase
       .from('soumissions')
-      .insert({
-        user_id: user.id,
-        full_name: formData.fullName,
-        company_name: formData.companyName,
-        phone: formData.phone,
-        email: formData.email,
-        address: formData.address,
-        city: formData.city,
-        postal_code: formData.postalCode,
-        location_name: formData.locationName,
-        location_address: formData.locationAddress,
-        location_city: formData.locationCity,
-        location_postal_code: formData.locationPostalCode,
-        event_details: formData.eventDetails,
-        items: items,
-        total_price: finalTotal,
-        start_date: startDate,
-        end_date: endDate
-      });
+      .insert(submissionData);
+
+    // Fallback: If columns don't exist yet, insert into event_details as JSON string
+    if (error && error.message?.includes('column')) {
+      console.warn('[Supabase] Missing columns for metadata, falling back to event_details.');
+      const fallbackData = { ...submissionData };
+      delete fallbackData.delivery_method;
+      delete fallbackData.subtotal;
+      delete fallbackData.tps;
+      delete fallbackData.tvq;
+      
+      fallbackData.event_details = `${formData.eventDetails}\n\n--- METADATA ---\n${JSON.stringify({
+        delivery_method: deliveryMethod,
+        subtotal,
+        tps,
+        tvq
+      })}`;
+
+      const fallbackResult = await supabase
+        .from('soumissions')
+        .insert(fallbackData);
+      error = fallbackResult.error;
+    }
 
     if (error) {
       alert("Erreur lors de l'envoi : " + error.message);
