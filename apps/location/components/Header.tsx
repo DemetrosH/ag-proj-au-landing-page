@@ -496,12 +496,15 @@ export function Header() {
               onMouseEnter={() => setIsCategoryOpen(true)}
               onMouseLeave={() => setIsCategoryOpen(false)}
             >
-              <Link href="/categories" className="text-gray-900 hover:text-brand-gold transition-colors flex items-center h-full px-2">
+              <div 
+                className="text-gray-900 hover:text-brand-gold transition-colors flex items-center h-full px-2 cursor-pointer select-none"
+                onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+              >
                 Catégories
                 <svg className={`ml-1 w-4 h-4 transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
-              </Link>
+              </div>
               
               {isCategoryOpen && (
                 <div className="absolute top-full left-0 pt-4 w-[700px] max-w-[90vw] animate-fade-in-up z-50">
