@@ -172,48 +172,8 @@ function SoumissionContent() {
       tvq: tvq
     };
 
-    // 1. Save to Supabase first and get the record ID
-    let { data: insertedData, error } = await supabase
-      .from('soumissions')
-      .insert(submissionData)
-      .select('id')
-      .single();
-
-    // Fallback: If columns don't exist yet, insert into event_details as JSON string
-    if (error && error.message?.includes('column')) {
-      console.warn('[Supabase] Missing columns for metadata, falling back to event_details.');
-      const fallbackData = { ...submissionData };
-      delete fallbackData.delivery_method;
-      delete fallbackData.subtotal;
-      delete fallbackData.tps;
-      delete fallbackData.tvq;
-      
-      fallbackData.event_details = `${formData.eventDetails}\n\n--- METADATA ---\n${JSON.stringify({
-        delivery_method: deliveryMethod,
-        subtotal,
-        tps,
-        tvq
-      })}`;
-
-      const fallbackResult = await supabase
-        .from('soumissions')
-        .insert(fallbackData)
-        .select('id')
-        .single();
-      
-      error = fallbackResult.error;
-      insertedData = fallbackResult.data;
-    }
-
-    if (error || !insertedData) {
-      alert("Erreur lors de l'envoi : " + (error?.message || "Erreur inconnue"));
-      setLoading(false);
-      return;
-    }
-
-    const supabaseRecordId = insertedData.id;
-
-    // 2. Create Rentman Project Request
+    // 1. Create Rentman Project Request FIRST
+    let rid: string | null = null;
     try {
       const nameParts = formData.fullName.split(' ');
       const firstName = nameParts[0];
@@ -250,39 +210,54 @@ function SoumissionContent() {
       });
 
       const rentmanResult = await rentmanRes.json();
-
       if (rentmanRes.ok && rentmanResult.requestId) {
-        const rid = String(rentmanResult.requestId);
-        // 3. Update Supabase with the Rentman Request ID
-        // Try direct column first
-        const { error: updateError } = await supabase
-          .from('soumissions')
-          .update({ rentman_id: rid })
-          .eq('id', supabaseRecordId);
-        
-        // Fallback: If column missing, store in event_details metadata
-        if (updateError && updateError.message?.includes('column')) {
-          console.warn('[Supabase] Missing rentman_id column, saving to metadata fallback.');
-          const { data: current } = await supabase.from('soumissions').select('event_details').eq('id', supabaseRecordId).single();
-          if (current) {
-             const parts = current.event_details.split('--- METADATA ---');
-             const details = parts[0];
-             const meta = parts[1] ? JSON.parse(parts[1]) : {};
-             meta.rentman_id = rid;
-             
-             await supabase
-               .from('soumissions')
-               .update({ event_details: `${details}\n\n--- METADATA ---\n${JSON.stringify(meta)}` })
-               .eq('id', supabaseRecordId);
-          }
-        }
-        
-        console.log('[Integration] Linked Rentman ID:', rid);
+        rid = String(rentmanResult.requestId);
+        console.log('[Integration] Received Rentman ID:', rid);
       } else {
-        console.warn('[Rentman] Failed to create project request, but Supabase record was saved.');
+        console.warn('[Rentman] Failed to create project request.');
       }
     } catch (err) {
       console.error('[Rentman Integration Error]:', err);
+    }
+
+    // 2. Save to Supabase with the Rentman ID (if we got one)
+    const finalSubmissionData = {
+      ...submissionData,
+      rentman_id: rid
+    };
+
+    let { error } = await supabase
+      .from('soumissions')
+      .insert(finalSubmissionData);
+
+    // Fallback: If columns don't exist yet, insert into event_details as JSON string
+    if (error && error.message?.includes('column')) {
+      console.warn('[Supabase] Missing columns, falling back to event_details.');
+      const fallbackData = { ...finalSubmissionData };
+      delete fallbackData.delivery_method;
+      delete fallbackData.subtotal;
+      delete fallbackData.tps;
+      delete fallbackData.tvq;
+      delete fallbackData.rentman_id;
+      
+      fallbackData.event_details = `${formData.eventDetails}\n\n--- METADATA ---\n${JSON.stringify({
+        delivery_method: deliveryMethod,
+        subtotal,
+        tps,
+        tvq,
+        rentman_id: rid
+      })}`;
+
+      const fallbackResult = await supabase
+        .from('soumissions')
+        .insert(fallbackData);
+      error = fallbackResult.error;
+    }
+
+    if (error) {
+      alert("Erreur lors de l'envoi : " + error.message);
+      setLoading(false);
+      return;
     }
 
     setSubmitted(true);
