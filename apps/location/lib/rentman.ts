@@ -290,7 +290,7 @@ export async function getHomeCategories(role: UserRole = 'guest'): Promise<Categ
   const dbProducts = await getProductsFromDb({ role });
   if (dbProducts.length > 0) {
     const results = allowedCategories.map(cat => {
-      const categoryProducts = dbProducts.filter(p => p.categoryId === cat.slug);
+      const categoryProducts = dbProducts.filter(p => p.categoryId === cat.slug || p.category_slugs?.includes(cat.slug));
       const previewImages = categoryProducts
         .map(p => p.image)
         .filter((img, i, self) => img && self.indexOf(img) === i)
@@ -346,7 +346,8 @@ export async function getHomeCategories(role: UserRole = 'guest'): Promise<Categ
           if (itemFolderId && targetFolderIds.includes(String(itemFolderId))) return true;
           const itemNameLower = item.name.toLowerCase().trim();
           const mappedCategories = (wcData.productMapping as any)[itemNameLower];
-          const isInCategory = mappedCategories && mappedCategories.includes(cat.name);
+          const isInCategory = (itemFolderId && targetFolderIds.includes(String(itemFolderId))) || 
+                               (mappedCategories && (mappedCategories.includes(cat.name) || mappedCategories.includes(cat.name.replace('&', '&amp;'))));
           if (!isInCategory) return false;
           const itemTags = item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [];
           return !itemTags.some((tag: string) => rules.hideTags.includes(tag));
