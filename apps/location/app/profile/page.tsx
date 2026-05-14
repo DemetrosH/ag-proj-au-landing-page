@@ -14,6 +14,8 @@ export default function ProfilePage() {
   const supabase = createClient();
   const router = useRouter();
 
+  const [expandedId, setExpandedId] = React.useState<string | null>(null);
+
   React.useEffect(() => {
     const fetchData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -47,6 +49,10 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push('/login');
+  };
+
+  const toggleExpand = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
   };
 
   if (loading) {
@@ -109,64 +115,173 @@ export default function ProfilePage() {
               </div>
             ) : (
               <div className="space-y-6">
-                {soumissions.map((s) => (
-                  <div key={s.id} className="bg-white border border-brand-border rounded-[2.5rem] p-8 hover:shadow-2xl transition-all group overflow-hidden relative">
-                    <div className="flex flex-col md:flex-row justify-between gap-6 relative z-10">
-                      <div>
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">ID #{s.id.slice(0, 8)}</span>
-                          <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${
-                            s.status === 'pending' ? 'bg-amber-50 text-amber-600 border-amber-100' :
-                            s.status === 'confirmed' ? 'bg-green-50 text-green-600 border-green-100' :
-                            'bg-red-50 text-red-600 border-red-100'
-                          }`}>
-                            {s.status}
-                          </span>
-                        </div>
-                        <h3 className="text-xl font-black text-brand-dark uppercase tracking-tight mb-4">
-                          {s.items?.length || 0} Articles - {s.total_price}$
-                        </h3>
-                        <div className="flex flex-wrap gap-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                          <div className="flex items-center gap-2 bg-brand-surface px-3 py-1.5 rounded-full border border-brand-border">
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            {s.start_date} au {s.end_date}
+                {soumissions.map((s) => {
+                  const isExpanded = expandedId === s.id;
+                  return (
+                    <div 
+                      key={s.id} 
+                      className={`bg-white border border-brand-border rounded-[2.5rem] transition-all duration-500 overflow-hidden relative ${
+                        isExpanded ? 'ring-2 ring-brand-orange shadow-2xl' : 'hover:shadow-xl'
+                      }`}
+                    >
+                      {/* Main Header / Summary (Clickable to Toggle) */}
+                      <div 
+                        onClick={() => toggleExpand(s.id)}
+                        className="p-8 cursor-pointer group"
+                      >
+                        <div className="flex flex-col md:flex-row justify-between gap-6 relative z-10">
+                          <div>
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">ID #{s.id.slice(0, 8)}</span>
+                              <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${
+                                s.status === 'pending' ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                                s.status === 'confirmed' ? 'bg-green-50 text-green-600 border-green-100' :
+                                'bg-red-50 text-red-600 border-red-100'
+                              }`}>
+                                {s.status}
+                              </span>
+                            </div>
+                            <h3 className="text-xl font-black text-brand-dark uppercase tracking-tight mb-4">
+                              {s.items?.length || 0} Articles - {s.total_price}$
+                            </h3>
+                            <div className="flex flex-wrap gap-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                              <div className="flex items-center gap-2 bg-brand-surface px-3 py-1.5 rounded-full border border-brand-border">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                {s.start_date} au {s.end_date}
+                              </div>
+                              <div className="flex items-center gap-2 bg-brand-surface px-3 py-1.5 rounded-full border border-brand-border">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                {new Date(s.created_at).toLocaleDateString('fr-CA')}
+                              </div>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2 bg-brand-surface px-3 py-1.5 rounded-full border border-brand-border">
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            {new Date(s.created_at).toLocaleDateString('fr-CA')}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center">
-                        <div className="flex -space-x-4">
-                          {s.items?.slice(0, 3).map((item: any, i: number) => (
-                            <div key={i} className="w-12 h-12 rounded-full border-4 border-white bg-brand-surface overflow-hidden shadow-lg flex items-center justify-center">
-                              {item.image ? (
-                                <img src={item.image} alt="" className="w-full h-full object-contain p-1" />
-                              ) : (
-                                <span className="text-[8px] font-black uppercase">{item.name[0]}</span>
+                          
+                          <div className="flex items-center justify-between md:justify-end gap-6">
+                            <div className="flex -space-x-4">
+                              {s.items?.slice(0, 3).map((item: any, i: number) => (
+                                <div key={i} className="w-12 h-12 rounded-full border-4 border-white bg-brand-surface overflow-hidden shadow-lg flex items-center justify-center">
+                                  {item.image ? (
+                                    <img src={item.image} alt="" className="w-full h-full object-contain p-1" />
+                                  ) : (
+                                    <span className="text-[8px] font-black uppercase">{item.name[0]}</span>
+                                  )}
+                                </div>
+                              ))}
+                              {s.items?.length > 3 && (
+                                <div className="w-12 h-12 rounded-full border-4 border-white bg-brand-dark text-white text-[10px] font-black flex items-center justify-center shadow-lg relative z-10">
+                                  +{s.items.length - 3}
+                                </div>
                               )}
                             </div>
-                          ))}
-                          {s.items?.length > 3 && (
-                            <div className="w-12 h-12 rounded-full border-4 border-white bg-brand-dark text-white text-[10px] font-black flex items-center justify-center shadow-lg relative z-10">
-                              +{s.items.length - 3}
+                            
+                            <div className={`w-10 h-10 rounded-full border border-brand-border flex items-center justify-center transition-transform duration-300 ${isExpanded ? 'rotate-180 bg-brand-orange border-brand-orange text-white' : 'group-hover:bg-brand-surface'}`}>
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                              </svg>
                             </div>
-                          )}
+                          </div>
                         </div>
                       </div>
+
+                      {/* Expanded Details */}
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                            className="border-t border-brand-border"
+                          >
+                            <div className="p-8 space-y-8 bg-gray-50/50">
+                              
+                              {/* 1. Itemized List */}
+                              <div>
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-orange mb-4">Détails de l'équipement</h4>
+                                <div className="bg-white border border-brand-border rounded-[1.5rem] overflow-hidden">
+                                  <table className="w-full text-left">
+                                    <thead>
+                                      <tr className="bg-brand-surface border-b border-brand-border">
+                                        <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400">Article</th>
+                                        <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400 text-center">Qté</th>
+                                        <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400 text-right">Total</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-brand-border">
+                                      {s.items?.map((item: any, i: number) => (
+                                        <tr key={i} className="group/row hover:bg-gray-50 transition-colors">
+                                          <td className="px-6 py-4">
+                                            <div className="flex items-center gap-4">
+                                              <div className="w-10 h-10 rounded-lg border border-brand-border bg-white flex items-center justify-center p-1">
+                                                {item.image ? (
+                                                  <img src={item.image} alt="" className="max-w-full max-h-full object-contain" />
+                                                ) : (
+                                                  <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                  </svg>
+                                                )}
+                                              </div>
+                                              <span className="text-sm font-bold text-brand-dark line-clamp-1">{item.name}</span>
+                                            </div>
+                                          </td>
+                                          <td className="px-6 py-4 text-center">
+                                            <span className="text-sm font-black text-brand-dark">x{item.quantity}</span>
+                                          </td>
+                                          <td className="px-6 py-4 text-right">
+                                            <span className="text-sm font-black text-brand-orange">{Math.round((item.price || 0) * (item.quantity || 1))}$</span>
+                                          </td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                    <tfoot>
+                                      <tr className="bg-brand-surface/50">
+                                        <td colSpan={2} className="px-6 py-5 text-right text-xs font-black uppercase tracking-widest text-gray-400">Total estimé</td>
+                                        <td className="px-6 py-5 text-right text-xl font-black text-brand-dark">{s.total_price}$</td>
+                                      </tr>
+                                    </tfoot>
+                                  </table>
+                                </div>
+                              </div>
+
+                              {/* 2. Event Info Grid */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="bg-white border border-brand-border p-6 rounded-[1.5rem]">
+                                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-orange mb-3">Lieu de l'événement</h4>
+                                  <p className="text-sm font-bold text-brand-dark">{s.location_name || 'Non spécifié'}</p>
+                                  {s.location_address && (
+                                    <p className="text-xs text-gray-400 mt-1">{s.location_address}, {s.location_city}</p>
+                                  )}
+                                </div>
+                                <div className="bg-white border border-brand-border p-6 rounded-[1.5rem]">
+                                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-orange mb-3">Détails / Remarques</h4>
+                                  <p className="text-xs text-gray-500 italic leading-relaxed">
+                                    {s.event_details || 'Aucune remarque particulière.'}
+                                  </p>
+                                </div>
+                              </div>
+
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      {/* Background decoration */}
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/5 rounded-bl-[5rem] group-hover:bg-brand-orange/10 transition-colors pointer-events-none"></div>
                     </div>
-                    
-                    {/* Background decoration */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/5 rounded-bl-[5rem] group-hover:bg-brand-orange/10 transition-colors"></div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
+            )}
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
             )}
           </div>
         </div>
