@@ -5,6 +5,7 @@ import { Header } from '../../components/Header';
 import { createClient } from '../../lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProfilePage() {
   const [user, setUser] = React.useState<any>(null);
