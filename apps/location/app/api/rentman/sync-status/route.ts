@@ -37,11 +37,11 @@ export async function POST(request: Request) {
                status = 'draft';
              } else if (rStatus === 3 || rStatus === 'Pending') {
                status = 'pending';
-             } else if (rStatus === 4 || rStatus === 'Confirmed' || rStatus === 'Confirmed (Draft)') {
+             } else if (rStatus === 4 || rStatus === 'Confirmed' || rStatus === 'Accepted' || rStatus === 'Confirmed (Draft)') {
                status = 'confirmed';
              } else if (rStatus === 8 || rStatus === 'Cancelled' || rStatus === 'Denied') {
                status = 'denied';
-             } else if (rStatus === 'Converted') {
+             } else if (rStatus === 'Converted' || rStatus === 'Accepted') {
                status = 'confirmed';
              }
           }
