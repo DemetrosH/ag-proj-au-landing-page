@@ -48,6 +48,7 @@ function SoumissionContent() {
     eventDetails: ''
   });
 
+  const [deliveryMethod, setDeliveryMethod] = React.useState<'pickup' | 'delivery'>('pickup');
   const [suggestions, setSuggestions] = React.useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
 
@@ -212,7 +213,10 @@ function SoumissionContent() {
     setLoading(false);
   };
 
-  const finalTotal = totalPrice;
+  const subtotal = totalPrice;
+  const tps = Math.round(subtotal * 0.05 * 100) / 100;
+  const tvq = Math.round(subtotal * 0.09975 * 100) / 100;
+  const finalTotal = Math.round((subtotal + tps + tvq) * 100) / 100;
 
   if (submitted) {
     return (
@@ -340,16 +344,51 @@ function SoumissionContent() {
                   <div className="bg-brand-surface rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 border border-brand-border sticky top-32">
                     <h3 className="text-2xl font-black text-brand-dark uppercase tracking-tight mb-8">Récapitulatif</h3>
                     
-                    <div className="space-y-6 mb-8">
-                      <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+                    <div className="space-y-4 mb-8">
+                      {/* Delivery Options */}
+                      <div className="bg-white border border-brand-border rounded-2xl p-4 space-y-3">
+                        <label className="flex items-center gap-3 cursor-pointer group">
+                          <input 
+                            type="radio" 
+                            name="delivery" 
+                            checked={deliveryMethod === 'pickup'} 
+                            onChange={() => setDeliveryMethod('pickup')}
+                            className="w-4 h-4 text-brand-orange focus:ring-brand-orange border-gray-300"
+                          />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-brand-dark group-hover:text-brand-orange transition-colors">Ramasser à l'entrepôt</span>
+                        </label>
+                        <label className="flex items-center gap-3 cursor-pointer group">
+                          <input 
+                            type="radio" 
+                            name="delivery" 
+                            checked={deliveryMethod === 'delivery'} 
+                            onChange={() => setDeliveryMethod('delivery')}
+                            className="w-4 h-4 text-brand-orange focus:ring-brand-orange border-gray-300"
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-brand-dark group-hover:text-brand-orange transition-colors">Livraison à votre évènement</span>
+                            <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">(Prix sur appel)</span>
+                          </div>
+                        </label>
+                      </div>
+
+                      <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest pt-4">
                         <span className="text-gray-400">Dates</span>
                         <span className="text-brand-orange bg-white px-3 py-1 rounded-full border border-brand-border">
                           {isDateSet ? `${startDate} - ${endDate}` : 'Non définies'}
                         </span>
                       </div>
                       <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-                        <span className="text-gray-400">Durée</span>
-                        <span className="text-brand-dark">{durationInDays} jours</span>
+                        <span className="text-gray-400">Sous-total</span>
+                        <span className="text-brand-dark">{subtotal}$</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+                        <span className="text-gray-400">TPS (5%)</span>
+                        <span className="text-brand-dark">{tps}$</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+                        <span className="text-gray-400">TVQ (9.975%)</span>
+                        <span className="text-brand-dark">{tvq}$</span>
                       </div>
                       <div className="pt-6 border-t border-brand-border flex justify-between items-end">
                         <span className="text-sm font-black text-brand-dark uppercase tracking-widest">Total estimé</span>
@@ -390,6 +429,13 @@ function SoumissionContent() {
                         {dateError ? 'Veuillez choisir vos dates en haut !' : 'Veuillez choisir vos dates pour continuer'}
                       </p>
                     )}
+
+                    {/* Delivery Info Box */}
+                    <div className="mt-8 p-6 bg-brand-surface border-l-4 border-brand-orange rounded-r-2xl">
+                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-relaxed">
+                        Livraison et récupération gratuites dans les régions de <span className="text-brand-dark font-black">Portneuf</span> et de la <span className="text-brand-dark font-black">ville de Québec</span> pour toute location de <span className="text-brand-orange font-black text-xs">1 000 $ et plus</span> avant taxes. Service de livraison et de récupération offert en semaine seulement.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
