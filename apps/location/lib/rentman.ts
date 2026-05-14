@@ -709,6 +709,13 @@ export async function createProjectRequest(data: {
 }
 
 /**
+ * Fetch a single Project Request by ID to check its status
+ */
+export async function getProjectRequestById(id: string | number) {
+  return await rentmanFetch<any>(`/projectrequests/${id}`);
+}
+
+/**
  * Add equipment to a Project Request.
  * Sets both `quantity` and `quantity_total` so that quantities
  * carry through when converting the request to a project in Rentman.

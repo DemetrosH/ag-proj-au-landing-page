@@ -172,9 +172,12 @@ function SoumissionContent() {
       tvq: tvq
     };
 
-    let { error } = await supabase
+    // 1. Save to Supabase first and get the record ID
+    let { data: insertedData, error } = await supabase
       .from('soumissions')
-      .insert(submissionData);
+      .insert(submissionData)
+      .select('id')
+      .single();
 
     // Fallback: If columns don't exist yet, insert into event_details as JSON string
     if (error && error.message?.includes('column')) {
@@ -194,15 +197,21 @@ function SoumissionContent() {
 
       const fallbackResult = await supabase
         .from('soumissions')
-        .insert(fallbackData);
+        .insert(fallbackData)
+        .select('id')
+        .single();
+      
       error = fallbackResult.error;
+      insertedData = fallbackResult.data;
     }
 
-    if (error) {
-      alert("Erreur lors de l'envoi : " + error.message);
+    if (error || !insertedData) {
+      alert("Erreur lors de l'envoi : " + (error?.message || "Erreur inconnue"));
       setLoading(false);
       return;
     }
+
+    const supabaseRecordId = insertedData.id;
 
     // 2. Create Rentman Project Request
     try {
@@ -225,7 +234,6 @@ function SoumissionContent() {
           postalCode: formData.postalCode,
           locationName: formData.locationName,
           locationId: formData.locationId,
-          // Passing specific location address if provided, otherwise route handles fallback
           locationAddress: formData.locationAddress,
           locationCity: formData.locationCity,
           locationPostalCode: formData.locationPostalCode,
@@ -241,7 +249,17 @@ function SoumissionContent() {
         })
       });
 
-      if (!rentmanRes.ok) {
+      const rentmanResult = await rentmanRes.json();
+
+      if (rentmanRes.ok && rentmanResult.requestId) {
+        // 3. Update Supabase with the Rentman Request ID
+        await supabase
+          .from('soumissions')
+          .update({ rentman_id: String(rentmanResult.requestId) })
+          .eq('id', supabaseRecordId);
+        
+        console.log('[Integration] Linked Rentman ID:', rentmanResult.requestId);
+      } else {
         console.warn('[Rentman] Failed to create project request, but Supabase record was saved.');
       }
     } catch (err) {

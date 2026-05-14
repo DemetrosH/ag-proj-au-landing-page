@@ -39,9 +39,37 @@ export default function ProfilePage() {
         .from('soumissions')
         .select('*')
         .order('created_at', { ascending: false });
-      setSoumissions(soumissionsData || []);
       
+      const orders = soumissionsData || [];
+      setSoumissions(orders);
       setLoading(false);
+
+      // --- SYNC STATUS FROM RENTMAN ---
+      const rentmanIds = orders
+        .filter(s => s.rentman_id && (s.status === 'pending' || !s.status))
+        .map(s => s.rentman_id);
+
+      if (rentmanIds.length > 0) {
+        try {
+          const res = await fetch('/api/rentman/sync-status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ requestIds: rentmanIds })
+          });
+          const { statuses } = await res.json();
+          
+          if (statuses) {
+            setSoumissions(prev => prev.map(s => {
+              if (s.rentman_id && statuses[s.rentman_id]) {
+                return { ...s, status: statuses[s.rentman_id] };
+              }
+              return s;
+            }));
+          }
+        } catch (err) {
+          console.error('Status sync error:', err);
+        }
+      }
     };
 
     fetchData();
@@ -158,12 +186,13 @@ export default function ProfilePage() {
                             <div className="flex items-center gap-3 mb-2">
                               <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">ID #{s.id.slice(0, 8)}</span>
                               <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${
-                                s.status === 'pending' ? 'bg-amber-50 text-amber-600 border-amber-100' :
-                                s.status === 'confirmed' ? 'bg-green-50 text-green-600 border-green-100' :
-                                'bg-red-50 text-red-600 border-red-100'
-                              }`}>
-                                {s.status}
-                              </span>
+                                 s.status === 'pending' || !s.status ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                                 (s.status === 'accepted' || s.status === 'confirmed' || s.status === 'converted') ? 'bg-green-50 text-green-600 border-green-100' :
+                                 s.status === 'denied' ? 'bg-red-50 text-red-600 border-red-100' :
+                                 'bg-gray-50 text-gray-600 border-gray-100'
+                               }`}>
+                                 {s.status || 'En attente'}
+                               </span>
                               <span className="text-[9px] font-black uppercase tracking-widest text-brand-orange bg-brand-orange/5 px-2 py-1 rounded-md">
                                 {meta.delivery_method === 'pickup' ? 'Ramassage' : 'Livraison'}
                               </span>
