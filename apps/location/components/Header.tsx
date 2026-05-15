@@ -206,8 +206,8 @@ export function Header() {
             <div className="flex items-center gap-3">
               <img src="/logo2-A.png" alt="Artéfact Urbain" className="h-10 sm:h-12 w-auto object-contain" />
               <div className="hidden sm:flex flex-col leading-none">
-                <span className="text-xl 3xl:text-3xl 5xl:text-5xl font-black text-brand-dark uppercase tracking-tighter">Location</span>
-                <span className="text-[8px] 3xl:text-sm 5xl:text-xl font-black text-brand-orange uppercase tracking-[0.2em]">Par Artéfact Urbain</span>
+                <span className="text-xl 5xl:text-5xl font-black text-brand-dark uppercase tracking-tighter">Location</span>
+                <span className="text-[8px] 5xl:text-xl font-black text-brand-orange uppercase tracking-[0.2em]">Par Artéfact Urbain</span>
               </div>
             </div>
           </Link>
@@ -223,7 +223,7 @@ export function Header() {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => searchQuery.length >= 2 && setIsSearchOpen(true)}
               placeholder="Rechercher un équipement..."
-              className="w-full bg-brand-surface border border-brand-border rounded-full py-2.5 px-6 pr-12 text-sm 3xl:text-lg 5xl:text-2xl focus:outline-none focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/5 transition-all"
+              className="w-full bg-brand-surface border border-brand-border rounded-full py-2.5 px-6 pr-12 text-sm 5xl:text-2xl focus:outline-none focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/5 transition-all"
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
               {searchQuery && (
@@ -420,8 +420,8 @@ export function Header() {
 
                     <div className="pt-4 border-t border-brand-border mb-6">
                       <div className="flex justify-between items-end">
-                        <span className="text-[10px] 3xl:text-sm 5xl:text-lg font-black text-gray-400 uppercase tracking-widest">Sous-total</span>
-                        <span className="text-xl 3xl:text-3xl 5xl:text-5xl font-black text-brand-dark">{totalPrice}$</span>
+                        <span className="text-[10px] 5xl:text-lg font-black text-gray-400 uppercase tracking-widest">Sous-total</span>
+                        <span className="text-xl 5xl:text-5xl font-black text-brand-dark">{totalPrice}$</span>
                       </div>
                     </div>
 

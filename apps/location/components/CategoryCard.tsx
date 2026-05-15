@@ -154,7 +154,7 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
 
       {/* Content */}
       <div className="p-3 sm:p-5 flex flex-col flex-grow bg-gray-50 border-t border-gray-200">
-        <h3 className="text-xs sm:text-base 3xl:text-xl 5xl:text-3xl font-black text-brand-dark uppercase tracking-tight mb-4 group-hover:text-brand-orange transition-colors line-clamp-1">
+        <h3 className="text-xs sm:text-base 5xl:text-3xl font-black text-brand-dark uppercase tracking-tight mb-4 group-hover:text-brand-orange transition-colors line-clamp-1">
           {displayTitle}
         </h3>
         
@@ -162,7 +162,7 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
         
         <Link 
           href={`/categories/${category.slug}`}
-          className="flex items-center justify-between w-full p-2 sm:p-3 3xl:p-5 5xl:p-8 rounded-lg bg-brand-dark text-white font-bold uppercase tracking-widest text-[8px] sm:text-[10px] 3xl:text-base 5xl:text-2xl hover:bg-brand-orange transition-colors group/btn shadow-md"
+          className="flex items-center justify-between w-full p-2 sm:p-3 5xl:p-8 rounded-lg bg-brand-dark text-white font-bold uppercase tracking-widest text-[8px] sm:text-[10px] 5xl:text-2xl hover:bg-brand-orange transition-colors group/btn shadow-md"
         >
           <span>Voir</span>
           <svg className="w-2 h-2 sm:w-3 sm:h-3 3xl:w-5 3xl:h-5 5xl:w-8 5xl:h-8 transform group-hover/btn:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -25,15 +25,9 @@
   }
 }
 
-@media (min-width: 2560px) {
-  html {
-    font-size: 20px; /* Scale up for 27-28" monitors if needed, or keep 16px if user liked it there */
-  }
-}
-
 @media (min-width: 3840px) {
   html {
-    font-size: 26px; /* Significant scale up for 32" 4K monitors to fill space proportionately */
+    font-size: 26px; /* Significant scale up ONLY for 32" 4K monitors to fill space proportionately */
   }
 }
 
