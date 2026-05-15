@@ -111,42 +111,21 @@ export function Header() {
       }
 
       setIsSearching(true);
-      const role: UserRole = user?.role || 'guest';
-      const rules = URBA_ACCESS_RULES[role];
-
       const { data, error } = await supabase
         .from('products')
-        .select('id, rentman_id, name, image_url, price, category_slug, category_slugs, tags')
+        .select('id, rentman_id, name, image_url, price, category_slug')
         .ilike('name', `%${searchQuery}%`)
-        .limit(20); // Fetch more to allow for filtering
+        .limit(6);
 
       if (!error && data) {
-        const filteredData = data
-          .filter(p => {
-            // Hide if category is restricted
-            const catSlugs = p.category_slugs || [p.category_slug].filter(Boolean);
-            if (catSlugs.some((slug: string) => rules.hideCats.includes(slug))) return false;
-            
-            // Hide if any hideTag is present
-            if (p.tags?.some((tag: string) => rules.hideTags.includes(tag))) return false;
-            
-            // If requiredTags are specified, at least one must be present
-            if (rules.requiredTags && rules.requiredTags.length > 0) {
-              return p.tags?.some((tag: string) => rules.requiredTags?.includes(tag));
-            }
-            
-            return true;
-          })
-          .slice(0, 6); // Only show top 6 after filtering
-
-        setSearchResults(filteredData);
+        setSearchResults(data);
         setIsSearchOpen(true);
       }
       setIsSearching(false);
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, user]);
+  }, [searchQuery]);
 
   const formatDate = (dateStr: string) => {
     // Add T00:00:00 to force local timezone parsing
@@ -227,8 +206,8 @@ export function Header() {
             <div className="flex items-center gap-3">
               <img src="/logo2-A.png" alt="Artéfact Urbain" className="h-10 sm:h-12 w-auto object-contain" />
               <div className="hidden sm:flex flex-col leading-none">
-                <span className="text-xl 3xl:text-3xl 5xl:text-5xl font-black text-brand-dark uppercase tracking-tighter">Location</span>
-                <span className="text-[8px] 3xl:text-xs 5xl:text-xl font-black text-brand-orange uppercase tracking-[0.2em]">Par Artéfact Urbain</span>
+                <span className="text-xl font-black text-brand-dark uppercase tracking-tighter">Location</span>
+                <span className="text-[8px] font-black text-brand-orange uppercase tracking-[0.2em]">Par Artéfact Urbain</span>
               </div>
             </div>
           </Link>
@@ -244,7 +223,7 @@ export function Header() {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => searchQuery.length >= 2 && setIsSearchOpen(true)}
               placeholder="Rechercher un équipement..."
-              className="w-full bg-brand-surface border border-brand-border rounded-full py-2.5 px-6 pr-12 text-sm 3xl:text-lg 5xl:text-2xl focus:outline-none focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/5 transition-all"
+              className="w-full bg-brand-surface border border-brand-border rounded-full py-2.5 px-6 pr-12 text-sm focus:outline-none focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/5 transition-all"
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
               {searchQuery && (
@@ -291,22 +270,22 @@ export function Header() {
                           <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-300 italic">No img</div>
                         )}
                       </div>
-                      <div className="flex flex-col">
-                        <p className="text-sm 3xl:text-base 5xl:text-xl font-bold text-gray-900">{result.name}</p>
-                        <p className="text-xs 3xl:text-sm 5xl:text-lg text-gray-500 font-medium">{result.price}$ / jour</p>
+                      <div className="flex-grow">
+                        <p className="text-sm font-bold text-gray-900">{result.name}</p>
+                        <p className="text-xs text-gray-500 font-medium">{result.price}$ / jour</p>
                       </div>
                     </Link>
                   ))}
                 </div>
                 <div className="p-3 bg-brand-surface text-center">
-                  <p className="text-[10px] 3xl:text-xs 5xl:text-base font-bold uppercase tracking-widest text-gray-400">Appuyez sur entrée pour voir tous les résultats</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Appuyez sur entrée pour voir tous les résultats</p>
                 </div>
               </div>
             )}
             
             {isSearchOpen && searchQuery.length >= 2 && searchResults.length === 0 && !isSearching && (
               <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-brand-border shadow-2xl rounded-2xl p-6 text-center z-50 before:absolute before:inset-x-0 before:-top-4 before:h-4 before:bg-transparent">
-                <p className="text-sm 3xl:text-base 5xl:text-xl text-gray-500">Aucun produit trouvé pour "{searchQuery}"</p>
+                <p className="text-sm text-gray-500">Aucun produit trouvé pour "{searchQuery}"</p>
               </div>
             )}
           </div>
@@ -330,7 +309,7 @@ export function Header() {
               <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" />
               </svg>
-              <span className="text-[10px] sm:text-xs 3xl:text-sm 5xl:text-xl font-bold uppercase tracking-wider whitespace-nowrap">
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider whitespace-nowrap">
                 {isDateSet ? (
                   <>
                     <span className="sm:hidden">{formatCompactDate(startDate!)} - {formatCompactDate(endDate!)}</span>
@@ -353,7 +332,7 @@ export function Header() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   </div>
-                  <span className="hidden sm:inline max-w-[100px] truncate uppercase tracking-widest text-[10px] 3xl:text-xs 5xl:text-base">
+                  <span className="hidden sm:inline max-w-[100px] truncate uppercase tracking-widest text-[10px]">
                     {user.role === 'guest' ? 'Mon Profil' : 'Espace Pro'}
                   </span>
                 </button>
@@ -364,7 +343,7 @@ export function Header() {
                   >
                     <Link 
                       href="/profile"
-                      className="w-full text-left px-4 py-2 text-xs 3xl:text-sm 5xl:text-base font-bold uppercase tracking-widest text-brand-dark hover:bg-brand-surface rounded-xl transition-colors block"
+                      className="w-full text-left px-4 py-2 text-xs font-bold uppercase tracking-widest text-brand-dark hover:bg-brand-surface rounded-xl transition-colors block"
                     >
                       Mon Profil
                     </Link>
@@ -375,7 +354,7 @@ export function Header() {
                   >
                     <button 
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-xs 3xl:text-sm 5xl:text-base font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                      className="w-full text-left px-4 py-2 text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 rounded-xl transition-colors"
                     >
                       Déconnexion
                     </button>
@@ -383,7 +362,7 @@ export function Header() {
                 </div>
               </div>
             ) : (
-              <Link href="/login" className="hidden sm:flex items-center space-x-2 text-[10px] 3xl:text-xs 5xl:text-base font-black uppercase tracking-[0.2em] bg-brand-dark text-white px-6 py-2.5 rounded-full hover:bg-brand-orange transition-all shadow-lg shadow-brand-dark/10">
+              <Link href="/login" className="hidden sm:flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.2em] bg-brand-dark text-white px-6 py-2.5 rounded-full hover:bg-brand-orange transition-all shadow-lg shadow-brand-dark/10">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
@@ -402,7 +381,7 @@ export function Header() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
                 {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-brand-gold text-white text-[10px] 3xl:text-xs font-bold px-1.5 py-0.5 rounded-full shadow-lg border-2 border-white">
+                  <span className="absolute -top-1 -right-1 bg-brand-gold text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-lg border-2 border-white">
                     {itemCount}
                   </span>
                 )}
@@ -411,13 +390,13 @@ export function Header() {
               {/* Cart Dropdown on Hover */}
               <div className="absolute top-full right-0 mt-2 w-80 bg-white border border-brand-border shadow-2xl rounded-3xl p-6 opacity-0 invisible group-hover/cart:opacity-100 group-hover/cart:visible transition-all z-50 animate-fade-in-up before:absolute before:inset-x-0 before:-top-4 before:h-4 before:bg-transparent">
                 <div className="flex justify-between items-center mb-6">
-                  <h4 className="text-[10px] 3xl:text-sm 5xl:text-xl font-black uppercase tracking-[0.2em] text-brand-dark">Mon Panier</h4>
-                  <span className="text-[10px] 3xl:text-xs 5xl:text-base font-bold text-gray-400 uppercase">{itemCount} Articles</span>
+                  <h4 className="text-xs font-black uppercase tracking-[0.2em] text-brand-dark">Mon Panier</h4>
+                  <span className="text-[10px] font-bold text-gray-400 uppercase">{itemCount} Articles</span>
                 </div>
 
                 {items.length === 0 ? (
                   <div className="py-8 text-center">
-                    <p className="text-[10px] 3xl:text-sm 5xl:text-xl text-gray-400 font-medium italic">Votre panier est vide</p>
+                    <p className="text-xs text-gray-400 font-medium italic">Votre panier est vide</p>
                   </div>
                 ) : (
                   <>
@@ -432,25 +411,17 @@ export function Header() {
                             )}
                           </div>
                           <div className="flex-grow min-w-0">
-                            <p className="text-[11px] 3xl:text-sm 5xl:text-xl font-black text-brand-dark uppercase truncate">{item.name}</p>
-                            <p className="text-[10px] 3xl:text-xs 5xl:text-base font-bold text-brand-orange">{item.quantity}x {Math.round(item.price * factor)}$</p>
+                            <p className="text-[11px] font-black text-brand-dark uppercase truncate">{item.name}</p>
+                            <p className="text-[10px] font-bold text-brand-orange">{item.quantity}x {Math.round(item.price * factor)}$</p>
                           </div>
                         </div>
                       ))}
                     </div>
 
                     <div className="pt-4 border-t border-brand-border mb-6">
-                      <div className="hidden sm:block text-left mb-4">
-                        <p className="text-[10px] 3xl:text-sm 5xl:text-xl text-gray-400 font-bold uppercase tracking-widest mb-0.5">
-                          Mon Compte
-                        </p>
-                        <p className="text-xs 3xl:text-base 5xl:text-2xl font-black text-brand-dark uppercase tracking-tight">
-                          {profile?.full_name?.split(' ')[0] || 'Espace Client'}
-                        </p>
-                      </div>
                       <div className="flex justify-between items-end">
-                        <span className="text-[10px] 3xl:text-sm 5xl:text-xl font-black text-gray-400 uppercase tracking-widest">Sous-total</span>
-                        <span className="text-xl 3xl:text-2xl 5xl:text-4xl font-black text-brand-dark">{totalPrice}$</span>
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sous-total</span>
+                        <span className="text-xl font-black text-brand-dark">{totalPrice}$</span>
                       </div>
                     </div>
 
@@ -470,7 +441,7 @@ export function Header() {
                               window.location.href = '/soumission?step=checkout';
                             }
                           }}
-                          className={`w-full text-white text-center py-4 rounded-2xl text-[10px] 3xl:text-sm 5xl:text-xl font-black uppercase tracking-[0.2em] transition-all shadow-xl ${
+                          className={`w-full text-white text-center py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl ${
                             dateError ? 'bg-red-500 shadow-red-500/20' : 'bg-brand-dark hover:bg-brand-orange shadow-brand-dark/10'
                           }`}
                         >
@@ -478,7 +449,7 @@ export function Header() {
                         </button>
                       </motion.div>
                       {dateError && (
-                        <p className="text-[9px] 3xl:text-xs 5xl:text-base font-black text-red-500 uppercase text-center animate-pulse">
+                        <p className="text-[9px] font-black text-red-500 uppercase text-center animate-pulse">
                           Veuillez choisir vos dates !
                         </p>
                       )}
@@ -488,7 +459,7 @@ export function Header() {
                       >
                         <Link 
                           href="/soumission"
-                          className="w-full bg-white border border-brand-border text-brand-dark text-center py-4 rounded-2xl text-[10px] 3xl:text-sm 5xl:text-xl font-black uppercase tracking-[0.2em] hover:bg-brand-surface transition-all block"
+                          className="w-full bg-white border border-brand-border text-brand-dark text-center py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-surface transition-all block"
                         >
                           Voir mon panier
                         </Link>
@@ -522,7 +493,7 @@ export function Header() {
 
         {/* Bottom Header: Navigation - Desktop Only */}
         <div className="hidden lg:flex h-12 border-t border-brand-border items-center justify-center">
-          <nav className="flex items-center h-full space-x-12 text-xs 3xl:text-sm 5xl:text-xl font-bold tracking-widest uppercase">
+          <nav className="flex items-center h-full space-x-12 text-xs font-bold tracking-widest uppercase">
             <Link href="/" className="text-gray-900 hover:text-brand-gold transition-colors flex items-center h-full px-2">
               Accueil
             </Link>
@@ -549,7 +520,7 @@ export function Header() {
                         <Link 
                           key={cat.id} 
                           href={`/categories/${cat.slug}`}
-                          className="block break-inside-avoid mb-3 text-gray-600 hover:text-brand-gold text-[13px] 3xl:text-base 5xl:text-2xl font-semibold tracking-wide transition-colors leading-tight"
+                          className="block break-inside-avoid mb-3 text-gray-600 hover:text-brand-gold text-[13px] font-semibold tracking-wide transition-colors leading-tight"
                           onClick={() => setIsCategoryOpen(false)}
                         >
                           {cat.name}
@@ -559,7 +530,7 @@ export function Header() {
                     <div className="pt-5 mt-3 border-t border-brand-border text-center">
                       <Link 
                         href="/categories" 
-                        className="inline-block text-brand-gold text-xs 3xl:text-sm 5xl:text-xl font-bold uppercase tracking-widest hover:underline"
+                        className="inline-block text-brand-gold text-xs font-bold uppercase tracking-widest hover:underline"
                         onClick={() => setIsCategoryOpen(false)}
                       >
                         Voir toutes les catégories →

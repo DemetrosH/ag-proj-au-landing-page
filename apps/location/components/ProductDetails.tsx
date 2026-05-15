@@ -142,7 +142,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
         {/* Right: Info & Pricing */}
         <div className="lg:w-1/2 pt-12">
-          <h1 className="text-4xl md:text-5xl 3xl:text-7xl 5xl:text-[8rem] font-bold mb-6">{product.name}</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">{product.name}</h1>
           <div 
             className="prose-brand mb-10"
             dangerouslySetInnerHTML={{ __html: formatDescription(product.description) }}
@@ -151,16 +151,16 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           <div className="bg-brand-surface rounded-[2.5rem] p-10 mb-10 border border-brand-border/50">
             <div className="flex justify-between items-start mb-10">
               <div>
-                <span className="block text-xs 3xl:text-base 5xl:text-2xl font-bold uppercase tracking-widest text-gray-400 mb-1">Prix de base</span>
-                <span className="text-4xl 3xl:text-6xl 5xl:text-8xl font-bold text-gray-900">{product.price}$ <span className="text-lg 3xl:text-2xl 5xl:text-4xl font-normal text-gray-400">/ jour</span></span>
+                <span className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Prix de base</span>
+                <span className="text-4xl font-bold text-gray-900">{product.price}$ <span className="text-lg font-normal text-gray-400">/ jour</span></span>
               </div>
               <div className="text-right">
                 {isDateSet ? (
                   <div className="flex flex-col items-end">
-                    <span className="bg-brand-gold/10 text-brand-gold text-[10px] 3xl:text-sm 5xl:text-xl font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full mb-2">
+                    <span className="bg-brand-gold/10 text-brand-gold text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full mb-2">
                       {durationInDays} JOURS SÉLECTIONNÉS
                     </span>
-                    <span className="text-4xl 3xl:text-7xl 5xl:text-[10rem] font-black text-brand-dark tracking-tighter">Total: {totalPrice}$</span>
+                    <span className="text-4xl font-black text-brand-dark tracking-tighter">Total: {totalPrice}$</span>
                   </div>
                 ) : (
                   product.stock_level !== undefined && product.stock_level > 0 && (
@@ -233,7 +233,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M20 12H4" />
                       </svg>
                     </button>
-                    <span className="text-lg 3xl:text-2xl 5xl:text-4xl font-black w-8 text-center">{availableSessionStock > 0 ? quantity : 0}</span>
+                    <span className="text-lg font-black w-8 text-center">{availableSessionStock > 0 ? quantity : 0}</span>
                     <button 
                       onClick={() => setQuantity(Math.min(maxStock, quantity + 1))}
                       className="w-8 h-8 rounded-full border border-brand-border flex items-center justify-center hover:bg-brand-surface transition-colors disabled:opacity-30"
@@ -252,7 +252,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                     </p>
                   )}
                   {product.stock_level !== undefined && (
-                    <p className={`text-sm 3xl:text-base 5xl:text-2xl font-black uppercase tracking-widest ml-auto ${availableSessionStock <= 0 ? 'text-red-500' : 'text-brand-gold'}`}>
+                    <p className={`text-sm font-black uppercase tracking-widest ml-auto ${availableSessionStock <= 0 ? 'text-red-500' : 'text-brand-gold'}`}>
                       {availableSessionStock} disponible(s)
                     </p>
                   )}
@@ -270,7 +270,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className={`w-full py-6 3xl:py-10 5xl:py-16 text-lg 3xl:text-2xl 5xl:text-4xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-gray-200 flex items-center justify-center gap-3 rounded-2xl group ${
+                className={`w-full py-6 text-lg shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-gray-200 flex items-center justify-center gap-3 rounded-2xl group ${
                   availableSessionStock <= 0
                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                     : 'bg-white text-brand-dark hover:border-brand-orange/50 transition-colors'
@@ -305,13 +305,13 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Link 
                     href="/soumission"
-                    className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] py-5 3xl:py-8 5xl:py-12 rounded-2xl hover:bg-brand-orange transition-all shadow-xl text-center text-xs 3xl:text-sm 5xl:text-xl"
+                    className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] py-5 rounded-2xl hover:bg-brand-orange transition-all shadow-xl text-center text-xs"
                   >
                     Finaliser ma demande
                   </Link>
                   <button 
                     onClick={() => setAdded(false)}
-                    className="bg-white border-2 border-brand-dark text-brand-dark font-black uppercase tracking-[0.2em] py-5 3xl:py-8 5xl:py-12 rounded-2xl hover:bg-brand-surface transition-all text-center text-xs 3xl:text-sm 5xl:text-xl"
+                    className="bg-white border-2 border-brand-dark text-brand-dark font-black uppercase tracking-[0.2em] py-5 rounded-2xl hover:bg-brand-surface transition-all text-center text-xs"
                   >
                     Continuer mes achats
                   </button>

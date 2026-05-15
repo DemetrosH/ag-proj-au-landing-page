@@ -80,7 +80,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
                       ]
                     }}
                     transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
-                    className="text-white font-black text-3xl sm:text-4xl md:text-5xl 3xl:text-6xl 5xl:text-8xl select-none"
+                    className="text-white font-black text-3xl sm:text-4xl md:text-5xl select-none"
                   >
                     {char}
                   </motion.span>
@@ -98,13 +98,13 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
                       ]
                     }}
                     transition={{ duration: 2, repeat: Infinity, delay: (i + 8) * 0.1 }}
-                    className="text-white font-black text-3xl sm:text-4xl md:text-5xl 3xl:text-6xl 5xl:text-8xl select-none"
+                    className="text-white font-black text-3xl sm:text-4xl md:text-5xl select-none"
                   >
                     {char}
                   </motion.span>
                 ))}
              </div>
-             <p className="text-[10px] sm:text-xs 3xl:text-sm 5xl:text-xl text-pink-500 font-bold uppercase tracking-[0.3em] max-w-[120px] 3xl:max-w-[180px] 5xl:max-w-[300px] mx-auto leading-relaxed opacity-80">
+             <p className="text-[10px] text-pink-500 font-bold uppercase tracking-[0.3em] max-w-[120px] mx-auto leading-relaxed opacity-80">
                Illuminez vos événements avec nos créations sur mesure.
              </p>
           </motion.div>
@@ -113,14 +113,14 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
         /* Horizontal Title (Unchanged logic but upgraded style) */
         <div className="relative z-10 flex-shrink-0 mb-10 md:mb-0 text-center md:text-left">
           <h2 
-            className="text-white font-black uppercase tracking-[0.2em] text-4xl sm:text-5xl md:text-7xl lg:text-8xl 3xl:text-9xl 5xl:text-[12rem] leading-none"
+            className="text-white font-black uppercase tracking-[0.2em] text-4xl sm:text-5xl md:text-7xl lg:text-8xl leading-none"
             style={{
               textShadow: '0 0 20px rgba(236, 72, 153, 1), 0 0 40px rgba(236, 72, 153, 0.6)'
             }}
           >
             Enseigne<br/>Néon
           </h2>
-          <p className="mt-6 text-sm md:text-xl 3xl:text-2xl 5xl:text-5xl text-pink-500 font-bold uppercase tracking-[0.3em] opacity-80 max-w-md 3xl:max-w-2xl 5xl:max-w-5xl">
+          <p className="mt-6 text-sm md:text-xl text-pink-500 font-bold uppercase tracking-[0.3em] opacity-80 max-w-md">
             Illuminez vos événements avec nos créations sur mesure.
           </p>
           <div className="mt-8 flex justify-center md:justify-start space-x-3">
@@ -139,8 +139,8 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
           href="/categories/enseigne-neon"
           className={`group/link relative overflow-hidden transition-all duration-500 ${
             isVertical 
-              ? 'px-8 py-5 3xl:px-12 3xl:py-8 5xl:px-20 5xl:py-12 text-[11px] 3xl:text-sm 5xl:text-2xl font-black text-white tracking-[0.2em] uppercase border border-pink-500/50 bg-pink-500/10 hover:bg-pink-500 hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] rounded-xl' 
-              : 'px-12 py-6 3xl:px-20 3xl:py-10 5xl:px-32 5xl:py-16 text-sm 3xl:text-2xl 5xl:text-4xl font-black text-white tracking-[0.3em] uppercase border-2 border-pink-500 hover:bg-pink-500 hover:shadow-[0_0_50px_rgba(236,72,153,0.6)] rounded-full'
+              ? 'px-8 py-5 text-[11px] font-black text-white tracking-[0.2em] uppercase border border-pink-500/50 bg-pink-500/10 hover:bg-pink-500 hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] rounded-xl' 
+              : 'px-12 py-6 text-sm font-black text-white tracking-[0.3em] uppercase border-2 border-pink-500 hover:bg-pink-500 hover:shadow-[0_0_50px_rgba(236,72,153,0.6)] rounded-full'
           }`}
         >
           <span className="relative z-10">Voir l'inventaire</span>

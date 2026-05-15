@@ -143,12 +143,12 @@ export function InspiredHero() {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="relative z-20"
             >
-              <h1 className="text-4xl sm:text-5xl md:text-7xl 3xl:text-8xl 5xl:text-[10rem] font-black text-brand-dark uppercase tracking-tight md:tracking-tighter leading-[1.1] md:leading-[0.9] mb-8 text-balance">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-brand-dark uppercase tracking-tight md:tracking-tighter leading-[1.1] md:leading-[0.9] mb-8 text-balance">
                 Votre Expertise, <br />
                 Notre <span className="text-brand-orange">Équipement</span>
               </h1>
               
-              <p className="text-lg md:text-xl 3xl:text-2xl 5xl:text-4xl text-gray-600 mb-10 leading-relaxed font-medium">
+              <p className="text-lg md:text-xl text-gray-600 mb-10 leading-relaxed font-medium">
                 Artéfact Urbain est votre partenaire technique pour tous vos besoins en location d'équipement événementiel. Nous assurons la réussite visuelle et logistique de vos projets.
               </p>
               
@@ -160,7 +160,7 @@ export function InspiredHero() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
-                    <div className="font-bold text-brand-dark uppercase text-[11px] 3xl:text-sm 5xl:text-2xl tracking-widest flex flex-wrap gap-x-1">
+                    <div className="font-bold text-brand-dark uppercase text-[11px] tracking-widest flex flex-wrap gap-x-1">
                       {feature.parts.map((part, pi) => (
                         part.href ? (
                           <Link 
@@ -180,10 +180,10 @@ export function InspiredHero() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-5">
-                <Link href="/categories" className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-10 py-5 3xl:px-16 3xl:py-8 5xl:px-24 5xl:py-12 rounded-full hover:bg-brand-orange transition-all shadow-xl shadow-brand-dark/10 text-center text-xs 3xl:text-base 5xl:text-2xl">
+                <Link href="/categories" className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-10 py-5 rounded-full hover:bg-brand-orange transition-all shadow-xl shadow-brand-dark/10 text-center text-xs">
                   Parcourir l'inventaire
                 </Link>
-                <Link href="/contact" className="bg-white border-2 border-brand-dark text-brand-dark font-black uppercase tracking-[0.2em] px-10 py-5 3xl:px-16 3xl:py-8 5xl:px-24 5xl:py-12 rounded-full hover:bg-brand-dark hover:text-white transition-all text-center text-xs 3xl:text-base 5xl:text-2xl">
+                <Link href="/contact" className="bg-white border-2 border-brand-dark text-brand-dark font-black uppercase tracking-[0.2em] px-10 py-5 rounded-full hover:bg-brand-dark hover:text-white transition-all text-center text-xs">
                   Demander un devis
                 </Link>
               </div>
@@ -266,7 +266,7 @@ export function InspiredHero() {
                       repeat: Infinity, 
                       ease: "easeInOut" 
                     }}
-                    className="w-full max-w-[280px] sm:max-w-xs 3xl:max-w-md 5xl:max-w-xl bg-white rounded-[2.5rem] 5xl:rounded-[4rem] shadow-[0_30px_60px_rgba(0,0,0,0.12)] p-6 5xl:p-12 border border-white/50 relative group"
+                    className="w-full max-w-[280px] sm:max-w-xs bg-white rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.12)] p-6 border border-white/50 relative group"
                   >
                     {/* Status Badge */}
                     {heroProducts.length > 0 && (
@@ -317,14 +317,14 @@ export function InspiredHero() {
                               )}
                             </div>
 
-                            <h3 className="text-sm 3xl:text-lg 5xl:text-2xl font-black text-brand-dark uppercase tracking-tight leading-tight line-clamp-2 min-h-[2.5rem] 5xl:min-h-[4rem]">
+                            <h3 className="text-sm font-black text-brand-dark uppercase tracking-tight leading-tight line-clamp-2 min-h-[2.5rem]">
                               {heroProducts[currentIndex].name}
                             </h3>
                             
                             <div className="flex items-center justify-center gap-4 pt-1">
-                              <div className="text-lg 3xl:text-2xl 5xl:text-4xl font-black text-brand-dark">
+                              <div className="text-lg font-black text-brand-dark">
                                 {heroProducts[currentIndex].price}$
-                                <span className="text-[10px] 3xl:text-xs 5xl:text-xl font-bold text-gray-400 ml-1">/ jour</span>
+                                <span className="text-[10px] font-bold text-gray-400 ml-1">/ jour</span>
                               </div>
                               
                               <Link 
