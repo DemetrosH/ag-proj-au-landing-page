@@ -52,22 +52,32 @@ export async function POST(request: Request) {
                 }
               }
 
-              const rStatus = typeof rStatusRaw === 'string' ? rStatusRaw.toLowerCase() : rStatusRaw;
-              console.log(`[Sync Debug] Rentman ID ${rid} effective status:`, rStatusRaw);
+              // Normalize the status: Rentman can return it as a number, a string, 
+              // or an object { id: number, name: string }
+              const normalizeStatus = (raw: any): string | number => {
+                if (!raw) return '';
+                if (typeof raw === 'object') {
+                  return raw.name || raw.id || '';
+                }
+                return raw;
+              };
+
+              const normalizedRaw = normalizeStatus(rStatusRaw);
+              const s = typeof normalizedRaw === 'string' ? normalizedRaw.toLowerCase() : normalizedRaw;
+              console.log(`[Sync Debug] Rentman ID ${rid} normalized status:`, s);
               
               // Expanded mapping based on Rentman Project Request and Project statuses
-              if (rStatus === 1 || rStatus === 'concept' || rStatus === 'option' || rStatus === 'demande' || rStatus === 'inquiry' || rStatus === 'open') {
+              // 1-2: Pending/Request
+              // 3-6: Confirmed/Ready/In Use/Returned (all represent a 'confirmed' transaction)
+              // 7-8: Cancelled/Denied
+              if ([1, 2, 'concept', 'option', 'demande', 'inquiry', 'open', 'draft', 'pending'].includes(s)) {
                 status = 'pending';
-              } else if (rStatus === 2 || rStatus === 'draft' || rStatus === 'pending') {
-                status = 'pending';
-              } else if (rStatus === 3 || rStatus === 'confirmed' || rStatus === 'confirmé' || rStatus === 'accepted' || rStatus === 'confirmed (draft)') {
+              } else if ([3, 4, 5, 6, 'confirmed', 'confirmé', 'accepted', 'prêt', 'ready', 'en location', 'in use', 'retour', 'returned', 'converted'].includes(s)) {
                 status = 'confirmed';
-              } else if (rStatus === 4 || rStatus === 'prêt' || rStatus === 'ready' || rStatus === 5 || rStatus === 'en location' || rStatus === 'in use') {
-                status = 'confirmed';
-              } else if (rStatus === 6 || rStatus === 'retour' || rStatus === 'returned' || rStatus === 'converted') {
-                status = 'confirmed';
-              } else if (rStatus === 7 || rStatus === 8 || rStatus === 'cancelled' || rStatus === 'annulé' || rStatus === 'denied' || rStatus === 'refused') {
+              } else if ([7, 8, 'cancelled', 'canceled', 'annulé', 'annulée', 'denied', 'refused'].includes(s)) {
                 status = 'denied';
+              } else if (typeof s === 'string' && s.includes('confirmed')) {
+                status = 'confirmed';
               }
            }
 
