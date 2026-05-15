@@ -117,7 +117,9 @@ export async function syncRentmanToSupabase() {
         const itemNameLower = item.name.toLowerCase().trim();
         const mappedCats = (wcData.productMapping as any)[itemNameLower];
         if (mappedCats && mappedCats.length > 0) {
-          const matchingMapped = categories.filter(c => mappedCats.includes(c.name));
+          // Clean &amp; in mapped names to match cleaned category names
+          const cleanedMappedCats = mappedCats.map((name: string) => name.replace(/&amp;/g, '&'));
+          const matchingMapped = categories.filter(c => cleanedMappedCats.includes(c.name));
           matchingMapped.forEach(c => categorySlugs.add(c.slug));
         }
 
