@@ -371,7 +371,7 @@ export function InspiredHero() {
                       ease: "easeInOut" 
                     }
                   }}
-                  className="hidden lg:flex absolute -bottom-6 -left-6 3xl:-bottom-10 3xl:-left-10 5xl:-bottom-16 5xl:-left-16 w-24 h-24 3xl:w-32 3xl:h-32 5xl:w-48 5xl:h-48 bg-white rounded-3xl 5xl:rounded-[3rem] z-30 shadow-2xl items-center justify-center p-4 5xl:p-8 border-4 5xl:border-8 border-brand-orange cursor-pointer"
+                  className="hidden lg:flex absolute -bottom-6 -left-6 w-24 h-24 bg-white rounded-3xl z-30 shadow-2xl items-center justify-center p-4 border-4 border-brand-orange cursor-pointer"
                 >
                   <img 
                     src="/logo2-A.png" 

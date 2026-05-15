@@ -42,7 +42,7 @@ export function InspiredCategoryGrid({ categories, configs = [], showTitle = tru
       */}
 
       {/* --- DESKTOP VIEW (XL and up) --- */}
-      <div className="hidden xl:grid grid-cols-4 auto-rows-min gap-6 3xl:gap-12 5xl:gap-16 items-start">
+      <div className="hidden xl:grid grid-cols-4 auto-rows-min gap-6 3xl:gap-12 5xl:gap-24 items-start">
         {/* First 3 categories on the left */}
         {categories.slice(0, 3).map((category, index) => {
           const normalizedCatName = category.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
