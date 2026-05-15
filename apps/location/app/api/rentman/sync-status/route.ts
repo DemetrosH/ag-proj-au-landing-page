@@ -69,13 +69,20 @@ export async function POST(request: Request) {
               console.log(`  - Final Normalized:`, s);
               
               // Priority mapping
+              // 1. Denied/Cancelled (High priority)
               if ([7, 8, 'cancelled', 'canceled', 'annulé', 'annulée', 'denied', 'refused'].includes(s)) {
                 status = 'denied';
-              } else if ([1, 2, 'concept', 'option', 'demande', 'inquiry', 'open', 'draft', 'pending'].includes(s)) {
+              } 
+              // 2. Pending/Accepted/Converted (Accepted means project created but not yet confirmed)
+              else if ([1, 2, 'concept', 'option', 'demande', 'inquiry', 'open', 'draft', 'pending', 'accepted', 'converted'].includes(s)) {
                 status = 'pending';
-              } else if ([3, 4, 5, 6, 'confirmed', 'confirmé', 'accepted', 'prêt', 'ready', 'en location', 'in use', 'retour', 'returned', 'converted'].includes(s)) {
+              } 
+              // 3. Confirmed/Active statuses
+              else if ([3, 4, 5, 6, 'confirmed', 'confirmé', 'prêt', 'ready', 'en location', 'in use', 'retour', 'returned'].includes(s)) {
                 status = 'confirmed';
-              } else if (typeof s === 'string' && (s.includes('confirmed') || s.includes('confirmé'))) {
+              } 
+              // 4. Catch-all for string-based confirmations
+              else if (typeof s === 'string' && (s.includes('confirmed') || s.includes('confirmé'))) {
                 status = 'confirmed';
               }
               
