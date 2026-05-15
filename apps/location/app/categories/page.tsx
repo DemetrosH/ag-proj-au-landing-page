@@ -36,7 +36,7 @@ export default async function CategoriesPage() {
     <div className="min-h-screen bg-white">
       <Header />
       
-      <main className="container mx-auto px-4 py-24 md:py-32 max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[2000px] 4xl:max-w-[2400px] 5xl:max-w-[3200px]">
+      <main className="container mx-auto px-4 py-24 md:py-32 max-w-7xl">
         <div className="mb-20 text-center max-w-3xl mx-auto">
           <h1 className="text-5xl font-black text-brand-dark uppercase tracking-tighter mb-6">
             Toutes nos <span className="text-brand-orange">catégories</span>

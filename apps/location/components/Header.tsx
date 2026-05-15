@@ -198,7 +198,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-brand-border bg-white/90 backdrop-blur-md">
-      <div className="container mx-auto px-4 2xl:max-w-[1600px] 3xl:max-w-[2000px] 4xl:max-w-[2400px] 5xl:max-w-[3200px]">
+      <div className="container mx-auto px-4">
         {/* Top Header: Logo, Search, Account/Cart */}
         <div className="h-20 flex items-center justify-between gap-1 sm:gap-8">
           {/* Logo */}

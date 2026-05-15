@@ -101,7 +101,7 @@ export function LandingPage({ categories, division, categoryConfigs = [] }: Land
 
       {/* 2. Main Content Area */}
       <main className="bg-white">
-        <div className="container mx-auto px-4 max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[2000px] 4xl:max-w-[2400px] 5xl:max-w-[3200px] py-24">
+        <div className="container mx-auto px-4 max-w-7xl py-24">
           <InspiredCategoryGrid 
             categories={activeCategories} 
             configs={categoryConfigs} 
@@ -120,7 +120,7 @@ export function LandingPage({ categories, division, categoryConfigs = [] }: Land
 
       {/* 5. Modern Mini Footer CTA */}
       <section className="py-12 md:py-24 bg-brand-gray/30 border-t border-gray-100">
-        <div className="container mx-auto px-4 max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[2000px] 4xl:max-w-[2400px] 5xl:max-w-[3200px]">
+        <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex flex-col md:flex-row items-center justify-between gap-12 bg-brand-dark p-8 md:p-20 rounded-[2rem] md:rounded-[4rem] text-white overflow-hidden relative shadow-2xl">
             <div className="relative z-10 text-center md:text-left">
               <h2 className="text-3xl md:text-6xl font-black uppercase tracking-tighter mb-6 leading-none">

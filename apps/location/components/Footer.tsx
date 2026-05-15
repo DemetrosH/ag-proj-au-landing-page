@@ -75,7 +75,7 @@ export function Footer() {
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-orange via-brand-gold to-brand-orange opacity-50" />
       <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-brand-orange/5 rounded-full blur-[100px]" />
       
-      <div className="container mx-auto px-4 max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[2000px] 4xl:max-w-[2400px] 5xl:max-w-[3200px] relative z-10">
+      <div className="container mx-auto px-4 max-w-7xl relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
           
           {/* Brand Column */}

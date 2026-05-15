@@ -59,7 +59,7 @@ export function CategoryFilterLayout({ categories, allProducts, categoryConfigs 
     <div className="flex flex-col space-y-12">
       {/* Search and Filters Header */}
       <div className="sticky top-20 z-40 bg-white/80 backdrop-blur-md pt-4 pb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[2000px] 4xl:max-w-[2400px] 5xl:max-w-[3200px] mx-auto space-y-6">
+        <div className="max-w-7xl mx-auto space-y-6">
           
           {/* Search Bar */}
           <div className="relative max-w-md mx-auto sm:mx-0">
@@ -128,7 +128,7 @@ export function CategoryFilterLayout({ categories, allProducts, categoryConfigs 
         {filteredProducts.length > 0 ? (
           <motion.div 
             layout
-            className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 4xl:grid-cols-8 5xl:grid-cols-10 gap-4 sm:gap-8"
+            className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8"
           >
             <AnimatePresence mode='popLayout'>
               {filteredProducts.map((product) => {
