@@ -2,14 +2,13 @@
 
 import React from 'react';
 
-export function ContactForm({ isGuest }: { isGuest: boolean }) {
+export function ContactForm() {
   const [loading, setLoading] = React.useState(false);
   const [submitted, setSubmitted] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (isGuest) return;
 
     setLoading(true);
     setError(null);
@@ -72,7 +71,7 @@ export function ContactForm({ isGuest }: { isGuest: boolean }) {
             type="text" 
             placeholder="Jean Tremblay"
             required
-            disabled={isGuest || loading}
+            disabled={loading}
             className="w-full bg-white border border-brand-border rounded-full py-4 px-8 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50"
           />
         </div>
@@ -82,7 +81,7 @@ export function ContactForm({ isGuest }: { isGuest: boolean }) {
             name="phone"
             type="tel" 
             placeholder="(514) 000-0000"
-            disabled={isGuest || loading}
+            disabled={loading}
             className="w-full bg-white border border-brand-border rounded-full py-4 px-8 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50"
           />
         </div>
@@ -95,7 +94,7 @@ export function ContactForm({ isGuest }: { isGuest: boolean }) {
           type="email" 
           placeholder="jean@exemple.com"
           required
-          disabled={isGuest || loading}
+          disabled={loading}
           className="w-full bg-white border border-brand-border rounded-full py-4 px-8 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all disabled:opacity-50"
         />
       </div>
@@ -107,7 +106,7 @@ export function ContactForm({ isGuest }: { isGuest: boolean }) {
           rows={5}
           placeholder="Comment pouvons-nous vous aider ?"
           required
-          disabled={isGuest || loading}
+          disabled={loading}
           className="w-full bg-white border border-brand-border rounded-[2rem] py-6 px-8 text-sm font-medium focus:outline-none focus:border-brand-orange focus:ring-8 focus:ring-brand-orange/5 transition-all resize-none disabled:opacity-50"
         ></textarea>
       </div>
@@ -119,7 +118,7 @@ export function ContactForm({ isGuest }: { isGuest: boolean }) {
       <div className="pt-4">
         <button 
           type="submit"
-          disabled={isGuest || loading}
+          disabled={loading}
           className="w-full bg-brand-dark text-white font-black uppercase tracking-[0.3em] py-6 rounded-full hover:bg-brand-orange transition-all shadow-xl flex items-center justify-center gap-4 group disabled:opacity-50"
         >
           {loading ? 'Envoi en cours...' : 'Envoyer le message'}

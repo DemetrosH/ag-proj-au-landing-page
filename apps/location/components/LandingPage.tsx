@@ -5,6 +5,7 @@ import { Category } from '../lib/rentman';
 import { InspiredHero } from './InspiredHero';
 import { InspiredCategoryGrid } from './InspiredCategoryGrid';
 import { InspiredNeonBanner } from './InspiredNeonBanner';
+import { DeliveryZoneSection } from './DeliveryZoneSection';
 import { SEOSection } from './SEOSection';
 
 export interface CategoryConfig {
@@ -99,7 +100,10 @@ export function LandingPage({ categories, division, categoryConfigs = [] }: Land
       {/* 1. Brand Inspired Hero */}
       <InspiredHero />
 
-      {/* 2. Main Content Area */}
+      {/* 2. Delivery Zone Information */}
+      <DeliveryZoneSection />
+
+      {/* 3. Main Content Area */}
       <main className="bg-white">
         <div className="container mx-auto px-4 max-w-7xl 4xl:max-w-[90rem] 5xl:max-w-[140rem] py-24">
           <InspiredCategoryGrid 

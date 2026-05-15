@@ -113,12 +113,30 @@ export function Header() {
       setIsSearching(true);
       const { data, error } = await supabase
         .from('products')
-        .select('id, rentman_id, name, image_url, price, category_slug')
+        .select('id, rentman_id, name, image_url, price, category_slug, tags')
         .ilike('name', `%${searchQuery}%`)
-        .limit(6);
+        .limit(20);
 
       if (!error && data) {
-        setSearchResults(data);
+        const role: UserRole = user?.role || 'guest';
+        const rules = URBA_ACCESS_RULES[role];
+        
+        const filtered = data.filter(p => {
+          // Hide if category is forbidden
+          if (rules.hideCats.includes(p.category_slug)) return false;
+          
+          // Hide if any forbidden tag is present
+          if (p.tags?.some((tag: string) => rules.hideTags.includes(tag))) return false;
+          
+          // If required tags are specified, at least one must be present
+          if (rules.requiredTags && rules.requiredTags.length > 0) {
+            return p.tags?.some((tag: string) => rules.requiredTags?.includes(tag));
+          }
+          
+          return true;
+        });
+
+        setSearchResults(filtered.slice(0, 6));
         setIsSearchOpen(true);
       }
       setIsSearching(false);

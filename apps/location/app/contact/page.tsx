@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import { Header } from '../../components/Header';
 import { ContactForm } from '../../components/ContactForm';
+import { DeliveryZoneSection } from '../../components/DeliveryZoneSection';
 import { Footer } from '../../components/Footer';
-import { getUserRole, getUserProfile } from '../../lib/auth';
-import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Contact | Artéfact Urbain Location',
@@ -11,11 +10,6 @@ export const metadata: Metadata = {
 }
 
 export default async function ContactPage() {
-  const profile = await getUserProfile();
-  const role = profile?.role || 'guest';
-  const isConnected = !!profile;
-  const isGuest = !isConnected; // Now isGuest means "not logged in"
-
   return (
     <div className="min-h-screen bg-white flex flex-col font-poppins overflow-hidden">
       <Header />
@@ -97,23 +91,6 @@ export default async function ContactPage() {
               {/* Right Side: Contact Form */}
               <div className="lg:col-span-8">
                 <div className="bg-brand-surface rounded-[3rem] p-8 md:p-16 border border-brand-border shadow-2xl shadow-brand-dark/5 relative overflow-hidden">
-                  {isGuest && (
-                    <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-20 flex items-center justify-center p-8">
-                      <div className="bg-white border border-brand-border rounded-[3rem] p-12 shadow-2xl text-center max-w-sm">
-                        <h3 className="text-2xl font-black uppercase tracking-tighter mb-4">Accès <span className="text-brand-orange">Réservé</span></h3>
-                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-8 leading-relaxed">
-                          Veuillez vous connecter à votre compte pour accéder au formulaire de contact.
-                        </p>
-                        <Link 
-                          href="/login" 
-                          className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-8 py-4 rounded-full hover:bg-brand-orange transition-all shadow-xl block"
-                        >
-                          Se Connecter
-                        </Link>
-                      </div>
-                    </div>
-                  )}
-
                   <div className="mb-10">
                     <h2 className="text-4xl font-black text-brand-dark uppercase tracking-tighter mb-2">
                       Prêt à <span className="text-brand-orange">Collaborer?</span>
@@ -123,13 +100,15 @@ export default async function ContactPage() {
                     </p>
                   </div>
 
-                  <ContactForm isGuest={isGuest} />
+                  <ContactForm />
                 </div>
               </div>
 
             </div>
           </div>
         </section>
+
+        <DeliveryZoneSection height="30vh" />
       </main>
       
       <Footer />

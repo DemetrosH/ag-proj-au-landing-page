@@ -19,6 +19,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const [added, setAdded] = React.useState(false);
   const [quantity, setQuantity] = React.useState(1);
   const [activeImage, setActiveImage] = React.useState(product.image);
+  const [quickAdded, setQuickAdded] = React.useState(false);
 
   const currentInCart = getItemQuantity(product.id);
   const availableSessionStock = product.stock_level !== undefined ? Math.max(0, product.stock_level - currentInCart) : 999;
@@ -42,6 +43,15 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     if (quantity > 0) {
       addToCart(product, quantity);
       setAdded(true);
+    }
+  };
+
+  const handleQuickAdd10 = () => {
+    const newQuantity = Math.min(maxStock, quantity + 10);
+    if (newQuantity !== quantity) {
+      setQuantity(newQuantity);
+      setQuickAdded(true);
+      setTimeout(() => setQuickAdded(false), 500);
     }
   };
 
@@ -243,6 +253,24 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
                       </svg>
                     </button>
+
+                    {product.stock_level !== undefined && product.stock_level > 20 && availableSessionStock >= 10 && (
+                      <div className="flex items-center ml-2 pl-6 border-l border-brand-border">
+                        <button
+                          onClick={handleQuickAdd10}
+                          className={`px-4 py-2 rounded-full border-2 transition-all shadow-sm whitespace-nowrap flex items-center gap-2 ${
+                            quickAdded 
+                              ? 'border-green-500 bg-white text-green-600' 
+                              : 'border-brand-gold bg-white text-brand-gold hover:bg-brand-gold hover:text-white'
+                          }`}
+                          title="Ajouter 10 articles à la soumission"
+                        >
+                          <span className="text-[10px] font-black uppercase tracking-[0.15em]">
+                            +10
+                          </span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex justify-between items-center px-4">
