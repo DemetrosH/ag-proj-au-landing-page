@@ -69,7 +69,7 @@ export function CategoryFilterLayout({ categories, allProducts, categoryConfigs 
               placeholder="Rechercher un produit..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-orange/20 focus:border-brand-orange transition-all font-medium"
+              className="w-full pl-12 pr-4 py-4 3xl:py-6 5xl:py-10 bg-gray-50 border border-gray-100 rounded-2xl 5xl:rounded-[3rem] focus:outline-none focus:ring-2 focus:ring-brand-orange/20 focus:border-brand-orange transition-all font-medium text-base 3xl:text-xl 5xl:text-3xl"
             />
           </div>
 
@@ -81,8 +81,7 @@ export function CategoryFilterLayout({ categories, allProducts, categoryConfigs 
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               <button
-                onClick={() => setSelectedCategory('all')}
-                className={`flex-shrink-0 px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest transition-all ${
+                className={`flex-shrink-0 px-8 py-3 3xl:px-12 3xl:py-5 5xl:px-20 5xl:py-8 rounded-full text-sm 3xl:text-lg 5xl:text-2xl font-bold uppercase tracking-widest transition-all ${
                   selectedCategory === 'all' 
                   ? 'bg-brand-dark text-white shadow-lg' 
                   : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
@@ -95,7 +94,7 @@ export function CategoryFilterLayout({ categories, allProducts, categoryConfigs 
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.slug)}
-                  className={`flex-shrink-0 px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest transition-all ${
+                  className={`flex-shrink-0 px-8 py-3 3xl:px-12 3xl:py-5 5xl:px-20 5xl:py-8 rounded-full text-sm 3xl:text-lg 5xl:text-2xl font-bold uppercase tracking-widest transition-all ${
                     selectedCategory === category.slug 
                     ? 'bg-brand-orange text-white shadow-lg' 
                     : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
@@ -128,7 +127,7 @@ export function CategoryFilterLayout({ categories, allProducts, categoryConfigs 
         {filteredProducts.length > 0 ? (
           <motion.div 
             layout
-            className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8"
+            className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8 3xl:gap-12 5xl:gap-20"
           >
             <AnimatePresence mode='popLayout'>
               {filteredProducts.map((product) => {
@@ -194,7 +193,7 @@ export function CategoryFilterLayout({ categories, allProducts, categoryConfigs 
                       </div>
                     </div>
                     <div className="p-4 sm:p-8">
-                      <h3 className="text-sm sm:text-xl font-bold mb-1 sm:mb-3 group-hover:text-brand-orange transition-colors line-clamp-2 min-h-[2.5rem] sm:min-h-0">{product.name}</h3>
+                      <h3 className="text-sm 3xl:text-xl 5xl:text-3xl font-bold mb-1 sm:mb-3 group-hover:text-brand-orange transition-colors line-clamp-2 min-h-[2.5rem] sm:min-h-0">{product.name}</h3>
                       <div className="flex items-center justify-between pt-2 sm:pt-6 border-t border-brand-border">
                         <span className="text-[8px] sm:text-[10px] font-bold uppercase tracking-widest text-gray-400">Détails</span>
                         <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-brand-orange/10 text-brand-orange flex items-center justify-center transform group-hover:scale-110 transition-transform">

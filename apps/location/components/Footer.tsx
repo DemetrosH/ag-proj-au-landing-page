@@ -86,12 +86,12 @@ export function Footer() {
                   <img src="/logo2-A.png" alt="Logo" className="w-full h-full object-contain" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xl font-black tracking-tighter leading-none">ARTÉFACT</span>
-                  <span className="text-xs font-bold tracking-[0.3em] text-brand-orange">LOCATION</span>
+                  <span className="text-xl 3xl:text-3xl 5xl:text-5xl font-black tracking-tighter leading-none">ARTÉFACT</span>
+                  <span className="text-xs 3xl:text-sm 5xl:text-xl font-bold tracking-[0.3em] text-brand-orange">LOCATION</span>
                 </div>
               </div>
             </Link>
-            <p className="text-gray-400 text-sm leading-relaxed mb-8 max-w-xs">
+            <p className="text-gray-400 text-sm 3xl:text-base 5xl:text-2xl leading-relaxed mb-8 max-w-xs 3xl:max-w-md 5xl:max-w-2xl">
               Votre partenaire technique pour tous vos besoins en location d'équipement événementiel au Québec. Expertise, qualité et service exceptionnel.
             </p>
             <div className="flex gap-4">
@@ -117,7 +117,7 @@ export function Footer() {
           {/* Links Columns */}
           {footerSections.map((section, idx) => (
             <div key={idx} className="lg:col-span-1">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-orange mb-8">
+              <h4 className="text-[10px] 3xl:text-sm 5xl:text-xl font-black uppercase tracking-[0.2em] text-brand-orange mb-8">
                 {section.title}
               </h4>
               <ul className="space-y-4">
@@ -125,9 +125,9 @@ export function Footer() {
                   <li key={i}>
                     <Link 
                       href={link.href} 
-                      className="text-gray-400 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest flex items-center group"
+                      className="text-gray-400 hover:text-white transition-colors text-sm 3xl:text-base 5xl:text-2xl font-bold uppercase tracking-widest flex items-center group"
                     >
-                      <ArrowRight size={14} className="mr-2 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all text-brand-orange" />
+                      <ArrowRight size={14} className="mr-2 5xl:w-6 5xl:h-6 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all text-brand-orange" />
                       {link.label}
                     </Link>
                   </li>
@@ -138,7 +138,7 @@ export function Footer() {
 
           {/* Contact Column */}
           <div className="lg:col-span-1">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-orange mb-8">
+            <h4 className="text-[10px] 3xl:text-sm 5xl:text-xl font-black uppercase tracking-[0.2em] text-brand-orange mb-8">
               Contact
             </h4>
             <ul className="space-y-6">
@@ -146,7 +146,7 @@ export function Footer() {
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
                   <IconMapPin size={16} className="text-brand-orange" />
                 </div>
-                <div className="text-sm text-gray-400 font-medium">
+                <div className="text-sm 3xl:text-base 5xl:text-2xl text-gray-400 font-medium">
                   277 Boul. Bona-Dussault, <br />
                   Saint-Marc-des-Carrières, <br />
                   QC G0A 4B0
@@ -156,7 +156,7 @@ export function Footer() {
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
                   <IconMail size={16} className="text-brand-orange" />
                 </div>
-                <a href="mailto:location@artefacturbain.ca" className="text-sm text-gray-400 font-bold hover:text-white transition-colors">
+                <a href="mailto:location@artefacturbain.ca" className="text-sm 3xl:text-base 5xl:text-2xl text-gray-400 font-bold hover:text-white transition-colors">
                   location@artefacturbain.ca
                 </a>
               </li>
@@ -165,7 +165,7 @@ export function Footer() {
                <Link 
                 href="https://artefacturbain.ca" 
                 target="_blank"
-                className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-colors"
+                className="inline-flex items-center gap-2 text-[10px] 3xl:text-sm 5xl:text-xl font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-colors"
               >
                 Visiter artefacturbain.ca <IconExternalLink size={12} />
               </Link>
@@ -176,10 +176,10 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">
+          <div className="text-[10px] 3xl:text-sm 5xl:text-xl font-black uppercase tracking-[0.3em] text-gray-500">
             © {currentYear} Artéfact Urbain. Tous droits réservés.
           </div>
-          <div className="flex gap-8 uppercase tracking-[0.2em] text-[10px] font-bold text-gray-500">
+          <div className="flex gap-8 uppercase tracking-[0.2em] text-[10px] 3xl:text-sm 5xl:text-xl font-bold text-gray-500">
             <Link href="/confidentialite" className="hover:text-brand-orange transition-colors">Confidentialité</Link>
             <Link href="/conditions" className="hover:text-brand-orange transition-colors">Conditions</Link>
             <Link href="/cookies" className="hover:text-brand-orange transition-colors">Cookies</Link>

@@ -34,7 +34,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link 
       href={`/products/${product.id}`} 
-      className="group flex flex-col w-[160px] md:w-[200px] flex-shrink-0"
+      className="group flex flex-col w-[160px] md:w-[200px] 3xl:w-[300px] 5xl:w-[450px] flex-shrink-0"
     >
       <div className="aspect-[3/4] bg-white border border-gray-100 rounded-2xl overflow-hidden mb-4 relative transition-all duration-500 hover:shadow-2xl hover:shadow-gray-200/50 hover:-translate-y-1">
         
@@ -105,10 +105,10 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
       
       <div className="flex flex-col space-y-1.5 px-1">
-        <h4 className="text-sm font-bold text-gray-900 line-clamp-2 leading-snug group-hover:text-brand-gold transition-colors">
+        <h4 className="text-sm 3xl:text-xl 5xl:text-3xl font-bold text-gray-900 line-clamp-2 leading-snug group-hover:text-brand-gold transition-colors">
           {product.name}
         </h4>
-        <p className="text-xs font-medium text-gray-500">
+        <p className="text-xs 3xl:text-base 5xl:text-2xl font-medium text-gray-500">
           À partir de <span className="text-gray-900 font-black">{product.price > 0 ? `${product.price.toFixed(2)} $` : '---'}</span>
         </p>
       </div>
