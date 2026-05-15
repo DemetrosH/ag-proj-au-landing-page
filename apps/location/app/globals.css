@@ -18,6 +18,25 @@
   --font-poppins: var(--font-poppins), 'Poppins', sans-serif;
 }
 
+/* Proportional scaling for ultra-wide monitors to maintain symmetry and layout */
+@media (min-width: 1921px) {
+  html {
+    font-size: 18px; /* Slight scale up for large monitors */
+  }
+}
+
+@media (min-width: 2560px) {
+  html {
+    font-size: 20px; /* Scale up for 27-28" monitors if needed, or keep 16px if user liked it there */
+  }
+}
+
+@media (min-width: 3840px) {
+  html {
+    font-size: 24px; /* Significant scale up for 32" 4K monitors to fill space proportionately */
+  }
+}
+
 @layer base {
   body {
     @apply bg-white text-gray-900 antialiased selection:bg-brand-orange selection:text-white;
