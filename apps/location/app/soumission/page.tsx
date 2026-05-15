@@ -310,7 +310,7 @@ function SoumissionContent() {
     <div className="min-h-screen bg-white">
       <Header />
       
-      <main className="container mx-auto px-4 py-16">
+      <main className="container mx-auto px-4 2xl:max-w-[1600px] 3xl:max-w-[1800px] py-16">
 
         {items.length === 0 ? (
           <div className="text-center py-32 bg-brand-surface rounded-[3rem] border border-brand-border">

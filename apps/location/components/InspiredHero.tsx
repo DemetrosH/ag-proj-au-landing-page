@@ -132,7 +132,7 @@ export function InspiredHero() {
       {/* Decorative background elements */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-brand-gray/50 -skew-x-6 translate-x-1/4 z-0" />
       
-      <div className="container mx-auto px-4 max-w-7xl relative z-10">
+      <div className="container mx-auto px-4 max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1800px] relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           
           {/* Left Column: Content */}
