@@ -104,7 +104,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
                   </motion.span>
                 ))}
              </div>
-             <p className="text-[10px] text-pink-500 font-bold uppercase tracking-[0.3em] max-w-[120px] mx-auto leading-relaxed opacity-80">
+             <p className="text-[10px] text-pink-500 font-bold uppercase tracking-[0.3em] 3xl:text-sm 5xl:text-xl max-w-[120px] 3xl:max-w-[200px] 5xl:max-w-[300px] mx-auto leading-relaxed opacity-80">
                Illuminez vos événements avec nos créations sur mesure.
              </p>
           </motion.div>
@@ -139,7 +139,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
           href="/categories/enseigne-neon"
           className={`group/link relative overflow-hidden transition-all duration-500 ${
             isVertical 
-              ? 'px-8 py-5 3xl:px-12 3xl:py-8 5xl:px-20 5xl:py-12 text-[11px] 3xl:text-sm 5xl:text-2xl font-black text-white tracking-[0.2em] uppercase border border-pink-500/50 bg-pink-500/10 hover:bg-pink-500 hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] rounded-xl' 
+              ? 'px-8 py-5 3xl:px-12 3xl:py-8 5xl:px-20 5xl:py-12 text-xs 3xl:text-base 5xl:text-2xl font-black text-white tracking-[0.2em] uppercase border border-pink-500/50 bg-pink-500/10 hover:bg-pink-500 hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] rounded-xl' 
               : 'px-12 py-6 3xl:px-18 3xl:py-9 5xl:px-28 5xl:py-14 text-sm 3xl:text-xl 5xl:text-3xl font-black text-white tracking-[0.3em] uppercase border-2 border-pink-500 hover:bg-pink-500 hover:shadow-[0_0_50px_rgba(236,72,153,0.6)] rounded-full'
           }`}
         >

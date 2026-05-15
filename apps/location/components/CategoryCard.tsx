@@ -154,7 +154,7 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
 
       {/* Content */}
       <div className="p-3 sm:p-5 flex flex-col flex-grow bg-gray-50 border-t border-gray-200">
-        <h3 className="text-sm sm:text-xl 3xl:text-3xl 5xl:text-5xl font-black text-brand-dark uppercase tracking-tight mb-4 group-hover:text-brand-orange transition-colors line-clamp-1">
+        <h3 className="text-sm sm:text-lg 3xl:text-2xl 5xl:text-4xl font-black text-brand-dark uppercase tracking-tight mb-4 group-hover:text-brand-orange transition-colors line-clamp-1">
           {displayTitle}
         </h3>
         
