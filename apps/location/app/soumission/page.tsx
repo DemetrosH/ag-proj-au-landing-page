@@ -205,7 +205,8 @@ function SoumissionContent() {
             quantity: item.quantity,
             price: item.price
           })),
-          details: formData.eventDetails
+          details: formData.eventDetails,
+          deliveryMethod: deliveryMethod
         })
       });
 

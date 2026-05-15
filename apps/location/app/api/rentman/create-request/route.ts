@@ -71,7 +71,10 @@ export async function POST(request: Request) {
 
     // Move real location info to remarks
     const realLocationNotes = `
-[LIEU DE LIVRAISON]
+[LOGISTIQUE]
+Type: ${body.deliveryMethod === 'delivery' ? 'Livraison' : 'Ramassage à l\\'entrepôt'}
+
+[LIEU DE L'ÉVÈNEMENT]
 Nom: ${locationName || 'N/A'}
 Adresse: ${body.locationAddress || 'Même que facturation'}
 Ville: ${body.locationCity || ''}
