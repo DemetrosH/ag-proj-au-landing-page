@@ -99,7 +99,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       
-      <main className="container mx-auto px-4 2xl:max-w-[1600px] 3xl:max-w-[1800px] py-16">
+      <main className="container mx-auto px-4 2xl:max-w-[1600px] 3xl:max-w-[2000px] 4xl:max-w-[2400px] 5xl:max-w-[3200px] py-16">
         <ProductDetails product={productWithAccessories} />
       </main>
       <Footer />
