@@ -718,6 +718,13 @@ export async function getProjectRequestById(id: string | number) {
 }
 
 /**
+ * Fetch a single Project by ID to check its status
+ */
+export async function getProjectById(id: string | number) {
+  return await rentmanFetch<any>(`/projects/${id}`);
+}
+
+/**
  * Add equipment to a Project Request.
  * Sets both `quantity` and `quantity_total` so that quantities
  * carry through when converting the request to a project in Rentman.
