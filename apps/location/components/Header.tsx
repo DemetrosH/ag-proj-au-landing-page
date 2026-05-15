@@ -20,6 +20,9 @@ export function Header() {
   const [categories, setCategories] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
   
+  const [localStartDate, setLocalStartDate] = useState(startDate || '');
+  const [localEndDate, setLocalEndDate] = useState(endDate || '');
+  
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -150,12 +153,12 @@ export function Header() {
 
   const tomorrowStr = getTomorrowStr();
 
-  // If start date exists, max end date is start date + 6 days
-  let maxEndDateStr = '';
-  if (startDate) {
-    const d = new Date(startDate + 'T00:00:00');
+  // If local start date exists, max end date is start date + 6 days
+  let maxLocalEndDateStr = '';
+  if (localStartDate) {
+    const d = new Date(localStartDate + 'T00:00:00');
     d.setDate(d.getDate() + 6);
-    maxEndDateStr = getFormattedDateStr(d) || '';
+    maxLocalEndDateStr = getFormattedDateStr(d) || '';
   }
 
   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -165,7 +168,7 @@ export function Header() {
     }
     
     // Check if current end date is now invalid
-    let newEnd = endDate;
+    let newEnd = localEndDate;
     if (newEnd) {
       const s = new Date(newStart);
       const eDate = new Date(newEnd);
@@ -176,20 +179,21 @@ export function Header() {
         newEnd = newStart; // Reset end date to start date if out of bounds
       }
     }
-    setDates(newStart, newEnd);
+    setLocalStartDate(newStart);
+    setLocalEndDate(newEnd);
   };
 
   const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let newEnd = e.target.value;
-    const minEnd = startDate || tomorrowStr || '';
+    const minEnd = localStartDate || tomorrowStr || '';
     
     if (newEnd < minEnd) {
       newEnd = minEnd;
-    } else if (maxEndDateStr && newEnd > maxEndDateStr) {
-      newEnd = maxEndDateStr;
+    } else if (maxLocalEndDateStr && newEnd > maxLocalEndDateStr) {
+      newEnd = maxLocalEndDateStr;
     }
     
-    setDates(startDate, newEnd);
+    setLocalEndDate(newEnd);
   };
 
   return (
@@ -293,6 +297,8 @@ export function Header() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => {
+                setLocalStartDate(startDate || '');
+                setLocalEndDate(endDate || '');
                 setIsDatePickerOpen(!isDatePickerOpen);
                 if (!isDatePickerOpen) setIsMobileMenuOpen(false);
               }}
@@ -713,7 +719,7 @@ export function Header() {
                 <input 
                   type="date" 
                   min={tomorrowStr}
-                  value={startDate || ''} 
+                  value={localStartDate || ''} 
                   onChange={handleStartDateChange}
                   onKeyDown={(e) => e.preventDefault()}
                   onClick={(e) => (e.target as any).showPicker?.()}
@@ -724,20 +730,23 @@ export function Header() {
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Fin (Max 7 jours)</label>
                 <input 
                   type="date" 
-                  min={startDate || tomorrowStr}
-                  max={maxEndDateStr || undefined}
-                  value={endDate || ''} 
+                  min={localStartDate || tomorrowStr}
+                  max={maxLocalEndDateStr || undefined}
+                  value={localEndDate || ''} 
                   onChange={handleEndDateChange}
                   onKeyDown={(e) => e.preventDefault()}
                   onClick={(e) => (e.target as any).showPicker?.()}
                   className="w-full border border-brand-border rounded-xl p-5 text-lg focus:border-brand-gold focus:ring-0 cursor-pointer bg-brand-surface"
-                  disabled={!startDate}
+                  disabled={!localStartDate}
                 />
               </div>
               <button 
-                onClick={() => setIsDatePickerOpen(false)}
+                onClick={() => {
+                  setDates(localStartDate, localEndDate);
+                  setIsDatePickerOpen(false);
+                }}
                 className="bg-brand-gold text-white font-black uppercase tracking-widest text-xs px-8 py-4 rounded-xl hover:bg-brand-gold-hover transition-all disabled:opacity-50 mt-4 md:mt-0 shadow-lg shadow-brand-gold/20"
-                disabled={!startDate || !endDate}
+                disabled={!localStartDate || !localEndDate}
               >
                 Confirmer
               </button>
