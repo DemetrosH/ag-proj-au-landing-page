@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getProjectRequestById, getProjectById } from '../../../../lib/rentman';
+import { getProjectRequestById, getProjectById, rentmanFetch } from '../../../../lib/rentman';
 import { createClient } from '../../../../lib/supabase/server';
 
 export async function POST(request: Request) {
@@ -50,9 +50,37 @@ export async function POST(request: Request) {
                   const projectData = await getProjectById(projectId);
                   if (projectData) {
                     const pData = projectData.data || projectData;
-                    if (pData.status) {
+                    if (pData.status !== undefined && pData.status !== null) {
                       projectStatusRaw = pData.status;
                       rStatusRaw = pData.status;
+                    } else {
+                      // Rentman API v4 sometimes omits status from the project object itself.
+                      // We must fetch the subprojects to get the real status.
+                      try {
+                        const subs: any = await rentmanFetch(`/projects/${projectId}/subprojects`);
+                        const subData = subs.data || subs;
+                        if (Array.isArray(subData) && subData.length > 0) {
+                          const firstSub = subData[0];
+                          if (firstSub.status) {
+                            // firstSub.status is often a string like "/statuses/3"
+                            const statusIdStr = typeof firstSub.status === 'string' ? firstSub.status.split('/').pop() : firstSub.status;
+                            const statusId = parseInt(statusIdStr, 10);
+                            
+                            // 2: Annulé (Denied)
+                            // 3,4,5,6: Confirmé, Prêt, Sur site, Retour (Confirmed)
+                            // 1,7,8: Option, Demande, Concept (Pending)
+                            let mappedSubStatus = 'pending';
+                            if (statusId === 2) mappedSubStatus = 'denied';
+                            else if ([3, 4, 5, 6].includes(statusId)) mappedSubStatus = 'confirmed';
+                            else if ([1, 7, 8].includes(statusId)) mappedSubStatus = 'pending';
+
+                            projectStatusRaw = { id: statusId, raw: firstSub.status, mapped: mappedSubStatus };
+                            rStatusRaw = mappedSubStatus; // Feed this clean string into the downstream logic
+                          }
+                        }
+                      } catch (subErr) {
+                         console.error(`[Sync Warning] Failed to fetch subprojects for project ${projectId}:`, subErr);
+                      }
                     }
                   }
                 } catch (pErr) {
@@ -70,11 +98,11 @@ export async function POST(request: Request) {
               
               // Priority mapping
               // 1. Denied/Cancelled (High priority)
-              if ([7, 8, 'cancelled', 'canceled', 'annulé', 'annulée', 'denied', 'refused'].includes(s)) {
+              if ([2, 'denied', 'cancelled', 'canceled', 'annulé', 'annulée', 'refused'].includes(s)) {
                 status = 'denied';
               } 
               // 2. Pending/Accepted/Converted (Accepted means project created but not yet confirmed)
-              else if ([1, 2, 'concept', 'option', 'demande', 'inquiry', 'open', 'draft', 'pending', 'accepted', 'converted'].includes(s)) {
+              else if ([1, 7, 8, 'pending', 'concept', 'option', 'demande', 'inquiry', 'open', 'draft', 'accepted', 'converted'].includes(s)) {
                 status = 'pending';
               } 
               // 3. Confirmed/Active statuses
