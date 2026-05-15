@@ -82,12 +82,10 @@ export function Footer() {
           <div className="lg:col-span-1">
             <Link href="/" className="inline-block mb-8 group">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center p-2 border-2 border-brand-orange transform group-hover:rotate-6 transition-transform">
-                  <img src="/logo2-A.png" alt="Logo" className="w-full h-full object-contain" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xl 5xl:text-5xl font-black tracking-tighter leading-none">ARTÉFACT</span>
-                  <span className="text-xs 5xl:text-xl font-bold tracking-[0.3em] text-brand-orange">LOCATION</span>
+                <img src="/logo2-A.png" alt="Artéfact Urbain" className="h-12 w-auto object-contain" />
+                <div className="flex flex-col leading-none">
+                  <span className="text-xl 5xl:text-5xl font-black text-white uppercase tracking-tighter">Location</span>
+                  <span className="text-[8px] 5xl:text-xl font-black text-brand-orange uppercase tracking-[0.2em]">Par Artéfact Urbain</span>
                 </div>
               </div>
             </Link>
