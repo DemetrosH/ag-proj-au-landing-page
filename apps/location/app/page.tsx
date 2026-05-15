@@ -6,8 +6,8 @@ import { Footer } from '../components/Footer';
 
 import { getUserRole } from '../lib/auth';
 
-// Cache the page for 1 hour — Rentman API data doesn't change frequently
-export const revalidate = 3600;
+// Force dynamic rendering as we use cookies for user roles
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const role = await getUserRole();

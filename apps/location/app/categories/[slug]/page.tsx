@@ -40,8 +40,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-// Cache category pages for 1 hour
-export const revalidate = 3600;
+// Force dynamic rendering as we use cookies for user roles
+export const dynamic = 'force-dynamic';
 
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

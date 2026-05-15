@@ -1,5 +1,7 @@
 import { getEquipment } from '../../lib/rentman';
 
+export const dynamic = 'force-dynamic';
+
 export default async function TestApiPage() {
   let equipment: any = null;
   let error: string | null = null;
