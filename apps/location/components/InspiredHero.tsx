@@ -143,12 +143,12 @@ export function InspiredHero() {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="relative z-20"
             >
-              <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-brand-dark uppercase tracking-tight md:tracking-tighter leading-[1.1] md:leading-[0.9] mb-8 text-balance">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl 3xl:text-8xl 5xl:text-[10rem] font-black text-brand-dark uppercase tracking-tight md:tracking-tighter leading-[1.1] md:leading-[0.9] mb-8 text-balance">
                 Votre Expertise, <br />
                 Notre <span className="text-brand-orange">Équipement</span>
               </h1>
               
-              <p className="text-lg md:text-xl text-gray-600 mb-10 leading-relaxed font-medium">
+              <p className="text-lg md:text-xl 3xl:text-2xl 5xl:text-4xl text-gray-600 mb-10 leading-relaxed font-medium">
                 Artéfact Urbain est votre partenaire technique pour tous vos besoins en location d'équipement événementiel. Nous assurons la réussite visuelle et logistique de vos projets.
               </p>
               
@@ -180,10 +180,10 @@ export function InspiredHero() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-5">
-                <Link href="/categories" className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-10 py-5 rounded-full hover:bg-brand-orange transition-all shadow-xl shadow-brand-dark/10 text-center text-xs">
+                <Link href="/categories" className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-10 py-5 3xl:px-14 3xl:py-7 5xl:px-20 5xl:py-10 rounded-full hover:bg-brand-orange transition-all shadow-xl shadow-brand-dark/10 text-center text-xs 3xl:text-base 5xl:text-2xl">
                   Parcourir l'inventaire
                 </Link>
-                <Link href="/contact" className="bg-white border-2 border-brand-dark text-brand-dark font-black uppercase tracking-[0.2em] px-10 py-5 rounded-full hover:bg-brand-dark hover:text-white transition-all text-center text-xs">
+                <Link href="/contact" className="bg-white border-2 border-brand-dark text-brand-dark font-black uppercase tracking-[0.2em] px-10 py-5 3xl:px-14 3xl:py-7 5xl:px-20 5xl:py-10 rounded-full hover:bg-brand-dark hover:text-white transition-all text-center text-xs 3xl:text-base 5xl:text-2xl">
                   Demander un devis
                 </Link>
               </div>
@@ -196,7 +196,7 @@ export function InspiredHero() {
               initial={{ opacity: 0, scale: 0.9, rotate: 2 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className="relative aspect-square md:aspect-video lg:aspect-[4/5] w-full max-w-lg mx-auto overflow-visible"
+              className="relative aspect-square md:aspect-video lg:aspect-[4/5] w-full max-w-lg 3xl:max-w-xl 5xl:max-w-3xl mx-auto overflow-visible"
             >
               {/* Main Gradient Card - Animated Liquid Effect */}
               <motion.div 
@@ -266,7 +266,7 @@ export function InspiredHero() {
                       repeat: Infinity, 
                       ease: "easeInOut" 
                     }}
-                    className="w-full max-w-[280px] sm:max-w-xs bg-white rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.12)] p-6 border border-white/50 relative group"
+                    className="w-full max-w-[280px] sm:max-w-xs 3xl:max-w-[22rem] 5xl:max-w-[32rem] bg-white rounded-[2.5rem] 5xl:rounded-[4rem] shadow-[0_30px_60px_rgba(0,0,0,0.12)] p-6 5xl:p-12 border border-white/50 relative group"
                   >
                     {/* Status Badge */}
                     {heroProducts.length > 0 && (

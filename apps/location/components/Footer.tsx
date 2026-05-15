@@ -86,12 +86,12 @@ export function Footer() {
                   <img src="/logo2-A.png" alt="Logo" className="w-full h-full object-contain" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xl font-black tracking-tighter leading-none">ARTÉFACT</span>
-                  <span className="text-xs font-bold tracking-[0.3em] text-brand-orange">LOCATION</span>
+                  <span className="text-xl 3xl:text-3xl 5xl:text-5xl font-black tracking-tighter leading-none">ARTÉFACT</span>
+                  <span className="text-xs 3xl:text-sm 5xl:text-xl font-bold tracking-[0.3em] text-brand-orange">LOCATION</span>
                 </div>
               </div>
             </Link>
-            <p className="text-gray-400 text-sm leading-relaxed mb-8 max-w-xs">
+            <p className="text-gray-400 text-sm 3xl:text-base 5xl:text-2xl leading-relaxed mb-8 max-w-xs 3xl:max-w-md 5xl:max-w-2xl">
               Votre partenaire technique pour tous vos besoins en location d'équipement événementiel au Québec. Expertise, qualité et service exceptionnel.
             </p>
             <div className="flex gap-4">
@@ -117,7 +117,7 @@ export function Footer() {
           {/* Links Columns */}
           {footerSections.map((section, idx) => (
             <div key={idx} className="lg:col-span-1">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-orange mb-8">
+              <h4 className="text-[10px] 3xl:text-sm 5xl:text-xl font-black uppercase tracking-[0.2em] text-brand-orange mb-8">
                 {section.title}
               </h4>
               <ul className="space-y-4">
