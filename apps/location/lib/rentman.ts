@@ -417,7 +417,8 @@ export async function getFilesLookup(): Promise<FilesLookup> {
       }
 
       files.forEach(file => {
-        if (file.url) {
+        // Only include files that are marked for the webshop
+        if (file.url && file.in_webshop) {
           fileIdToUrl[String(file.id)] = file.url;
           
           // If this file is linked to an equipment item and is an image, index it by item ID.

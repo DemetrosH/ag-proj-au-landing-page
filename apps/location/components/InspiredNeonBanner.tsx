@@ -154,7 +154,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
 
   return (
     <section className="py-12 bg-white">
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="container mx-auto px-4 max-w-7xl 3xl:max-w-[100rem] 4xl:max-w-[120rem] 5xl:max-w-[140rem]">
         {content}
       </div>
     </section>

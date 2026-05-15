@@ -59,7 +59,7 @@ export function CategoryFilterLayout({ categories, allProducts, categoryConfigs 
     <div className="flex flex-col space-y-12">
       {/* Search and Filters Header */}
       <div className="sticky top-20 z-40 bg-white/80 backdrop-blur-md pt-4 pb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="max-w-7xl mx-auto space-y-6">
+        <div className="max-w-7xl 3xl:max-w-[100rem] 4xl:max-w-[120rem] 5xl:max-w-[140rem] mx-auto space-y-6">
           
           {/* Search Bar */}
           <div className="relative max-w-md mx-auto sm:mx-0">

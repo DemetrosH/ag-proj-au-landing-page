@@ -33,7 +33,7 @@
 
 @media (min-width: 3840px) {
   html {
-    font-size: 24px; /* Significant scale up for 32" 4K monitors to fill space proportionately */
+    font-size: 26px; /* Significant scale up for 32" 4K monitors to fill space proportionately */
   }
 }
 
