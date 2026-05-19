@@ -22,7 +22,11 @@ export default async function CategoriesPage() {
       ...config,
       featuredProducts: config.featuredProducts.map((fp: any) => {
         if (!fp.imageUrl && fp.slug) {
-          const rentmanProduct = allProducts.find((p: any) => p.slug === fp.slug || p.id === fp.slug);
+          const rentmanProduct = allProducts.find((p: any) => 
+            p.slug === fp.slug || 
+            p.id === fp.slug ||
+            (fp.name && p.name.toLowerCase().trim() === fp.name.toLowerCase().trim())
+          );
           if (rentmanProduct?.image) {
             fp.imageUrl = rentmanProduct.image;
           }

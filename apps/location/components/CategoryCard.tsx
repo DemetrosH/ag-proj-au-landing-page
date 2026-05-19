@@ -60,7 +60,11 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
     config.featuredProducts.forEach(fp => {
       if (displayProducts.length >= 4) return;
       
-      const rentmanProduct = availableProducts.find(p => p.slug === String(fp.slug) || String(p.id) === String(fp.slug));
+      const rentmanProduct = availableProducts.find(p => 
+        p.slug === String(fp.slug) || 
+        String(p.id) === String(fp.slug) ||
+        (fp.name && p.name.toLowerCase().trim() === fp.name.toLowerCase().trim())
+      );
       const imageUrl = fp.imageUrl || rentmanProduct?.image;
       
       if (imageUrl) {

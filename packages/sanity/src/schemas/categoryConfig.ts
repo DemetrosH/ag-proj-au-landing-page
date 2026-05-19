@@ -54,6 +54,13 @@ export default defineType({
       title: "Ordre d'affichage",
       type: "number",
     }),
+    defineField({
+      name: "orderedProducts",
+      title: "Ordre personnalisé des produits",
+      description: "Ajoutez les identifiants / slugs Rentman dans l'ordre souhaité pour l'affichage dans la page catégorie. Les produits non spécifiés apparaîtront après.",
+      type: "array",
+      of: [{ type: "string" }],
+    }),
   ],
   preview: {
     select: {

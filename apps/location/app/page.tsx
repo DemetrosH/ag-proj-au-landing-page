@@ -25,7 +25,11 @@ export default async function Home() {
       ...config,
       featuredProducts: config.featuredProducts.map((fp: any) => {
         if (!fp.imageUrl && fp.slug) {
-          const rentmanProduct = allEquipment.find((p: any) => String(p.slug) === String(fp.slug) || String(p.id) === String(fp.slug));
+          const rentmanProduct = allEquipment.find((p: any) => 
+            String(p.slug) === String(fp.slug) || 
+            String(p.id) === String(fp.slug) ||
+            (fp.name && p.name.toLowerCase().trim() === fp.name.toLowerCase().trim())
+          );
           if (rentmanProduct?.image) {
             fp.imageUrl = rentmanProduct.image;
           }

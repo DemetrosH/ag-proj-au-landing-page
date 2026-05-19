@@ -1,4 +1,5 @@
 import { getCategories, getProductsForCategory } from '../../../lib/rentman';
+import { getCategoryConfigs } from '../../../lib/sanity';
 import { Header } from '../../../components/Header';
 import Link from 'next/link';
 import { getUserRole } from '../../../lib/auth';
@@ -72,10 +73,24 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
     return <div>Catégorie non trouvée</div>;
   }
 
-  const products = await getProductsForCategory(slug, role);
+  const [products, categoryConfigs] = await Promise.all([
+    getProductsForCategory(slug, role),
+    getCategoryConfigs(role)
+  ]);
 
-  // Sort products: Price Descending, then those without price at the end
+  const config = categoryConfigs?.find(c => c.rentmanId === slug || c.rentmanId === category.id);
+
+  // Sort products: orderedProducts first, then price descending fallback
   products.sort((a, b) => {
+    if (config?.orderedProducts && config.orderedProducts.length > 0) {
+      const indexA = config.orderedProducts.indexOf(a.slug);
+      const indexB = config.orderedProducts.indexOf(b.slug);
+      
+      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+    }
+
     const priceA = a.price || 0;
     const priceB = b.price || 0;
     
