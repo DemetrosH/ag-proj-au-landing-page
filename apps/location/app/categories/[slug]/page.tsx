@@ -59,9 +59,6 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
             <Link href="/login" className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-8 py-4 rounded-full hover:bg-brand-orange transition-all shadow-xl">
               Connexion Pro
             </Link>
-            <Link href="/devenir-partenaire" className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-brand-orange transition-colors">
-              Demander un accès
-            </Link>
           </div>
         </div>
       </div>

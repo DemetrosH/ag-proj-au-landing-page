@@ -179,22 +179,6 @@ export default function LoginPage() {
                 </Link>
               </div>
 
-              <div className="w-8 h-px bg-brand-border"></div>
-
-              <div className="flex flex-col space-y-3">
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">
-                  Professionnel de l'événementiel ?
-                </p>
-                <Link 
-                  href="/devenir-partenaire"
-                  className="text-[11px] font-bold uppercase tracking-[0.1em] text-brand-gold hover:text-brand-dark transition-colors inline-flex items-center justify-center space-x-2"
-                >
-                  <span>Demander un accès partenaire</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </Link>
-              </div>
             </div>
           </div>
         </div>

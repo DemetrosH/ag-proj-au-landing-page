@@ -519,12 +519,6 @@ function SoumissionContent() {
                           >
                             Connexion Pro
                           </Link>
-                          <Link 
-                            href="/devenir-partenaire" 
-                            className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-brand-orange transition-colors"
-                          >
-                            Demander un accès
-                          </Link>
                         </div>
                       </div>
                     </div>

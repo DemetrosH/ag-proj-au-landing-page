@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
+import { notFound } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Header } from '../../components/Header';
 import { Footer } from '../../components/Footer';
 import { Check, Send, Shield, Zap, TrendingUp, ArrowRight } from 'lucide-react';
 
 export default function DevenirPartenaire() {
+  notFound();
   const [formData, setFormData] = useState({
     name: '',
     company: '',
