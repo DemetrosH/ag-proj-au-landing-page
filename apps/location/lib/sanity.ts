@@ -46,7 +46,10 @@ export async function getCategoryConfigs(role: UserRole = 'guest') {
       "imageUrl": image.asset->url
     },
     order,
-    orderedProducts
+    orderedProducts[] {
+      name,
+      slug
+    }
   }`);
 }
 

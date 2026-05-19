@@ -83,8 +83,9 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   // Sort products: orderedProducts first, then price descending fallback
   products.sort((a, b) => {
     if (config?.orderedProducts && config.orderedProducts.length > 0) {
-      const indexA = config.orderedProducts.indexOf(a.slug);
-      const indexB = config.orderedProducts.indexOf(b.slug);
+      const orderedSlugs = config.orderedProducts.map((op: any) => op.slug);
+      const indexA = orderedSlugs.indexOf(a.slug);
+      const indexB = orderedSlugs.indexOf(b.slug);
       
       if (indexA !== -1 && indexB !== -1) return indexA - indexB;
       if (indexA !== -1) return -1;

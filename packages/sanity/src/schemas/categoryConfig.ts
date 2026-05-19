@@ -57,9 +57,35 @@ export default defineType({
     defineField({
       name: "orderedProducts",
       title: "Ordre personnalisé des produits",
-      description: "Ajoutez les identifiants / slugs Rentman dans l'ordre souhaité pour l'affichage dans la page catégorie. Les produits non spécifiés apparaîtront après.",
+      description: "Réorganisez les produits ci-dessous pour modifier leur ordre d'affichage sur le site. Les produits non listés apparaîtront après.",
       type: "array",
-      of: [{ type: "string" }],
+      of: [
+        {
+          type: "object",
+          name: "orderedProduct",
+          title: "Produit ordonné",
+          fields: [
+            {
+              name: "name",
+              title: "Nom du produit",
+              type: "string",
+              readOnly: true,
+            },
+            {
+              name: "slug",
+              title: "Identifiant / Slug Rentman",
+              type: "string",
+              readOnly: true,
+            }
+          ],
+          preview: {
+            select: {
+              title: "name",
+              subtitle: "slug"
+            }
+          }
+        }
+      ]
     }),
   ],
   preview: {
