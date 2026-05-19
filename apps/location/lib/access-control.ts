@@ -26,12 +26,12 @@ export const URBA_ACCESS_RULES: Record<UserRole, AccessRules> = {
   locationb: {
     hideCats: ['vehicule', 'divers'],
     hideTags: ['location c'],
-    requiredTags: ['location b'],
+    requiredTags: ['location a', 'location b'],
   },
   locationc: {
     hideCats: [],
-    hideTags: ['location b'],
-    requiredTags: ['location c'],
+    hideTags: [],
+    requiredTags: ['location a', 'location b', 'location c'],
   },
   admin: {
     hideCats: [],
