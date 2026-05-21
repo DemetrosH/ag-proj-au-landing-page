@@ -33,8 +33,12 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
   // 1. Content Overrides
   const displayTitle = config?.title || category.name;
 
-  // 2. Featured Products Selection: Sort by price descending and prioritize products with images
-  const sortedByPrice = [...(category.products || [])].sort((a: any, b: any) => {
+  // 2. Featured Products Selection: Try Sanity's manual grid items first, fallback to most expensive
+  const displayProducts: any[] = [];
+  const availableProducts = [...(category.products || [])];
+
+  // Sort by price descending as the premium fallback ranking
+  const sortedByPrice = [...availableProducts].sort((a: any, b: any) => {
     const priceA = a.price || 0;
     const priceB = b.price || 0;
     
@@ -44,10 +48,43 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
     return priceB - priceA;
   });
 
-  // Filter for products that actually have an image
-  const displayProducts = sortedByPrice.filter(p => p.image).slice(0, 4);
+  // A. Use Sanity Studio featured products first (allows manual drag-and-drop overrides)
+  if (config?.featuredProducts && config.featuredProducts.length > 0) {
+    config.featuredProducts.forEach(fp => {
+      if (displayProducts.length >= 4) return;
+      
+      const rentmanProduct = availableProducts.find(p => 
+        p.slug === String(fp.slug) || 
+        String(p.id) === String(fp.slug) ||
+        (fp.name && p.name.toLowerCase().trim() === fp.name.toLowerCase().trim())
+      );
+      const imageUrl = fp.imageUrl || rentmanProduct?.image;
+      
+      if (imageUrl) {
+        displayProducts.push({
+          slug: fp.slug,
+          name: fp.name,
+          image: imageUrl
+        });
 
-  // Fallback: If we have fewer than 4 products with images, fill the remaining slots with image-less products
+        // Remove from sorted fallback list to avoid duplicates
+        if (rentmanProduct) {
+          const idx = sortedByPrice.indexOf(rentmanProduct);
+          if (idx > -1) sortedByPrice.splice(idx, 1);
+        }
+      }
+    });
+  }
+
+  // B. Fill remaining spots with the most expensive products with images
+  if (displayProducts.length < 4) {
+    const withImages = sortedByPrice.filter(p => p.image);
+    while (displayProducts.length < 4 && withImages.length > 0) {
+      displayProducts.push(withImages.shift());
+    }
+  }
+
+  // C. Absolute fallback: fill remaining slots with any products
   if (displayProducts.length < 4) {
     const withoutImages = sortedByPrice.filter(p => !p.image);
     while (displayProducts.length < 4 && withoutImages.length > 0) {
