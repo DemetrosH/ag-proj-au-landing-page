@@ -365,11 +365,9 @@ export function InspiredHero() {
                   }}
                   whileHover={{ scale: 1.1, rotate: -5 }}
                   transition={{ 
-                    animate: {
-                      duration: 5, 
-                      repeat: Infinity, 
-                      ease: "easeInOut" 
-                    }
+                    duration: 5, 
+                    repeat: Infinity, 
+                    ease: "easeInOut" 
                   }}
                   className="hidden lg:flex absolute -bottom-6 -left-6 w-24 h-24 bg-white rounded-3xl z-30 shadow-2xl items-center justify-center p-4 border-4 border-brand-orange cursor-pointer"
                 >

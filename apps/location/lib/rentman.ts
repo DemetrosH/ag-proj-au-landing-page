@@ -48,6 +48,8 @@ export interface Product {
   canonical_url?: string;
   no_index?: boolean;
   og_image?: string;
+  product_sku?: string;
+  product_brand?: string;
 }
 
 export interface Category {
@@ -137,7 +139,7 @@ export async function getCategories(providedSupabase?: any) {
   return wcData.categories
     .filter(cat => cat.name !== 'Uncategorized' && cat.name !== 'Populaire' && cat.name !== 'Produits vedette')
     .map(cat => {
-      const dbCat = dbCats?.find(c => c.slug === cat.slug);
+      const dbCat = dbCats?.find((c: any) => c.slug === cat.slug);
       return {
         id: String(cat.id),
         name: cat.name.replace('&amp;', '&'),
@@ -245,6 +247,7 @@ async function getProductsFromDb(options: {
         price: p.price,
         description: p.description,
         image: p.image_url,
+        images: p.image_urls || [p.image_url].filter(Boolean),
         features: (p.tags || []).filter((tag: string) => !['location a', 'location b', 'location c', 'location-a', 'location-b', 'location-c', 'populaire', 'produits-vedette', 'uncategorized', 'has-accessories'].includes(tag.toLowerCase())),
         isFeatured: p.is_featured,
         stock_level: p.stock_level,
@@ -299,7 +302,7 @@ export async function getHomeCategories(role: UserRole = 'guest'): Promise<Categ
         .slice(0, 4);
 
       let name = cat.name;
-      if (cat.slug === 'rallongesmultiprises') name = 'Équipements électriques';
+      if (cat.slug === 'rallongesmultiprises') name = 'Rallonges & multiprises';
       if (cat.slug === 'bloc-dalimentation-batteries') name = "Blocs d'alimentation & batteries";
       if (cat.slug === 'poids-support') name = "Poids & Supports";
 
@@ -362,7 +365,7 @@ export async function getHomeCategories(role: UserRole = 'guest'): Promise<Categ
         .slice(0, 4);
 
       let name = cat.name;
-      if (cat.slug === 'rallongesmultiprises') name = 'Équipements électriques';
+      if (cat.slug === 'rallongesmultiprises') name = 'Rallonges & multiprises';
       if (cat.slug === 'bloc-dalimentation-batteries') name = "Blocs d'alimentation & batteries";
       if (cat.slug === 'poids-support') name = "Poids & Supports";
 
@@ -473,19 +476,19 @@ export function mapRentmanToProduct(item: any, categoryId: string, filesLookup: 
       imageUrl = imgStr;
     } else {
       const fileId = imgStr.split('/').pop();
-      imageUrl = fileId ? filesLookup.fileIdToUrl[fileId] : '';
+      imageUrl = (fileId ? filesLookup.fileIdToUrl[fileId] : '') || '';
     }
   }
 
   // Strategy 2: Fallback to linked files if primary is missing
   if (!imageUrl && item.id && filesLookup.itemIdToUrl[String(item.id)]) {
-    imageUrl = filesLookup.itemIdToUrl[String(item.id)];
+    imageUrl = filesLookup.itemIdToUrl[String(item.id)] || '';
   }
 
   // Strategy 3: Collect all images
   let images: string[] = [];
   if (item.id && filesLookup.itemIdToUrls[String(item.id)]) {
-    images = [...filesLookup.itemIdToUrls[String(item.id)]];
+    images = [...(filesLookup.itemIdToUrls[String(item.id)] || [])];
   }
   
   // Ensure primary image is first in the list if it's not already there
@@ -865,7 +868,7 @@ export async function getOrCreateContactAndPerson(params: {
         if (existingPerson) {
           personId = existingPerson.id;
         } else {
-          const newPerson = await createContactPerson(contactId, {
+          const newPerson = await createContactPerson(contactId!, {
             firstname: params.firstName,
             lastname: params.lastName,
             email: params.email,

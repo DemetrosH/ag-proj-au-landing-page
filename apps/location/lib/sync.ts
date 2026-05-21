@@ -134,19 +134,19 @@ export async function syncRentmanToSupabase() {
             imageUrl = imgStr;
           } else {
             const fileId = imgStr.split('/').pop();
-            imageUrl = fileId ? filesLookup.fileIdToUrl[fileId] : '';
+            imageUrl = (fileId ? filesLookup.fileIdToUrl[fileId] : '') || '';
           }
         }
 
         // Fallback to linked files if primary is missing
         if (!imageUrl && item.id && filesLookup.itemIdToUrl[String(item.id)]) {
-          imageUrl = filesLookup.itemIdToUrl[String(item.id)];
+          imageUrl = filesLookup.itemIdToUrl[String(item.id)] || '';
         }
 
         // Collect all images
         let images: string[] = [];
         if (item.id && filesLookup.itemIdToUrls[String(item.id)]) {
-          images = [...filesLookup.itemIdToUrls[String(item.id)]];
+          images = [...(filesLookup.itemIdToUrls[String(item.id)] || [])];
         }
         
         // Ensure primary image is first
@@ -164,7 +164,7 @@ export async function syncRentmanToSupabase() {
 
         // Final Image fallback: keep existing if new is empty
         if (!imageUrl && existingImages[String(item.id)]) {
-          imageUrl = existingImages[String(item.id)];
+          imageUrl = existingImages[String(item.id)] || '';
         }
 
         return {

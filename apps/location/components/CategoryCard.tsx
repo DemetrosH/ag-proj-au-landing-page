@@ -28,6 +28,8 @@ const featuredProductKeywords: Record<string, string[]> = {
   "mobilier": ["table", "chaise", "tabouret", "mange"],
   "ameublement": ["table", "chaise", "tabouret", "mange"],
   "equipements electriques": ["passe", "rallonge", "panneau", "generatrice"],
+  "rallonges & multiprises": ["passe", "rallonge", "panneau", "generatrice"],
+  "rallonges&multiprises": ["passe", "rallonge", "panneau", "generatrice"],
   "sonorisation": ["qsc", "micro", "pied", "console"],
   "enseigne neon": ["tatou", "bonbon", "neon", "enseigne"],
   "video": ["tv", "ecran", "trepied", "projecteur"],
@@ -158,7 +160,7 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
 
       {/* Content */}
       <div className="p-3 sm:p-5 flex flex-col flex-grow bg-gray-50 border-t border-gray-200">
-        <h3 className="text-xs sm:text-base 5xl:text-3xl font-black text-brand-dark uppercase tracking-tight mb-4 group-hover:text-brand-orange transition-colors line-clamp-1">
+        <h3 className="text-xs sm:text-base 5xl:text-3xl font-black text-brand-dark uppercase tracking-tight mb-4 line-clamp-1">
           {displayTitle}
         </h3>
         

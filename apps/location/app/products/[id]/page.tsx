@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     openGraph: {
       title,
       description,
-      images: [image],
+      images: [image].filter(Boolean),
       type: 'website',
     },
   };

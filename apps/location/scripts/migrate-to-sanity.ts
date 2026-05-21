@@ -18,6 +18,8 @@ const featuredProductKeywords: Record<string, string[]> = {
   "mobilier": ["table", "chaise", "tabouret", "mange"],
   "ameublement": ["table", "chaise", "tabouret", "mange"],
   "equipements electriques": ["passe", "rallonge", "panneau", "generatrice"],
+  "rallonges & multiprises": ["passe", "rallonge", "panneau", "generatrice"],
+  "rallongesmultiprises": ["passe", "rallonge", "panneau", "generatrice"],
   "sonorisation": ["qsc", "micro", "pied", "console"],
   "enseigne neon": ["tatou", "bonbon", "neon", "enseigne"],
   "video": ["tv", "ecran", "trepied", "projecteur"],
@@ -37,6 +39,8 @@ const categoryOrder = [
   "ameublement",
   "mobilier",
   "equipements electriques",
+  "rallonges & multiprises",
+  "rallongesmultiprises",
   "sonorisation",
   "enseigne neon",
   "video",
@@ -59,7 +63,7 @@ async function migrate() {
   }
 
   try {
-    const categories = await getHomeCategories();
+    const categories = await getHomeCategories('admin');
     console.log(`📦 Found ${categories.length} categories in Rentman.`);
 
     for (const category of categories) {
@@ -89,7 +93,7 @@ async function migrate() {
           p.slug.toLowerCase().includes(kw)
         );
         if (matchIndex !== -1) {
-          const p = availableProducts[matchIndex];
+          const p = availableProducts[matchIndex]!;
           featuredProducts.push({
             _key: Math.random().toString(36).substring(7),
             name: p.name,
@@ -109,14 +113,44 @@ async function migrate() {
         });
       }
 
+      const docId = `category-config-${category.slug}`;
+      let existingDoc: any = null;
+      let existingDraft: any = null;
+
+      try {
+        existingDoc = await client.getDocument(docId);
+      } catch (err) {
+        // Doesn't exist or fetch failed
+      }
+
+      try {
+        existingDraft = await client.getDocument(`drafts.${docId}`);
+      } catch (err) {
+        // Doesn't exist or fetch failed
+      }
+
+      // Determine existing orderedProducts
+      let orderedProducts = existingDraft?.orderedProducts || existingDoc?.orderedProducts;
+      
+      // If not present, populate with all products belonging to this category
+      if (!orderedProducts || orderedProducts.length === 0) {
+        orderedProducts = (category.products || []).map((p: any, i: number) => ({
+          _key: `prod_${p.slug}_${i}`,
+          _type: 'orderedProduct',
+          name: p.name,
+          slug: p.slug
+        }));
+      }
+
       const doc = {
         _type: 'categoryConfig',
-        _id: `category-config-${category.slug}`,
+        _id: docId,
         rentmanId: category.slug,
-        title: category.name,
-        description: category.description || `Équipement professionnel de ${category.name.toLowerCase()} pour vos événements de toutes tailles.`,
-        featuredProducts,
-        order: orderIndex
+        title: existingDraft?.title || existingDoc?.title || category.name,
+        description: existingDraft?.description || existingDoc?.description || category.description || `Équipement professionnel de ${category.name.toLowerCase()} pour vos événements de toutes tailles.`,
+        featuredProducts: existingDraft?.featuredProducts || existingDoc?.featuredProducts || featuredProducts,
+        orderedProducts,
+        order: existingDraft?.order !== undefined ? existingDraft?.order : (existingDoc?.order !== undefined ? existingDoc?.order : orderIndex)
       };
 
       console.log(`📝 Creating/Updating config for: ${category.name}...`);

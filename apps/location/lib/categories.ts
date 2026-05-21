@@ -44,7 +44,7 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 'electrique',
-    name: 'Équipements électriques',
+    name: 'Rallonges & multiprises',
     slug: 'equipements-electriques',
     description: 'Câblage, rallonges, générateurs et solutions de distribution électrique.',
     visibility: 'public',

@@ -78,7 +78,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
     getCategoryConfigs(role)
   ]);
 
-  const config = categoryConfigs?.find(c => c.rentmanId === slug || c.rentmanId === category.id);
+  const config = categoryConfigs?.find((c: any) => c.rentmanId === slug || c.rentmanId === category.id);
 
   // Sort products: orderedProducts first, then price descending fallback
   products.sort((a, b) => {
@@ -115,7 +115,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
     <div className="min-h-screen bg-white">
       <Header />
       
-      <main className="container mx-auto px-4 py-16">
+      <main className="container mx-auto px-4 py-16 max-w-7xl 3xl:max-w-[100rem] 4xl:max-w-[120rem] 5xl:max-w-[140rem]">
         <div className="mb-16">
           <Link href="/" className="text-sm font-bold text-brand-gold uppercase tracking-widest mb-4 inline-block hover:underline">
             ← Retour à l'accueil

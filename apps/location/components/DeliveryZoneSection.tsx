@@ -30,7 +30,7 @@ export function DeliveryZoneSection({ height = "50vh" }: { height?: string }) {
         ></iframe>
         
         {/* Custom Visual Pin at Center */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+        <div className="absolute inset-0 hidden lg:flex items-center justify-center pointer-events-none z-20">
           <motion.div 
             animate={{ y: [0, -4, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}

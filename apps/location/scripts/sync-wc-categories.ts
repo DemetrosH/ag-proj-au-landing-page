@@ -65,13 +65,13 @@ async function syncWooCommerce() {
     allProducts.forEach(p => {
       p.categories.forEach((c: any) => {
         if (!categoryToProducts[c.name]) categoryToProducts[c.name] = [];
-        categoryToProducts[c.name].push(p.name);
+        categoryToProducts[c.name]?.push(p.name);
       });
     });
 
     console.log('\n--- Category Analysis ---');
     Object.keys(categoryToProducts).forEach(cat => {
-      console.log(`${cat}: ${categoryToProducts[cat].length} products`);
+      console.log(`${cat}: ${categoryToProducts[cat]?.length || 0} products`);
     });
 
     // Output a clean JSON for use in the app

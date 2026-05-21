@@ -75,7 +75,7 @@ export function Header() {
       .map(cat => {
         let name = cat.name.replace('&amp;', '&');
         // Rename specific categories to match user's requested list
-        if (cat.slug === 'rallongesmultiprises') name = 'Équipements électriques';
+        if (cat.slug === 'rallongesmultiprises') name = 'Rallonges & multiprises';
         if (cat.slug === 'bloc-dalimentation-batteries') name = "Blocs d'alimentation & batteries";
         if (cat.slug === 'poids-support') name = "Poids & Supports";
         
