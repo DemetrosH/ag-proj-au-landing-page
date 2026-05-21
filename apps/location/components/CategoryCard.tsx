@@ -21,27 +21,7 @@ const borderColors = [
   "border-[#9C27B0]", // Purple
 ];
 
-const featuredProductKeywords: Record<string, string[]> = {
-  "alimentaire": ["papa", "slush", "popcorn", "hot dog"],
-  "chapiteaux": ["10x10", "mur", "photo", "poids"],
-  "ameublements": ["table", "chaise", "tabouret", "mange"],
-  "mobilier": ["table", "chaise", "tabouret", "mange"],
-  "ameublement": ["table", "chaise", "tabouret", "mange"],
-  "equipements electriques": ["passe", "rallonge", "panneau", "generatrice"],
-  "rallonges & multiprises": ["passe", "rallonge", "panneau", "generatrice"],
-  "rallonges&multiprises": ["passe", "rallonge", "panneau", "generatrice"],
-  "sonorisation": ["qsc", "micro", "pied", "console"],
-  "enseigne neon": ["tatou", "bonbon", "neon", "enseigne"],
-  "video": ["tv", "ecran", "trepied", "projecteur"],
-  "scene": ["praticable", "marche", "jupe", "garde"],
-  "eclairage": ["led", "trepied", "lumiere", "dmx"],
-  "signaletique": ["potelet", "corde", "chevalet", "panneau"],
-  "jeux": ["hache", "cornhole", "geant", "puissance"],
-  "blocs d'alimentation": ["ecoflow", "jackery", "batterie", "power"],
-  "batteries": ["ecoflow", "jackery", "batterie", "power"],
-  "poids": ["base", "pe30", "poids", "sable"],
-  "supports": ["base", "pe30", "poids", "sable"]
-};
+
 
 export function CategoryCard({ category, config: providedConfig, index }: CategoryCardProps) {
   const normalizedCatName = category.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
@@ -53,72 +33,26 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
   // 1. Content Overrides
   const displayTitle = config?.title || category.name;
 
-  // 2. Featured Products Selection
-  const availableProducts = [...(category.products || [])];
-  const displayProducts: any[] = [];
-
-  // A. Try Sanity featured products first - ONLY if they have an image
-  if (config?.featuredProducts && config.featuredProducts.length > 0) {
-    config.featuredProducts.forEach(fp => {
-      if (displayProducts.length >= 4) return;
-      
-      const rentmanProduct = availableProducts.find(p => 
-        p.slug === String(fp.slug) || 
-        String(p.id) === String(fp.slug) ||
-        (fp.name && p.name.toLowerCase().trim() === fp.name.toLowerCase().trim())
-      );
-      const imageUrl = fp.imageUrl || rentmanProduct?.image;
-      
-      if (imageUrl) {
-        displayProducts.push({
-          slug: fp.slug,
-          name: fp.name,
-          image: imageUrl
-        });
-
-        // Remove from available so we don't duplicate
-        if (rentmanProduct) {
-          const idx = availableProducts.indexOf(rentmanProduct);
-          if (idx > -1) availableProducts.splice(idx, 1);
-        }
-      }
-    });
-  }
-
-  // B. Fill with keywords - Prioritize products WITH images
-  if (displayProducts.length < 4) {
-    let keywords: string[] = [];
-    const normalizedCatName = category.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  // 2. Featured Products Selection: Sort by price descending and prioritize products with images
+  const sortedByPrice = [...(category.products || [])].sort((a: any, b: any) => {
+    const priceA = a.price || 0;
+    const priceB = b.price || 0;
     
-    for (const [key, kw] of Object.entries(featuredProductKeywords)) {
-      const normalizedKey = key.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-      if (normalizedCatName.includes(normalizedKey) || normalizedKey.includes(normalizedCatName)) {
-        keywords = kw;
-        break;
-      }
+    if (priceA === 0 && priceB > 0) return 1;
+    if (priceB === 0 && priceA > 0) return -1;
+    
+    return priceB - priceA;
+  });
+
+  // Filter for products that actually have an image
+  const displayProducts = sortedByPrice.filter(p => p.image).slice(0, 4);
+
+  // Fallback: If we have fewer than 4 products with images, fill the remaining slots with image-less products
+  if (displayProducts.length < 4) {
+    const withoutImages = sortedByPrice.filter(p => !p.image);
+    while (displayProducts.length < 4 && withoutImages.length > 0) {
+      displayProducts.push(withoutImages.shift());
     }
-
-    keywords.forEach((kw) => {
-      if (displayProducts.length >= 4) return;
-      const matchIndex = availableProducts.findIndex(p => 
-        p.image && (p.name.toLowerCase().includes(kw) || p.slug.toLowerCase().includes(kw))
-      );
-      if (matchIndex !== -1) {
-        displayProducts.push(availableProducts[matchIndex]);
-        availableProducts.splice(matchIndex, 1);
-      }
-    });
-  }
-
-  // C. Fill remaining slots with whatever has an image left
-  const withImages = availableProducts.filter(p => p.image);
-  while (displayProducts.length < 4 && withImages.length > 0) {
-    displayProducts.push(withImages.shift());
-  }
-
-  // D. Absolute fallback - if still empty, take anything
-  while (displayProducts.length < 4 && availableProducts.length > 0) {
-    displayProducts.push(availableProducts.shift());
   }
 
   const borderColor = borderColors[index % borderColors.length];
