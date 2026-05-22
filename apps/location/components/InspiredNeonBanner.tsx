@@ -16,7 +16,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
       viewport={{ once: true }}
       className={`relative w-full bg-[#050505] overflow-hidden flex h-full ${
         isVertical 
-          ? 'flex-col items-center justify-between py-6 px-4 sm:py-8 sm:px-6 text-center rounded-[1.75rem] shadow-[0_0_50px_rgba(0,0,0,0.5)]' 
+          ? 'flex-col items-center justify-between py-0 px-4 sm:px-6 text-center rounded-[1.75rem] shadow-[0_0_50px_rgba(0,0,0,0.5)]' 
           : 'flex-col md:flex-row items-center justify-between p-8 md:p-20 rounded-[2rem]'
       } border border-white/10 group`}
     >
@@ -38,12 +38,14 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
         />
       </div>
 
+      {isVertical && <div className="h-[6%] sm:h-[8%] w-full flex-shrink-0" />}
+
       {/* 2. Massive Vertical Title */}
       {isVertical ? (
-        <div className="relative z-10 flex flex-col items-center justify-center space-y-2 sm:space-y-4">
+        <div className="relative z-10 flex flex-col items-center justify-between flex-grow flex-1 h-full w-full">
           {/* Mobile Horizontal Title */}
           <motion.div 
-            className="sm:hidden text-center"
+            className="sm:hidden text-center flex flex-col justify-between py-2 flex-grow h-full"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
           >
@@ -62,13 +64,13 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
  
           {/* Desktop Vertical Title */}
           <motion.div 
-            className="hidden sm:flex flex-col items-center"
+            className="hidden sm:flex flex-col items-center justify-between flex-grow h-full w-full"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 1 }}
           >
              {/* Stacking letters with specialized font-weight and glow */}
-             <div className="flex flex-col items-center leading-[0.75] mb-4">
+             <div className="flex flex-col items-center justify-between flex-[2.5] w-full min-h-[38%]">
                 {"ENSEIGNE".split('').map((char, i) => (
                   <motion.span 
                     key={i} 
@@ -80,13 +82,17 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
                       ]
                     }}
                     transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
-                    className="text-white font-black text-3xl sm:text-4xl md:text-5xl select-none"
+                    className="text-white font-black text-3xl sm:text-4xl md:text-5xl select-none leading-none"
                   >
                     {char}
                   </motion.span>
                 ))}
              </div>
-             <div className="flex flex-col items-center leading-[0.75] mb-6">
+             
+             {/* Dynamic Gap between the two words */}
+             <div className="h-[4%] sm:h-[5%] flex-shrink-0" />
+
+             <div className="flex flex-col items-center justify-between flex-1 w-full min-h-[16%]">
                 {"NÉON".split('').map((char, i) => (
                   <motion.span 
                     key={char + i} 
@@ -98,13 +104,16 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
                       ]
                     }}
                     transition={{ duration: 2, repeat: Infinity, delay: (i + 8) * 0.1 }}
-                    className="text-white font-black text-3xl sm:text-4xl md:text-5xl select-none"
+                    className="text-white font-black text-3xl sm:text-4xl md:text-5xl select-none leading-none"
                   >
                     {char}
                   </motion.span>
                 ))}
              </div>
-             <p className="text-[10px] 5xl:text-xl text-pink-500 font-bold uppercase tracking-[0.3em] max-w-[120px] 5xl:max-w-[300px] mx-auto leading-relaxed opacity-80">
+             
+             <div className="h-[4%] sm:h-[6%] flex-shrink-0" />
+
+             <p className="text-[10px] 5xl:text-xl text-pink-500 font-bold uppercase tracking-[0.3em] max-w-[120px] 5xl:max-w-[300px] mx-auto leading-relaxed opacity-80 flex-shrink-0">
                Illuminez vos événements avec nos créations sur mesure.
              </p>
           </motion.div>
@@ -147,6 +156,8 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/link:translate-x-full transition-transform duration-1000" />
         </Link>
       </div>
+
+      {isVertical && <div className="h-[6%] sm:h-[8%] w-full flex-shrink-0" />}
     </motion.div>
   );
 
