@@ -23,14 +23,15 @@ function SoumissionContent() {
   
   // Handle step from query param and scroll to top
   useEffect(() => {
-    const stepParam = searchParams.get('step');
+    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+    const stepParam = params.get('step');
     if (stepParam === 'checkout' && isDateSet && items.length > 0) {
       setStep('checkout');
     } else {
       setStep('cart');
     }
     window.scrollTo(0, 0);
-  }, [searchParams, isDateSet, items.length]); // Removed 'step' from dependencies to avoid infinite loop when setting it internally
+  }, [searchParams, isDateSet, items.length, typeof window !== 'undefined' ? window.location.search : '']); // Removed 'step' from dependencies to avoid infinite loop when setting it internally
 
   // Form State
   const [formData, setFormData] = React.useState({
@@ -495,7 +496,12 @@ function SoumissionContent() {
             ) : (
               <div className="max-w-4xl mx-auto">
                 <button 
-                  onClick={() => setStep('cart')}
+                  onClick={() => {
+                    setStep('cart');
+                    if (typeof window !== 'undefined') {
+                      window.history.pushState({}, '', '/soumission');
+                    }
+                  }}
                   className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-brand-orange transition-colors mb-8 group"
                 >
                   <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
