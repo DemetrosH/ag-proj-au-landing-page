@@ -804,6 +804,22 @@ export async function getContactByName(name: string): Promise<any | null> {
 }
 
 /**
+ * Normalizes a country name or code to a standard 2-letter ISO code.
+ * Rentman API requires a 2-letter country code (like 'ca').
+ */
+export function normalizeCountry(country?: string): string {
+  if (!country) return 'ca';
+  const c = country.toLowerCase().trim();
+  if (c === 'canada' || c === 'ca' || c === 'can' || c === '') {
+    return 'ca';
+  }
+  if (c === 'usa' || c === 'us' || c === 'united states' || c === 'états-unis' || c === 'etats-unis') {
+    return 'us';
+  }
+  return country;
+}
+
+/**
  * Create a new Contact (Company or Private)
  */
 export async function createContact(data: {
@@ -851,6 +867,7 @@ export async function getOrCreateContactAndPerson(params: {
   address?: string;
   city?: string;
   postalCode?: string;
+  country?: string;
 }) {
   let contactId: string | number | null = null;
   let personId: string | number | null = null;
@@ -888,7 +905,8 @@ export async function getOrCreateContactAndPerson(params: {
           phone_1: params.phone,
           mailing_street: params.address,
           mailing_city: params.city,
-          mailing_postalcode: params.postalCode
+          mailing_postalcode: params.postalCode,
+          mailing_country: normalizeCountry(params.country)
         });
         contactId = newCompany.id;
 
@@ -909,7 +927,8 @@ export async function getOrCreateContactAndPerson(params: {
           phone_1: params.phone,
           mailing_street: params.address,
           mailing_city: params.city,
-          mailing_postalcode: params.postalCode
+          mailing_postalcode: params.postalCode,
+          mailing_country: normalizeCountry(params.country)
         });
         contactId = newPrivate.id;
       }
@@ -942,7 +961,7 @@ export async function getOrCreateLocation(name: string, address: {
       mailing_street: address.street,
       mailing_city: address.city,
       mailing_postalcode: address.postalCode,
-      mailing_country: address.country || 'Canada'
+      mailing_country: normalizeCountry(address.country)
     });
     return newLoc.id;
   } catch (error) {

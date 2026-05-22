@@ -3,7 +3,8 @@ import {
   createProjectRequest, 
   addEquipmentToProjectRequest,
   getOrCreateContactAndPerson,
-  getOrCreateLocation
+  getOrCreateLocation,
+  normalizeCountry
 } from '../../../../lib/rentman';
 import { sendQuoteConfirmationEmail } from '../../../../lib/mail';
 
@@ -43,7 +44,8 @@ export async function POST(request: Request) {
       phone,
       address,
       city,
-      postalCode
+      postalCode,
+      country
     });
 
     // 2. Get or Create Location in Rentman database
@@ -101,7 +103,7 @@ Code Postal: ${body.locationPostalCode || ''}
       contact_mailing_street: address || '',
       contact_mailing_city: city || '',
       contact_mailing_postalcode: postalCode || '',
-      contact_mailing_country: country || 'Canada',
+      contact_mailing_country: normalizeCountry(country),
 
       // Using the exact name of the default location helps Rentman auto-link
       location_name: defaultLocationName,
