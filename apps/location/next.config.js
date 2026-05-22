@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   basePath: '/location',
+  trailingSlash: true,
   images: {
     remotePatterns: [
       {
