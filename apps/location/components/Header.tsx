@@ -174,7 +174,39 @@ export function Header() {
         return true;
       });
 
-      setSearchResults(filtered.slice(0, 6));
+      // Sort by search relevance so that exact matches and query-starting items rank higher
+      const sorted = [...filtered].sort((a, b) => {
+        const normA = normalizeString(a.name);
+        const normB = normalizeString(b.name);
+
+        // Priority 1: Exact matches rank first
+        const exactA = normA === normalizedQuery;
+        const exactB = normB === normalizedQuery;
+        if (exactA && !exactB) return -1;
+        if (exactB && !exactA) return 1;
+
+        // Priority 2: Starts with matches rank second
+        const startsA = normA.startsWith(normalizedQuery);
+        const startsB = normB.startsWith(normalizedQuery);
+        if (startsA && !startsB) return -1;
+        if (startsB && !startsA) return 1;
+
+        // Priority 3: Word boundary matches (matches query at word start)
+        const regex = new RegExp(`\\b${normalizedQuery}`);
+        const wordA = regex.test(normA);
+        const wordB = regex.test(normB);
+        if (wordA && !wordB) return -1;
+        if (wordB && !wordA) return 1;
+
+        // Priority 4: Shorter names rank higher (better percentage fit)
+        if (normA.length !== normB.length) {
+          return normA.length - normB.length;
+        }
+
+        return normA.localeCompare(normB);
+      });
+
+      setSearchResults(sorted.slice(0, 6));
       setIsSearchOpen(true);
       setIsSearching(false);
     }, 150);
