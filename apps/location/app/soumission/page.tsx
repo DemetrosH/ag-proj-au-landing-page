@@ -539,7 +539,7 @@ function SoumissionContent() {
 
                 <div className="bg-brand-surface rounded-[2rem] md:rounded-[4rem] p-5 sm:p-8 md:p-20 border border-brand-border shadow-2xl shadow-brand-dark/5 relative overflow-hidden">
                   {!user && (
-                    <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-20 flex items-center justify-center p-8">
+                    <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-20 flex items-start justify-center p-8 pt-12 sm:pt-24">
                       <div className="bg-white border border-brand-border rounded-[3rem] p-12 shadow-2xl text-center max-w-sm w-full relative z-30">
                         <h3 className="text-2xl font-black uppercase tracking-tighter mb-4">Créer un <span className="text-brand-orange">Compte</span></h3>
                         <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-8 leading-relaxed">
