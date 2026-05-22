@@ -291,7 +291,7 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <div className="flex items-center gap-3">
-              <img src="/logo2-A.png" alt="Artéfact Urbain" className="h-10 sm:h-12 w-auto object-contain" />
+              <img src="/location/logo2-A.png" alt="Artéfact Urbain" className="h-10 sm:h-12 w-auto object-contain" />
               <div className="hidden sm:flex flex-col leading-none">
                 <span className="text-xl 5xl:text-5xl font-black text-brand-dark uppercase tracking-tighter">Location</span>
                 <span className="text-[8px] 5xl:text-xl font-black text-brand-orange uppercase tracking-[0.2em]">Par Artéfact Urbain</span>
@@ -528,7 +528,7 @@ export function Header() {
                               setDateError(true);
                               setTimeout(() => setDateError(false), 2000);
                             } else {
-                              window.location.href = '/soumission?step=checkout';
+                              window.location.href = '/location/soumission?step=checkout';
                             }
                           }}
                           className={`w-full text-white text-center py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl ${
