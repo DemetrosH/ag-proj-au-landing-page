@@ -7,6 +7,7 @@ import { CategoryConfig } from './LandingPage';
 import { Plus, Check, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import Link from 'next/link';
+import { normalizeString } from '../lib/utils';
 
 interface CategoryFilterLayoutProps {
   categories: Category[];
@@ -23,11 +24,14 @@ export function CategoryFilterLayout({ categories, allProducts, categoryConfigs 
 
   // Filter products based on category and search query
   const filteredProducts = useMemo(() => {
+    const normalizedQuery = normalizeString(searchQuery);
     return allProducts
       .filter(product => {
         const matchesCategory = selectedCategory === 'all' || product.categoryId === selectedCategory || product.category_slugs?.includes(selectedCategory);
-        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            product.description.toLowerCase().includes(searchQuery.toLowerCase());
+        if (!normalizedQuery) return matchesCategory;
+        
+        const matchesSearch = normalizeString(product.name).includes(normalizedQuery) || 
+                            normalizeString(product.description).includes(normalizedQuery);
         return matchesCategory && matchesSearch;
       })
       .sort((a, b) => (b.price || 0) - (a.price || 0));

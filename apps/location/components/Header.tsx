@@ -9,6 +9,7 @@ import { useCart } from '../context/CartContext';
 import wcData from '../data/wc-data.json';
 import { createClient } from '../lib/supabase/client';
 import { URBA_ACCESS_RULES, UserRole } from '../lib/access-control';
+import { normalizeString } from '../lib/utils';
 
 export function Header() {
   const { startDate, endDate, setDates, isDateSet } = useRental();
@@ -29,7 +30,41 @@ export function Header() {
   const [isSearching, setIsSearching] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   
+  // Client-side search caching
+  const [allSearchProducts, setAllSearchProducts] = useState<any[]>([]);
+  const [hasLoadedSearchProducts, setHasLoadedSearchProducts] = useState(false);
+  const [isLoadingSearchProducts, setIsLoadingSearchProducts] = useState(false);
+  
   const supabase = createClient();
+
+  const ensureSearchProductsLoaded = async () => {
+    if (hasLoadedSearchProducts || isLoadingSearchProducts) return;
+    setIsLoadingSearchProducts(true);
+    setIsSearching(true);
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, rentman_id, name, image_url, price, category_slug, tags');
+      
+      if (!error && data) {
+        setAllSearchProducts(data);
+        setHasLoadedSearchProducts(true);
+      }
+    } catch (e) {
+      console.error('Failed to load products for search:', e);
+    } finally {
+      setIsLoadingSearchProducts(false);
+      setIsSearching(false);
+    }
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSearchQuery(val);
+    if (val.length > 0) {
+      ensureSearchProductsLoaded();
+    }
+  };
 
   useEffect(() => {
     const fetchUserAndRole = async () => {
@@ -103,47 +138,49 @@ export function Header() {
 
   // Search logic
   useEffect(() => {
-    const timer = setTimeout(async () => {
+    const timer = setTimeout(() => {
       if (searchQuery.length < 2) {
         setSearchResults([]);
         setIsSearchOpen(false);
         return;
       }
 
-      setIsSearching(true);
-      const { data, error } = await supabase
-        .from('products')
-        .select('id, rentman_id, name, image_url, price, category_slug, tags')
-        .ilike('name', `%${searchQuery}%`)
-        .limit(20);
-
-      if (!error && data) {
-        const role: UserRole = user?.role || 'guest';
-        const rules = URBA_ACCESS_RULES[role];
-        
-        const filtered = data.filter(p => {
-          // Hide if category is forbidden
-          if (rules.hideCats.includes(p.category_slug)) return false;
-          
-          // Hide if any forbidden tag is present
-          if (p.tags?.some((tag: string) => rules.hideTags.includes(tag))) return false;
-          
-          // If required tags are specified, at least one must be present
-          if (rules.requiredTags && rules.requiredTags.length > 0) {
-            return p.tags?.some((tag: string) => rules.requiredTags?.includes(tag));
-          }
-          
-          return true;
-        });
-
-        setSearchResults(filtered.slice(0, 6));
-        setIsSearchOpen(true);
+      if (!hasLoadedSearchProducts) {
+        setIsSearching(true);
+        return;
       }
+
+      setIsSearching(true);
+      const normalizedQuery = normalizeString(searchQuery);
+      const role: UserRole = user?.role || 'guest';
+      const rules = URBA_ACCESS_RULES[role];
+      
+      const filtered = allSearchProducts.filter(p => {
+        // 1. Accent-insensitive name matching
+        const matchesName = normalizeString(p.name).includes(normalizedQuery);
+        if (!matchesName) return false;
+
+        // 2. Hide if category is forbidden
+        if (rules.hideCats.includes(p.category_slug)) return false;
+        
+        // 3. Hide if any forbidden tag is present
+        if (p.tags?.some((tag: string) => rules.hideTags.includes(tag))) return false;
+        
+        // 4. If required tags are specified, at least one must be present
+        if (rules.requiredTags && rules.requiredTags.length > 0) {
+          return p.tags?.some((tag: string) => rules.requiredTags?.includes(tag));
+        }
+        
+        return true;
+      });
+
+      setSearchResults(filtered.slice(0, 6));
+      setIsSearchOpen(true);
       setIsSearching(false);
-    }, 300);
+    }, 150);
 
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, allSearchProducts, hasLoadedSearchProducts, user]);
 
   const formatDate = (dateStr: string) => {
     // Add T00:00:00 to force local timezone parsing
@@ -238,8 +275,11 @@ export function Header() {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => searchQuery.length >= 2 && setIsSearchOpen(true)}
+              onChange={handleSearchChange}
+              onFocus={() => {
+                ensureSearchProductsLoaded();
+                if (searchQuery.length >= 2) setIsSearchOpen(true);
+              }}
               placeholder="Rechercher un équipement..."
               className="w-full bg-brand-surface border border-brand-border rounded-full py-2.5 px-6 pr-12 text-sm 5xl:text-2xl focus:outline-none focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/5 transition-all"
             />
@@ -574,7 +614,8 @@ export function Header() {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
+                onFocus={ensureSearchProductsLoaded}
                 placeholder="Rechercher..."
                 className="w-full bg-brand-surface border border-brand-border rounded-xl py-3 px-12 text-sm focus:outline-none focus:border-brand-gold"
               />
