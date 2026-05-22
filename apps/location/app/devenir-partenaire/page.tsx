@@ -31,7 +31,7 @@ export default function DevenirPartenaire() {
     setStatus('loading');
 
     try {
-      const res = await fetch('/api/partner-inquiry', {
+      const res = await fetch('/location/api/partner-inquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

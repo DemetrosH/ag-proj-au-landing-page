@@ -53,7 +53,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             if (startDate) queryParams.append('start', startDate);
             if (endDate) queryParams.append('end', endDate);
 
-            const res = await fetch(`/api/rentman/availability?${queryParams.toString()}`);
+            const res = await fetch(`/location/api/rentman/availability?${queryParams.toString()}`);
             if (res.ok) {
               const data = await res.json();
               const available = data.available;

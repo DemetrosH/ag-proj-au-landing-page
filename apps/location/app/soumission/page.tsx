@@ -73,7 +73,7 @@ function SoumissionContent() {
         return;
       }
       try {
-        const res = await fetch(`/api/rentman/search-locations?q=${encodeURIComponent(formData.locationName)}`);
+        const res = await fetch(`/location/api/rentman/search-locations?q=${encodeURIComponent(formData.locationName)}`);
         const json = await res.json();
         setSuggestions(json.data || []);
       } catch (err) {
@@ -148,7 +148,7 @@ function SoumissionContent() {
           if (startDate) queryParams.append('start', startDate);
           if (endDate) queryParams.append('end', endDate);
 
-          const res = await fetch(`/api/rentman/availability?${queryParams.toString()}`);
+          const res = await fetch(`/location/api/rentman/availability?${queryParams.toString()}`);
           if (res.ok) {
             const data = await res.json();
             if (item.quantity > data.available) {
@@ -207,7 +207,7 @@ function SoumissionContent() {
       const firstName = nameParts[0];
       const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
 
-      const rentmanRes = await fetch('/api/rentman/create-request', {
+      const rentmanRes = await fetch('/location/api/rentman/create-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

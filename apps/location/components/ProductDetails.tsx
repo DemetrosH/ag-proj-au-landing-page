@@ -33,7 +33,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         if (startDate) queryParams.append('start', startDate);
         if (endDate) queryParams.append('end', endDate);
 
-        const res = await fetch(`/api/rentman/availability?${queryParams.toString()}`);
+        const res = await fetch(`/location/api/rentman/availability?${queryParams.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch stock');
         const data = await res.json();
         if (active) {

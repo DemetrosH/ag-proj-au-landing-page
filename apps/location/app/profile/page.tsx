@@ -63,7 +63,7 @@ export default function ProfilePage() {
 
       if (rentmanIds.length > 0) {
         try {
-          const res = await fetch('/api/rentman/sync-status', {
+          const res = await fetch('/location/api/rentman/sync-status', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ requestIds: rentmanIds })
