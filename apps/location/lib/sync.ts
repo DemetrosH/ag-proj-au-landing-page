@@ -199,10 +199,106 @@ export async function syncRentmanToSupabase() {
       if (prodError) throw prodError;
     }
 
-    console.log('[Sync] Synchronization successful! (Ver 1.2)');
-    return { success: true, count: productsToUpsert.length };
+    // 4. Sync equipment allocations
+    let allocationsCount = 0;
+    try {
+      const allocationResult = await syncRentmanAllocations(supabase);
+      if (allocationResult.success) {
+        allocationsCount = allocationResult.count || 0;
+      }
+    } catch (allocErr) {
+      console.error('[Sync] Allocations sync failed but continuing with products:', allocErr);
+    }
+
+    console.log(`[Sync] Synchronization successful! Products: ${productsToUpsert.length}, Allocations: ${allocationsCount} (Ver 1.3)`);
+    return { success: true, count: productsToUpsert.length, allocationsCount };
   } catch (error) {
     console.error('[Sync] Synchronization failed:', error);
     return { success: false, error };
   }
 }
+
+/**
+ * Synchronize project equipment allocations from Rentman to Supabase
+ */
+export async function syncRentmanAllocations(supabase: any) {
+  console.log('[Sync] Starting Rentman allocations synchronization...');
+  try {
+    console.log('[Sync] Fetching all project equipment allocations from Rentman...');
+    const allAllocations = await rentmanFetchAll<any>('/projectequipment');
+    console.log(`[Sync] Fetched ${allAllocations.length} total allocations from Rentman.`);
+    
+    if (!Array.isArray(allAllocations)) {
+      console.warn('[Sync] No allocations returned or invalid response format.');
+      return { success: false, reason: 'Invalid allocations response' };
+    }
+
+    const today = new Date();
+    // Keep allocations ending in the future (meaning they could affect future rentals)
+    const futureAllocations = allAllocations.filter(a => {
+      if (!a.planperiod_end) return false;
+      return new Date(a.planperiod_end) >= today;
+    });
+
+    console.log(`[Sync] Found ${futureAllocations.length} active/future allocations to cache.`);
+
+    // Map Rentman allocations to Supabase schema
+    const allocationsToUpsert = futureAllocations.map(a => {
+      // a.equipment is a string like "/equipment/1335" or a number.
+      let equipmentId = '';
+      if (typeof a.equipment === 'string') {
+        equipmentId = a.equipment.split('/').pop() || '';
+      } else if (a.equipment) {
+        equipmentId = String(a.equipment);
+      }
+
+      return {
+        id: Number(a.id),
+        equipment_id: equipmentId,
+        quantity: Number(a.quantity || 0),
+        planperiod_start: a.planperiod_start,
+        planperiod_end: a.planperiod_end,
+        project_id: a.project ? String(a.project).split('/').pop() || null : null,
+        last_synced: new Date().toISOString()
+      };
+    }).filter(a => a.equipment_id && a.id);
+
+    console.log(`[Sync] Preparing to upsert ${allocationsToUpsert.length} allocations...`);
+
+    // Upsert into public.rentman_allocations in Supabase
+    const { error: upsertError } = await supabase
+      .from('rentman_allocations')
+      .upsert(allocationsToUpsert, { onConflict: 'id' });
+
+    if (upsertError) {
+      if (upsertError.message?.includes('relation') || upsertError.message?.includes('does not exist')) {
+        console.error('========================================================================');
+        console.error('[Sync Error] Database table "rentman_allocations" does NOT exist in Supabase!');
+        console.error('Please run the migration SQL from the following file in your Supabase SQL Editor:');
+        console.error('supabase/migrations/20260522000001_create_rentman_allocations.sql');
+        console.error('========================================================================');
+        return { success: false, error: 'Table does not exist. Run migration.' };
+      }
+      throw upsertError;
+    }
+
+    // Clean up stale past allocations from database
+    const { error: deleteError } = await supabase
+      .from('rentman_allocations')
+      .delete()
+      .lt('planperiod_end', today.toISOString());
+
+    if (deleteError) {
+      console.warn('[Sync] Failed to clean up stale allocations:', deleteError);
+    } else {
+      console.log('[Sync] Stale past allocations cleaned up successfully.');
+    }
+
+    console.log('[Sync] Allocations synchronized successfully!');
+    return { success: true, count: allocationsToUpsert.length };
+  } catch (error) {
+    console.error('[Sync] Allocations synchronization failed:', error);
+    return { success: false, error };
+  }
+}
+

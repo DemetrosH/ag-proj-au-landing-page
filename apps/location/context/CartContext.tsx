@@ -25,7 +25,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
-  const { durationInDays } = useRental();
+  const { durationInDays, startDate, endDate } = useRental();
 
   // Load cart from local storage
   useEffect(() => {
@@ -38,6 +38,60 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
     }
   }, []);
+
+  // Validate cart items when dates or items change
+  useEffect(() => {
+    let active = true;
+    
+    const validateCartItems = async () => {
+      if (items.length === 0) return;
+      
+      const validatedItems = await Promise.all(
+        items.map(async (item) => {
+          try {
+            const queryParams = new URLSearchParams({ id: item.id });
+            if (startDate) queryParams.append('start', startDate);
+            if (endDate) queryParams.append('end', endDate);
+
+            const res = await fetch(`/api/rentman/availability?${queryParams.toString()}`);
+            if (res.ok) {
+              const data = await res.json();
+              const available = data.available;
+              if (item.quantity > available) {
+                return { ...item, quantity: available };
+              }
+            }
+          } catch (e) {
+            console.error(`Failed to validate cart item ${item.id}`, e);
+          }
+          return item;
+        })
+      );
+
+      if (!active) return;
+
+      // Filter out items that are now at 0 quantity
+      const filtered = validatedItems.filter(item => item.quantity > 0);
+      
+      // If there are any differences, update the cart state!
+      const hasChanges = filtered.length !== items.length || 
+        filtered.some((item, idx) => item.quantity !== (items[idx]?.quantity ?? 0));
+
+      if (hasChanges) {
+        setItems(filtered);
+      }
+    };
+
+    // We can debounce this validation slightly to avoid multiple rapid queries
+    const timeout = setTimeout(() => {
+      validateCartItems();
+    }, 500);
+
+    return () => {
+      active = false;
+      clearTimeout(timeout);
+    };
+  }, [startDate, endDate]);
 
   // Save cart to local storage
   useEffect(() => {

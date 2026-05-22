@@ -14,15 +14,53 @@ interface ProductDetailsProps {
 }
 
 export function ProductDetails({ product }: ProductDetailsProps) {
-  const { durationInDays, isDateSet } = useRental();
+  const { durationInDays, isDateSet, startDate, endDate } = useRental();
   const { addToCart, getItemQuantity } = useCart();
   const [added, setAdded] = React.useState(false);
   const [quantity, setQuantity] = React.useState(1);
   const [activeImage, setActiveImage] = React.useState(product.image);
   const [quickAdded, setQuickAdded] = React.useState(false);
 
+  const [dynamicStock, setDynamicStock] = React.useState<number | null>(null);
+  const [loadingStock, setLoadingStock] = React.useState(false);
+
+  React.useEffect(() => {
+    let active = true;
+    const fetchAvailability = async () => {
+      setLoadingStock(true);
+      try {
+        const queryParams = new URLSearchParams({ id: product.id });
+        if (startDate) queryParams.append('start', startDate);
+        if (endDate) queryParams.append('end', endDate);
+
+        const res = await fetch(`/api/rentman/availability?${queryParams.toString()}`);
+        if (!res.ok) throw new Error('Failed to fetch stock');
+        const data = await res.json();
+        if (active) {
+          setDynamicStock(data.available);
+        }
+      } catch (err) {
+        console.error('Error fetching stock availability:', err);
+        if (active) {
+          setDynamicStock(product.stock_level ?? 999);
+        }
+      } finally {
+        if (active) {
+          setLoadingStock(false);
+        }
+      }
+    };
+
+    fetchAvailability();
+
+    return () => {
+      active = false;
+    };
+  }, [product.id, startDate, endDate, product.stock_level]);
+
   const currentInCart = getItemQuantity(product.id);
-  const availableSessionStock = product.stock_level !== undefined ? Math.max(0, product.stock_level - currentInCart) : 999;
+  const effectiveTotalStock = dynamicStock !== null ? dynamicStock : (product.stock_level ?? 999);
+  const availableSessionStock = Math.max(0, effectiveTotalStock - currentInCart);
   const maxStock = availableSessionStock;
   
   const factor = calculateRentalFactor(durationInDays);
@@ -173,10 +211,19 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                     <span className="text-4xl font-black text-brand-dark tracking-tighter">Total: {totalPrice}$</span>
                   </div>
                 ) : (
-                  product.stock_level !== undefined && product.stock_level > 0 && (
+                  effectiveTotalStock > 0 ? (
                     <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full border border-green-100">
-                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                      <span className="text-xs font-black uppercase tracking-widest text-green-700">En Stock</span>
+                      <div className={`w-2 h-2 rounded-full bg-green-500 ${loadingStock ? 'animate-ping' : 'animate-pulse'}`} />
+                      <span className="text-xs font-black uppercase tracking-widest text-green-700">
+                        {loadingStock ? 'Vérification...' : 'En Stock'}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 bg-red-50 px-4 py-2 rounded-full border border-red-100">
+                      <div className="w-2 h-2 rounded-full bg-red-500" />
+                      <span className="text-xs font-black uppercase tracking-widest text-red-700">
+                        {loadingStock ? 'Vérification...' : 'Indisponible'}
+                      </span>
                     </div>
                   )
                 )}
@@ -280,11 +327,26 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                     </p>
                   )}
                   {product.stock_level !== undefined && (
-                    <p className={`text-sm font-black uppercase tracking-widest ml-auto ${availableSessionStock <= 0 ? 'text-red-500' : 'text-brand-gold'}`}>
-                      {availableSessionStock} disponible(s)
+                    <p className={`text-sm font-black uppercase tracking-widest ml-auto ${availableSessionStock <= 0 ? 'text-red-500' : 'text-brand-gold'} ${loadingStock ? 'animate-pulse opacity-50' : ''}`}>
+                      {loadingStock ? 'Vérification...' : `${availableSessionStock} disponible(s)`}
                     </p>
                   )}
                 </div>
+              </div>
+            )}
+
+            {availableSessionStock <= 0 && (
+              <div className="p-5 bg-red-50 rounded-2xl mb-8 flex items-center gap-4 border border-red-100">
+                <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-500 shrink-0">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <p className="text-sm font-bold text-red-700 leading-tight uppercase tracking-tight">
+                  {isDateSet 
+                    ? "Indisponible pour ces dates. Veuillez sélectionner d'autres dates."
+                    : "Indisponible actuellement. Veuillez sélectionner d'autres dates."}
+                </p>
               </div>
             )}
 

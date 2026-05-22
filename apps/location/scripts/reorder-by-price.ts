@@ -55,7 +55,10 @@ async function run() {
       if (expensiveForGrid.length < 4) {
         const withoutImages = sortedProducts.filter(p => !p.image);
         while (expensiveForGrid.length < 4 && withoutImages.length > 0) {
-          expensiveForGrid.push(withoutImages.shift());
+          const item = withoutImages.shift();
+          if (item) {
+            expensiveForGrid.push(item);
+          }
         }
       }
 

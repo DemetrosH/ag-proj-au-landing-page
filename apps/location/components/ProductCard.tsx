@@ -14,16 +14,51 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart, getItemQuantity } = useCart();
-  const { isDateSet } = useRental();
+  const { isDateSet, startDate, endDate } = useRental();
   const [added, setAdded] = React.useState(false);
+  const [dynamicStock, setDynamicStock] = React.useState<number | null>(null);
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    let active = true;
+    const fetchStock = async () => {
+      setLoading(true);
+      try {
+        const queryParams = new URLSearchParams({ id: product.id });
+        if (startDate) queryParams.append('start', startDate);
+        if (endDate) queryParams.append('end', endDate);
+
+        const res = await fetch(`/api/rentman/availability?${queryParams.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (active) {
+            setDynamicStock(data.available);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch stock for product card:', err);
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+    
+    fetchStock();
+    
+    return () => {
+      active = false;
+    };
+  }, [product.id, startDate, endDate]);
+
+  const currentStock = dynamicStock !== null ? dynamicStock : (product.stock_level ?? 999);
+  const currentInCart = getItemQuantity(product.id);
+  const available = Math.max(0, currentStock - currentInCart);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    const currentInCart = getItemQuantity(product.id);
-    const available = product.stock_level !== undefined ? product.stock_level - currentInCart : 999;
-
     if (available > 0) {
       addToCart(product);
       setAdded(true);
@@ -40,15 +75,13 @@ export function ProductCard({ product }: ProductCardProps) {
         
         {/* Quick Add Button */}
         {(() => {
-          const currentInCart = getItemQuantity(product.id);
-          const available = product.stock_level !== undefined ? product.stock_level - currentInCart : 999;
-          const isOutOfStock = product.stock_level !== undefined && product.stock_level <= 0;
-          const isLimitReached = product.stock_level !== undefined && available <= 0 && !isOutOfStock;
+          const isOutOfStock = currentStock <= 0;
+          const isLimitReached = currentStock > 0 && available <= 0;
 
           if (isOutOfStock) {
             return (
               <div className="absolute top-3 right-3 px-2 py-1 bg-red-100 text-red-600 text-[10px] font-bold rounded uppercase z-30 shadow-sm border border-red-200">
-                Épuisé
+                {loading ? '...' : 'Épuisé'}
               </div>
             );
           }
@@ -56,7 +89,7 @@ export function ProductCard({ product }: ProductCardProps) {
           return (
             <button 
               onClick={handleQuickAdd}
-              disabled={available <= 0}
+              disabled={available <= 0 || loading}
               className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center z-30 transition-all shadow-lg ${
                 added 
                 ? 'bg-green-500 text-white scale-110 opacity-100' 

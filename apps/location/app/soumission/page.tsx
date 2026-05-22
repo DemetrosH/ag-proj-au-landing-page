@@ -139,12 +139,39 @@ function SoumissionContent() {
 
     setLoading(true);
 
-    // 0. Final Stock Check
-    const overbooked = items.filter(item => item.stock_level !== undefined && item.quantity > item.stock_level);
-    if (overbooked.length > 0) {
-      alert(`Certains articles ne sont plus disponibles en quantité suffisante : ${overbooked.map(i => i.name).join(', ')}`);
-      setLoading(false);
-      return;
+    // 0. Final Dynamic Stock Check
+    try {
+      const overbookedList: string[] = [];
+      await Promise.all(
+        items.map(async (item) => {
+          const queryParams = new URLSearchParams({ id: item.id });
+          if (startDate) queryParams.append('start', startDate);
+          if (endDate) queryParams.append('end', endDate);
+
+          const res = await fetch(`/api/rentman/availability?${queryParams.toString()}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (item.quantity > data.available) {
+              overbookedList.push(`${item.name} (${data.available} disponible(s) pour ces dates)`);
+            }
+          }
+        })
+      );
+
+      if (overbookedList.length > 0) {
+        alert(`Certains articles ne sont plus disponibles en quantité suffisante pour vos dates sélectionnées :\n\n${overbookedList.join('\n')}\n\nVeuillez ajuster votre panier.`);
+        setLoading(false);
+        return;
+      }
+    } catch (err) {
+      console.error('Failed to run final stock check:', err);
+      // Fallback: static check if API is down
+      const overbooked = items.filter(item => item.stock_level !== undefined && item.quantity > item.stock_level);
+      if (overbooked.length > 0) {
+        alert(`Certains articles ne sont plus disponibles en quantité suffisante : ${overbooked.map(i => i.name).join(', ')}`);
+        setLoading(false);
+        return;
+      }
     }
 
     // Prepare submission data
