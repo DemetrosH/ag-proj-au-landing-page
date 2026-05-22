@@ -55,7 +55,7 @@ export function DeliveryZoneSection({ height = "50vh" }: { height?: string }) {
         <div className="absolute inset-0 bg-gradient-to-r from-brand-dark via-brand-dark/40 to-transparent pointer-events-none" />
       </div>
 
-      <div className="container mx-auto px-4 max-w-7xl h-full relative z-10">
+      <div className="container mx-auto px-4 max-w-7xl 3xl:max-w-[100rem] 4xl:max-w-[120rem] 5xl:max-w-[140rem] h-full relative z-10">
         <div className="flex flex-col justify-center h-full max-w-2xl">
           
           {/* Text Content - Compact Version */}
