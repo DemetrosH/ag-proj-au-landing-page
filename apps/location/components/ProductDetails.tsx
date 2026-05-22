@@ -335,7 +335,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               </div>
             )}
 
-            {availableSessionStock <= 0 && (
+            {availableSessionStock <= 0 && !added && (
               <div className="p-5 bg-red-50 rounded-2xl mb-8 flex items-center gap-4 border border-red-100">
                 <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-500 shrink-0">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
