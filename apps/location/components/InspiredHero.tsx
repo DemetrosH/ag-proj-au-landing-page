@@ -50,12 +50,17 @@ const features = [
   }
 ];
 
-export function InspiredHero() {
-  const [heroProducts, setHeroProducts] = useState<any[]>([]);
+export function InspiredHero({ initialProducts }: { initialProducts?: any[] }) {
+  const [heroProducts, setHeroProducts] = useState<any[]>(initialProducts || []);
   const [currentIndex, setCurrentIndex] = useState(0);
   const supabase = createClient();
 
   useEffect(() => {
+    if (initialProducts && initialProducts.length > 0) {
+      console.log("Hero: Using pre-fetched server products, skipping client fetch.");
+      return;
+    }
+
     const fetchHeroProducts = async () => {
       // 0. Default Fallback List (Always ready)
       const fallbackItems = [
@@ -117,7 +122,7 @@ export function InspiredHero() {
     };
 
     fetchHeroProducts();
-  }, []);
+  }, [initialProducts]);
 
   useEffect(() => {
     if (heroProducts.length === 0) return;

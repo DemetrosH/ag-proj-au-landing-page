@@ -3,6 +3,7 @@ import { LandingPage } from '../components/LandingPage';
 import { getHomeCategories, getEquipment } from '../lib/rentman';
 import { getLocationDivision, getCategoryConfigs } from '../lib/sanity';
 import { Footer } from '../components/Footer';
+import { getHeroProducts } from '../lib/heroServer';
 
 import { getUserRole } from '../lib/auth';
 
@@ -11,11 +12,12 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const role = await getUserRole();
-  const [categories, division, rawCategoryConfigs, allEquipment] = await Promise.all([
+  const [categories, division, rawCategoryConfigs, allEquipment, heroProducts] = await Promise.all([
     getHomeCategories(role),
     getLocationDivision(),
     getCategoryConfigs(role),
-    getEquipment(5000, role) // Fetch all to resolve cross-category image links
+    getEquipment(5000, role), // Fetch all to resolve cross-category image links
+    getHeroProducts()
   ]);
 
   // Resolve missing images from Rentman for Sanity configs
@@ -47,6 +49,7 @@ export default async function Home() {
           categories={categories} 
           division={division} 
           categoryConfigs={categoryConfigs} 
+          heroProducts={heroProducts}
         />
       </main>
       

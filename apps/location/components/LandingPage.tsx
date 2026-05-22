@@ -34,9 +34,10 @@ interface LandingPageProps {
   categories: Category[];
   division?: Division;
   categoryConfigs?: CategoryConfig[];
+  heroProducts?: any[];
 }
 
-export function LandingPage({ categories, division, categoryConfigs = [] }: LandingPageProps) {
+export function LandingPage({ categories, division, categoryConfigs = [], heroProducts = [] }: LandingPageProps) {
   // Filter categories that have products and exclude specific ones
   const excludedCategories = ['communication', 'tapis'];
   let activeCategories = categories.filter(c => {
@@ -98,7 +99,7 @@ export function LandingPage({ categories, division, categoryConfigs = [] }: Land
     <div className="flex flex-col min-h-screen bg-white font-sans text-gray-900">
       
       {/* 1. Brand Inspired Hero */}
-      <InspiredHero />
+      <InspiredHero initialProducts={heroProducts} />
 
       {/* 2. Delivery Zone Information */}
       <DeliveryZoneSection />
