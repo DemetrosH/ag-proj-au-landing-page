@@ -275,7 +275,7 @@ function SoumissionContent() {
     return (
       <div className="min-h-screen bg-white">
         <Header />
-        <main className="container mx-auto px-4 py-16 md:py-32 text-center">
+        <main className="container mx-auto px-4 py-16 md:py-32 text-center max-w-7xl 3xl:max-w-[100rem] 4xl:max-w-[120rem] 5xl:max-w-[140rem]">
           <div className="max-w-2xl mx-auto bg-brand-surface rounded-[2rem] md:rounded-[4rem] p-8 md:p-20 border border-brand-border shadow-2xl shadow-brand-dark/5">
             <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-10 text-white shadow-xl shadow-green-500/20">
               <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -310,7 +310,7 @@ function SoumissionContent() {
     <div className="min-h-screen bg-white">
       <Header />
       
-      <main className="container mx-auto px-4 py-16">
+      <main className="container mx-auto px-4 py-16 max-w-7xl 3xl:max-w-[100rem] 4xl:max-w-[120rem] 5xl:max-w-[140rem]">
 
         {items.length === 0 ? (
           <div className="text-center py-32 bg-brand-surface rounded-[3rem] border border-brand-border">
