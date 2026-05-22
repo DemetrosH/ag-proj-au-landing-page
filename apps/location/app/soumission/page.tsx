@@ -540,17 +540,23 @@ function SoumissionContent() {
                 <div className="bg-brand-surface rounded-[2rem] md:rounded-[4rem] p-5 sm:p-8 md:p-20 border border-brand-border shadow-2xl shadow-brand-dark/5 relative overflow-hidden">
                   {!user && (
                     <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-20 flex items-center justify-center p-8">
-                      <div className="bg-white border border-brand-border rounded-[3rem] p-12 shadow-2xl text-center max-w-sm">
-                        <h3 className="text-2xl font-black uppercase tracking-tighter mb-4">Espace <span className="text-brand-orange">Partenaire</span></h3>
+                      <div className="bg-white border border-brand-border rounded-[3rem] p-12 shadow-2xl text-center max-w-sm w-full relative z-30">
+                        <h3 className="text-2xl font-black uppercase tracking-tighter mb-4">Créer un <span className="text-brand-orange">Compte</span></h3>
                         <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-8 leading-relaxed">
-                          Vous devez être connecté à votre compte professionnel pour finaliser cette soumission.
+                          Vous devez vous connecter ou créer un compte pour finaliser cette soumission.
                         </p>
                         <div className="flex flex-col gap-4">
                           <Link 
-                            href="/login" 
+                            href="/signup" 
                             className="bg-brand-dark text-white font-black uppercase tracking-[0.2em] px-8 py-4 rounded-full hover:bg-brand-orange transition-all shadow-xl block"
                           >
-                            Connexion Pro
+                            Créer un compte
+                          </Link>
+                          <Link 
+                            href="/login" 
+                            className="bg-white border-2 border-brand-dark text-brand-dark font-black uppercase tracking-[0.2em] px-8 py-4 rounded-full hover:bg-brand-dark hover:text-white transition-all block"
+                          >
+                            Se connecter
                           </Link>
                         </div>
                       </div>
