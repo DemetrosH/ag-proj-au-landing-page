@@ -262,6 +262,16 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                   );
                 })}
               </div>
+
+              {isDateSet && durationInDays === 2 && (
+                <div className="mt-6 p-5 bg-amber-50/50 border border-amber-200 rounded-2xl flex items-start gap-4 shadow-sm animate-fade-in-up">
+                  <span className="text-amber-500 text-xl shrink-0 mt-0.5">⚠️</span>
+                  <div className="text-xs font-bold text-gray-600 leading-relaxed">
+                    <span className="text-amber-700 font-extrabold uppercase tracking-wider block mb-1">Attention : Location de 2 jours (coefficient 1.5x)</span>
+                    Vous louez présentement pour deux jours. Si vous souhaitez louer pour une seule journée, veuillez choisir la même date de fin que de début.
+                  </div>
+                </div>
+              )}
             </div>
 
             {!isDateSet && (
@@ -430,7 +440,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {product.accessories.map((accessory) => (
               <div key={accessory.id} className="flex flex-col">
-                <Link href={`/products/${accessory.id}`} className="group">
+                <Link href={`/products/${accessory.slug || accessory.id}`} className="group">
                   <div className="aspect-square bg-brand-surface rounded-2xl overflow-hidden border border-brand-border mb-4 flex items-center justify-center p-6 transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1">
                     {accessory.image ? (
                       <img src={accessory.image} alt={accessory.name} className="w-full h-full object-contain mix-blend-multiply" />

@@ -36,11 +36,12 @@ export function RentalProvider({ children }: { children: React.ReactNode }) {
 
   const calculateDuration = () => {
     if (!startDate || !endDate) return 0;
+    if (startDate === endDate) return 1;
     const start = new Date(startDate);
     const end = new Date(endDate);
     const diffTime = Math.abs(end.getTime() - start.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays || 1; // Minimum 1 day
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays + 1;
   };
 
   return (

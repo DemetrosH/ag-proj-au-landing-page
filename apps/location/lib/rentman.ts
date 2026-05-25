@@ -590,7 +590,66 @@ export async function getProductsForCategory(categorySlug: string, role: UserRol
  */
 export async function getProductById(id: string, role: UserRole = 'guest'): Promise<Product | null> {
   const supabase = await createClient();
-  const { data: p, error } = await supabase.from('products').select('*').eq('rentman_id', id).single();
+  
+  // 1. Try to find the product using dynamic criteria (id or slug)
+  let query = supabase.from('products').select('*');
+  const isPureNumber = /^\d+$/.test(id);
+  
+  if (isPureNumber) {
+    query = query.eq('rentman_id', id);
+  } else {
+    query = query.eq('slug', id);
+  }
+
+  let { data: p, error } = await query.single();
+
+  // 2. Fallback: If not found, and contains a hyphen followed by numeric ID, parse the ID (e.g. "machine-a-barbe-a-papa-8023")
+  if ((!p || error) && id.includes('-')) {
+    const parts = id.split('-');
+    const lastPart = parts[parts.length - 1];
+    if (/^\d+$/.test(lastPart)) {
+      const { data: fallbackP, error: fallbackErr } = await supabase
+        .from('products')
+        .select('*')
+        .eq('rentman_id', lastPart)
+        .single();
+      
+      if (fallbackP && !fallbackErr) {
+        p = fallbackP;
+        error = null;
+      }
+    }
+  }
+
+  // 3. Fallback: If not found, and is a pure text slug (e.g. "machine-a-barbe-a-papa"), try prefix matching
+  if (!p || error) {
+    const { data: candidates, error: candidateErr } = await supabase
+      .from('products')
+      .select('*')
+      .ilike('slug', `${id}-%`);
+    
+    if (candidates && candidates.length > 0 && !candidateErr) {
+      p = candidates[0];
+      error = null;
+    }
+  }
+
+  // 4. Fallback: If not found, try fuzzy matching by matching the first 3 words of the requested slug (e.g. "machine-a-barbe-a-papa-quebec" -> "machine-a-barbe-%")
+  if (!p || error) {
+    const words = id.split('-');
+    if (words.length >= 3) {
+      const fuzzyPrefix = words.slice(0, 3).join('-');
+      const { data: candidates, error: candidateErr } = await supabase
+        .from('products')
+        .select('*')
+        .ilike('slug', `${fuzzyPrefix}-%`);
+      
+      if (candidates && candidates.length > 0 && !candidateErr) {
+        p = candidates[0];
+        error = null;
+      }
+    }
+  }
 
   if (p && !error) {
     const rules = URBA_ACCESS_RULES[role];
@@ -611,25 +670,35 @@ export async function getProductById(id: string, role: UserRole = 'guest'): Prom
     };
   }
 
-  const rules = URBA_ACCESS_RULES[role];
-  const item = await rentmanFetch<any>(`/equipment/${id}`);
-  if (!item || !item.in_shop) return null;
-  const itemTags = item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [];
-  if (itemTags.some((tag: string) => rules.hideTags.includes(tag))) return null;
-
-  const fileId = item.image ? item.image.split('/').pop() : null;
-  let imageUrl = '';
-  if (fileId) {
-    try {
-      const file = await rentmanFetch<any>(`/files/${fileId}`);
-      imageUrl = file?.url || '';
-    } catch (e) {}
+  // Only query Rentman API directly if it's a numeric ID (Rentman IDs are strictly numeric)
+  if (!isPureNumber) {
+    return null;
   }
 
-  return {
-    ...mapRentmanToProduct(item, 'unknown'),
-    image: imageUrl || ''
-  };
+  try {
+    const rules = URBA_ACCESS_RULES[role];
+    const item = await rentmanFetch<any>(`/equipment/${id}`);
+    if (!item || !item.in_shop) return null;
+    const itemTags = item.tags ? item.tags.split(',').map((t: string) => t.trim()) : [];
+    if (itemTags.some((tag: string) => rules.hideTags.includes(tag))) return null;
+
+    const fileId = item.image ? item.image.split('/').pop() : null;
+    let imageUrl = '';
+    if (fileId) {
+      try {
+        const file = await rentmanFetch<any>(`/files/${fileId}`);
+        imageUrl = file?.url || '';
+      } catch (e) {}
+    }
+
+    return {
+      ...mapRentmanToProduct(item, 'unknown'),
+      image: imageUrl || ''
+    };
+  } catch (e) {
+    console.warn(`[rentman] Failed to fetch raw item from Rentman for ID ${id}:`, e);
+    return null;
+  }
 }
 
 /**

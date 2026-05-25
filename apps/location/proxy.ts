@@ -44,21 +44,25 @@ export async function proxy(request: NextRequest) {
     console.error('Middleware Auth Error:', e);
   }
 
-  // Logic to protect contact and soumission forms later could go here
-  // or inside the page components themselves.
-
   return supabaseResponse
 }
 
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
+     * Match only the paths that require session/auth/email management.
+     * This avoids running the proxy middleware on static and public routes
+     * like the homepage (/location/) and public catalog pages, fixing 
+     * local rendering issues and speeding up page loads.
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/api/:path*',
+    '/profile/:path*',
+    '/soumission/:path*',
+    '/login/:path*',
+    '/signup/:path*',
+    '/reset-password/:path*',
+    '/forgot-password/:path*'
   ],
 }
+
+export default proxy;

@@ -333,7 +333,7 @@ export function InspiredHero({ initialProducts }: { initialProducts?: any[] }) {
                               </div>
                               
                               <Link 
-                                href={`/products/${heroProducts[currentIndex].rentman_id || heroProducts[currentIndex].id}`}
+                                href={`/products/${heroProducts[currentIndex].slug || heroProducts[currentIndex].rentman_id || heroProducts[currentIndex].id}`}
                                 className="w-10 h-10 rounded-full bg-brand-dark text-white flex items-center justify-center hover:bg-brand-orange transition-all shadow-xl group-hover:translate-x-1"
                               >
                                 <span className="text-xl">→</span>

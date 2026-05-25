@@ -170,7 +170,7 @@ export async function syncRentmanToSupabase() {
         return {
           rentman_id: String(item.id),
           name: item.name,
-          slug: String(item.id), // Using ID as slug for Rentman items
+          slug: slugify(item.name) + '-' + String(item.id),
           price: item.price || 0,
           description: item.shop_description_long || item.shop_description_short || item.description || '',
           image_url: imageUrl || '',
@@ -300,5 +300,20 @@ export async function syncRentmanAllocations(supabase: any) {
     console.error('[Sync] Allocations synchronization failed:', error);
     return { success: false, error };
   }
+}
+
+/**
+ * Standard utility to generate SEO-friendly clean textual slugs
+ */
+export function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .normalize('NFD') // Decompose combined graphemes into individual ones
+    .replace(/[\u0300-\u036f]/g, '') // Remove accent diacritics
+    .replace(/[^a-z0-9\s-]/g, '') // Remove non-alphanumeric (except spaces/hyphens)
+    .trim()
+    .replace(/\s+/g, '-') // Collapse spaces into hyphens
+    .replace(/-+/g, '-'); // Collapse double hyphens
 }
 

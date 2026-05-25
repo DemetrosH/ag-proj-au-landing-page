@@ -44,7 +44,7 @@ export function Header() {
     try {
       const { data, error } = await supabase
         .from('products')
-        .select('id, rentman_id, name, image_url, price, category_slug, tags');
+        .select('id, rentman_id, name, slug, image_url, price, category_slug, tags');
       
       if (!error && data) {
         setAllSearchProducts(data);
@@ -346,7 +346,7 @@ export function Header() {
                   {searchResults.map((result) => (
                     <Link
                       key={result.rentman_id || result.id}
-                      href={`/products/${result.rentman_id || result.id}`}
+                      href={`/products/${result.slug}`}
                       className="flex items-center gap-4 p-4 hover:bg-brand-surface transition-colors border-b border-brand-border last:border-0"
                       onClick={() => {
                         setIsSearchOpen(false);
@@ -680,7 +680,7 @@ export function Header() {
                   {searchResults.map((result) => (
                     <Link
                       key={result.rentman_id || result.id}
-                      href={`/products/${result.rentman_id || result.id}`}
+                      href={`/products/${result.slug}`}
                       className="flex items-center gap-3 p-3 hover:bg-brand-surface transition-colors border-b border-brand-border last:border-0"
                       onClick={() => {
                         setIsMobileMenuOpen(false);

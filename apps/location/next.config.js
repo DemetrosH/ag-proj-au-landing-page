@@ -10,6 +10,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: '**.amazonaws.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'cdn.sanity.io',
       },
       {
@@ -21,8 +25,19 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
+  async redirects() {
+    return [
+      {
+        source: '/product/:slug*',
+        destination: '/products/:slug*',
+        permanent: true,
+      },
+      {
+        source: '/produit/:slug*',
+        destination: '/products/:slug*',
+        permanent: true,
+      }
+    ];
   },
 };
 

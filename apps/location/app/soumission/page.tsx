@@ -453,11 +453,22 @@ function SoumissionContent() {
                         </label>
                       </div>
 
-                      <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest pt-4">
-                        <span className="text-gray-400">Dates</span>
-                        <span className="text-brand-orange bg-white px-3 py-1 rounded-full border border-brand-border">
-                          {isDateSet ? `${startDate} - ${endDate}` : 'Non définies'}
-                        </span>
+                      <div className="flex flex-col gap-2 pt-4 border-t border-brand-border/10">
+                        <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+                          <span className="text-gray-400">Dates</span>
+                          <span className="text-brand-orange bg-white px-3 py-1 rounded-full border border-brand-border">
+                            {isDateSet ? `${startDate} - ${endDate}` : 'Non définies'}
+                          </span>
+                        </div>
+                        {isDateSet && durationInDays === 2 && (
+                          <div className="p-3 bg-amber-50/50 border border-amber-200 rounded-xl flex items-start gap-2.5 mt-1">
+                            <span className="text-amber-500 text-xs shrink-0 mt-0.5">⚠️</span>
+                            <p className="text-[9px] font-bold text-gray-500 leading-normal">
+                              <span className="text-amber-700 font-extrabold uppercase tracking-wide block mb-0.5">Attention : Location de 2 jours (coefficient 1.5x)</span>
+                              Si vous souhaitez louer pour une seule journée, veuillez modifier vos dates pour choisir la même date de fin que de début.
+                            </p>
+                          </div>
+                        )}
                       </div>
                       <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
                         <span className="text-gray-400">Sous-total</span>

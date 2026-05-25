@@ -68,7 +68,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link 
-      href={`/products/${product.id}`} 
+      href={`/products/${product.slug}`} 
       className="group flex flex-col w-[160px] md:w-[200px] 5xl:w-[450px] flex-shrink-0"
     >
       <div className="aspect-[3/4] bg-white border border-gray-100 rounded-2xl overflow-hidden mb-4 relative transition-all duration-500 hover:shadow-2xl hover:shadow-gray-200/50 hover:-translate-y-1">

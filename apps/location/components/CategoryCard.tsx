@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import Image from 'next/image';
+
 import { Category } from '../lib/rentman';
 import { CategoryConfig } from './LandingPage';
 
@@ -108,19 +108,18 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
           const product = displayProducts[i];
 
           return (
-            <div key={i} className="relative border-[0.5px] border-gray-200 flex items-center justify-center p-2 sm:p-6 overflow-hidden transition-all duration-500 group/item">
+            <div key={i} className="relative aspect-square border-[0.5px] border-gray-200 flex items-center justify-center overflow-hidden transition-all duration-500 group/item">
               {product && product.image ? (
-                <Link href={`/products/${product.slug}`} className="relative w-full h-full block transform group-hover/item:scale-110 transition-transform duration-500">
-                  <Image 
+                <Link href={`/products/${product.slug}`} className="absolute inset-0 block transform group-hover/item:scale-110 transition-transform duration-500 p-3 sm:p-8">
+                  <img 
                     src={product.image} 
                     alt={product.name}
-                    fill
-                    className="object-contain p-1 sm:p-2"
-                    sizes="(max-width: 768px) 25vw, 15vw"
+                    className="w-full h-full object-contain"
+                    loading="lazy"
                   />
                 </Link>
               ) : (
-                <div className="text-gray-200 uppercase font-black text-[8px] sm:text-[10px] tracking-widest text-center">
+                <div className="text-gray-200 uppercase font-black text-[8px] sm:text-[10px] tracking-widest text-center p-2">
                   {displayTitle.split(' ')[0]}
                 </div>
               )}

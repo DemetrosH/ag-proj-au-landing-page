@@ -4,6 +4,7 @@ import { ProductDetails } from '../../../components/ProductDetails';
 import { Footer } from '../../../components/Footer';
 import { getUserRole } from '../../../lib/auth';
 import { Metadata } from 'next';
+import { permanentRedirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     description,
     keywords: product.seo_keywords,
     alternates: {
-      canonical: product.canonical_url,
+      canonical: product.canonical_url || `https://artefacturbain.ca/location/products/${product.slug}/`,
     },
     robots: {
       index: !product.no_index,
@@ -58,6 +59,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         </div>
       </div>
     );
+  }
+
+  // Canonicalize URL: If the visited parameter does not match the canonical product slug, permanently redirect (308)
+  if (id !== product.slug) {
+    permanentRedirect(`/products/${product.slug}/`);
   }
 
   // Schema.org Structured Data
