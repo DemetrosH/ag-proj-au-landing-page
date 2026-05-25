@@ -264,10 +264,12 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               </div>
 
               {isDateSet && durationInDays === 2 && (
-                <div className="mt-6 p-5 bg-amber-50/50 border border-amber-200 rounded-2xl flex items-start gap-4 shadow-sm animate-fade-in-up">
-                  <span className="text-amber-500 text-xl shrink-0 mt-0.5">⚠️</span>
+                <div className="mt-6 p-5 bg-orange-50/40 border border-orange-100 rounded-2xl flex items-start gap-4 shadow-sm animate-fade-in-up">
+                  <svg className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                   <div className="text-xs font-bold text-gray-600 leading-relaxed">
-                    <span className="text-amber-700 font-extrabold uppercase tracking-wider block mb-1">Attention : Location de 2 jours (coefficient 1.5x)</span>
+                    <span className="text-orange-700 font-extrabold uppercase tracking-wider block mb-1">Note : Location de 2 jours (coefficient 1.5x)</span>
                     Vous louez présentement pour deux jours. Si vous souhaitez louer pour une seule journée, veuillez choisir la même date de fin que de début.
                   </div>
                 </div>
