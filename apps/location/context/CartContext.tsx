@@ -7,13 +7,25 @@ import { calculateRentalFactor } from '../lib/pricing';
 
 interface CartItem extends Product {
   quantity: number;
+  cartItemId: string;
+  selectedIngredients?: boolean;
+  selectedFlavours?: Record<string, number>;
+  customPriceAdjustment?: number;
 }
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (product: Product, quantity?: number) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  addToCart: (
+    product: Product, 
+    quantity?: number, 
+    options?: { 
+      selectedIngredients?: boolean; 
+      selectedFlavours?: Record<string, number>; 
+      customPriceAdjustment?: number; 
+    }
+  ) => void;
+  removeFromCart: (cartItemId: string) => void;
+  updateQuantity: (cartItemId: string, quantity: number) => void;
   getItemQuantity: (productId: string) => number;
   clearCart: () => void;
   itemCount: number;
@@ -32,7 +44,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const savedCart = localStorage.getItem('au_location_cart');
     if (savedCart) {
       try {
-        setItems(JSON.parse(savedCart));
+        const parsed = JSON.parse(savedCart);
+        // Ensure all legacy items get a cartItemId
+        const upgraded = parsed.map((item: any) => ({
+          ...item,
+          cartItemId: item.cartItemId || item.id
+        }));
+        setItems(upgraded);
       } catch (e) {
         console.error('Failed to parse cart', e);
       }
@@ -98,9 +116,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('au_location_cart', JSON.stringify(items));
   }, [items]);
 
-  const addToCart = (product: Product, quantity = 1) => {
+  const addToCart = (
+    product: Product, 
+    quantity = 1, 
+    options?: { 
+      selectedIngredients?: boolean; 
+      selectedFlavours?: Record<string, number>; 
+      customPriceAdjustment?: number; 
+    }
+  ) => {
+    // Unique ID based on product ID and selected options
+    const suffix = options?.selectedIngredients && options?.selectedFlavours
+      ? `_ingredients_${JSON.stringify(options.selectedFlavours)}`
+      : '';
+    const cartItemId = `${product.id}${suffix}`;
+
     setItems(prev => {
-      const existing = prev.find(item => item.id === product.id);
+      const existing = prev.find(item => item.cartItemId === cartItemId);
       const currentQty = existing ? existing.quantity : 0;
       const newQty = currentQty + quantity;
       
@@ -112,42 +144,45 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         
         if (existing) {
           return prev.map(item => 
-            item.id === product.id ? { ...item, quantity: allowedQty } : item
+            item.cartItemId === cartItemId ? { ...item, quantity: allowedQty } : item
           );
         }
-        return [...prev, { ...product, quantity: allowedQty }];
+        return [...prev, { ...product, quantity: allowedQty, cartItemId, ...options }];
       }
 
       if (existing) {
         return prev.map(item => 
-          item.id === product.id ? { ...item, quantity: newQty } : item
+          item.cartItemId === cartItemId ? { ...item, quantity: newQty } : item
         );
       }
-      return [...prev, { ...product, quantity }];
+      return [...prev, { ...product, quantity, cartItemId, ...options }];
     });
   };
 
-  const removeFromCart = (productId: string) => {
-    setItems(prev => prev.filter(item => item.id !== productId));
+  const removeFromCart = (cartItemId: string) => {
+    setItems(prev => prev.filter(item => item.cartItemId !== cartItemId));
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (cartItemId: string, quantity: number) => {
     if (quantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(cartItemId);
       return;
     }
 
     setItems(prev => {
-      const item = prev.find(i => i.id === productId);
+      const item = prev.find(i => i.cartItemId === cartItemId);
       if (item && item.stock_level !== undefined && quantity > item.stock_level) {
         quantity = item.stock_level;
       }
-      return prev.map(item => item.id === productId ? { ...item, quantity } : item);
+      return prev.map(item => item.cartItemId === cartItemId ? { ...item, quantity } : item);
     });
   };
 
   const getItemQuantity = (productId: string) => {
-    return items.find(item => String(item.id) === String(productId))?.quantity || 0;
+    // For checking overall item count of a product, sum up all configs
+    return items
+      .filter(item => String(item.id) === String(productId))
+      .reduce((sum, item) => sum + item.quantity, 0);
   };
 
   const clearCart = () => setItems([]);
@@ -156,7 +191,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   
   // Apply Degressive Pricing Factor to the total
   const factor = calculateRentalFactor(durationInDays);
-  const baseTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const baseTotal = items.reduce((sum, item) => {
+    const itemPrice = item.price + (item.customPriceAdjustment || 0);
+    return sum + (itemPrice * item.quantity);
+  }, 0);
   const totalPrice = Math.round(baseTotal * factor);
 
   return (

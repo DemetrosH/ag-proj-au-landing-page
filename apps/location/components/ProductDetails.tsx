@@ -24,7 +24,27 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const [dynamicStock, setDynamicStock] = React.useState<number | null>(null);
   const [loadingStock, setLoadingStock] = React.useState(false);
 
+  // Slush Machine Options State
+  const isSlushMachine = product.id === '5459' || product.id === '5460';
+  const isDoubleSlush = product.id === '5460';
+  const [selectedOption, setSelectedOption] = React.useState<'without' | 'with'>('without');
+  const [flavourQuantities, setFlavourQuantities] = React.useState<Record<string, number>>({
+    'Framboise bleue': 0,
+    'Cerise': 0,
+    'Punch aux fruits': 0
+  });
+
+  const totalFlavourPortions = Object.values(flavourQuantities).reduce((a, b) => a + b, 0);
+  const optionAdjustment = isSlushMachine && selectedOption === 'with' ? (totalFlavourPortions * (isDoubleSlush ? 60 : 30)) : 0;
+  const isValidSelection = !isSlushMachine || selectedOption === 'without' || totalFlavourPortions > 0;
+
   React.useEffect(() => {
+    if (!isDateSet || !startDate || !endDate) {
+      setDynamicStock(null);
+      setLoadingStock(false);
+      return;
+    }
+
     let active = true;
     const fetchAvailability = async () => {
       setLoadingStock(true);
@@ -64,7 +84,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const maxStock = availableSessionStock;
   
   const factor = calculateRentalFactor(durationInDays);
-  const totalPrice = Math.round(product.price * factor);
+  const totalPrice = Math.round((product.price + optionAdjustment) * factor);
 
   // Sync active image if product changes
   React.useEffect(() => {
@@ -79,7 +99,15 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
   const handleAddToCart = () => {
     if (quantity > 0) {
-      addToCart(product, quantity);
+      if (isSlushMachine && selectedOption === 'with' && totalFlavourPortions === 0) {
+        alert('Veuillez sélectionner au moins une portion de saveur.');
+        return;
+      }
+      addToCart(product, quantity, {
+        selectedIngredients: isSlushMachine && selectedOption === 'with',
+        selectedFlavours: isSlushMachine && selectedOption === 'with' ? flavourQuantities : undefined,
+        customPriceAdjustment: optionAdjustment
+      });
       setAdded(true);
     }
   };
@@ -200,7 +228,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             <div className="flex justify-between items-start mb-10">
               <div>
                 <span className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Prix de base</span>
-                <span className="text-4xl font-bold text-gray-900">{product.price}$ <span className="text-lg font-normal text-gray-400">/ jour</span></span>
+                <span className="text-4xl font-bold text-gray-900">{(product.price + optionAdjustment)}$ <span className="text-lg font-normal text-gray-400">/ jour</span></span>
               </div>
               <div className="text-right">
                 {isDateSet ? (
@@ -287,11 +315,108 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               </div>
             )}
 
+            {/* Slush Machine Options */}
+            {isSlushMachine && !added && (
+              <div className="mb-8 border-t border-brand-border/30 pt-6">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-4">Options de location</h4>
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedOption('without')}
+                    className={`p-5 rounded-2xl border text-center transition-all ${
+                      selectedOption === 'without'
+                        ? 'bg-brand-dark border-brand-dark text-white shadow-lg'
+                        : 'bg-white border-brand-border/50 text-brand-dark hover:border-gray-400'
+                    }`}
+                  >
+                    <span className="block text-[10px] font-bold uppercase tracking-wider mb-1">Option 1</span>
+                    <span className="block text-sm font-black">Sans ingrédients</span>
+                    <span className="block text-[10px] opacity-75 mt-1">Prix de base</span>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => setSelectedOption('with')}
+                    className={`p-5 rounded-2xl border text-center transition-all ${
+                      selectedOption === 'with'
+                        ? 'bg-brand-dark border-brand-dark text-white shadow-lg'
+                        : 'bg-white border-brand-border/50 text-brand-dark hover:border-gray-400'
+                    }`}
+                  >
+                    <span className="block text-[10px] font-bold uppercase tracking-wider mb-1">Option 2</span>
+                    <span className="block text-sm font-black">Avec ingrédients</span>
+                    <span className="block text-[10px] opacity-75 mt-1">+{isDoubleSlush ? '60' : '30'} CAD</span>
+                  </button>
+                </div>
+
+                {/* Flavor Portions Selection */}
+                {selectedOption === 'with' && (
+                  <div className="bg-white border border-brand-border rounded-[2rem] p-6 space-y-4 mb-6 animate-fade-in-up">
+                    <h5 className="text-[10px] font-black uppercase tracking-widest text-brand-orange border-b border-brand-border/30 pb-3">
+                      Portions de sirop (Ajuster la quantité)
+                    </h5>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide leading-relaxed mt-2">
+                      * Note : Une portion de sirop est suffisante pour remplir la capacité maximale de la machine 
+                      ({isDoubleSlush ? "2 bacs complets" : "1 bac complet"}).
+                    </p>
+                    
+                    {Object.keys(flavourQuantities).map((flavor) => (
+                      <div key={flavor} className="flex items-center justify-between py-2 last:border-none">
+                        <span className="text-xs font-bold text-gray-700">{flavor}</span>
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => setFlavourQuantities(prev => ({
+                              ...prev,
+                              [flavor]: Math.max(0, prev[flavor] - 1)
+                            }))}
+                            className="w-6 h-6 rounded-full border border-brand-border flex items-center justify-center hover:bg-brand-surface transition-colors disabled:opacity-30"
+                            disabled={flavourQuantities[flavor] <= 0}
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M20 12H4" />
+                            </svg>
+                          </button>
+                          <span className="text-sm font-black w-6 text-center">{flavourQuantities[flavor]}</span>
+                          <button
+                            type="button"
+                            onClick={() => setFlavourQuantities(prev => ({
+                              ...prev,
+                              [flavor]: prev[flavor] + 1
+                            }))}
+                            className="w-6 h-6 rounded-full border border-brand-border flex items-center justify-center hover:bg-brand-surface transition-colors"
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {totalFlavourPortions > 0 && (
+                      <p className="text-xs font-black text-brand-orange uppercase tracking-wider text-center mt-2 border-t border-brand-border/30 pt-3">
+                        Montant additionnel pour les ingrédients : {optionAdjustment} $
+                      </p>
+                    )}
+
+                    {totalFlavourPortions === 0 && (
+                      <p className="text-[10px] font-black text-red-500 uppercase tracking-wider text-center mt-2 animate-pulse">
+                        * Sélectionnez au moins 1 portion total
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Quantity Selector */}
             {!added && (
               <div className="flex flex-col gap-3 mb-8">
                 <div className="flex items-center justify-between px-6 py-4 bg-white border border-brand-border rounded-2xl">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Quantité</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    {isSlushMachine ? "Quantité de machines" : "Quantité"}
+                  </span>
                   <div className="flex items-center gap-6">
                     <button 
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -338,16 +463,22 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                       {currentInCart} déjà au panier
                     </p>
                   )}
-                  {product.stock_level !== undefined && (
+                  {isDateSet && product.stock_level !== undefined ? (
                     <p className={`text-sm font-black uppercase tracking-widest ml-auto ${availableSessionStock <= 0 ? 'text-red-500' : 'text-brand-gold'} ${loadingStock ? 'animate-pulse opacity-50' : ''}`}>
                       {loadingStock ? 'Vérification...' : `${availableSessionStock} disponible(s)`}
                     </p>
+                  ) : (
+                    !isDateSet && (
+                      <p className="text-[10px] font-black uppercase tracking-widest ml-auto text-brand-gold">
+                        Sélectionnez vos dates pour voir la disponibilité
+                      </p>
+                    )
                   )}
                 </div>
               </div>
             )}
 
-            {availableSessionStock <= 0 && !added && (
+            {isDateSet && availableSessionStock <= 0 && !added && (
               <div className="p-5 bg-red-50 rounded-2xl mb-8 flex items-center gap-4 border border-red-100">
                 <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-500 shrink-0">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -355,9 +486,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                   </svg>
                 </div>
                 <p className="text-sm font-bold text-red-700 leading-tight uppercase tracking-tight">
-                  {isDateSet 
-                    ? "Indisponible pour ces dates. Veuillez sélectionner d'autres dates."
-                    : "Indisponible actuellement. Veuillez sélectionner d'autres dates."}
+                  Indisponible pour ces dates. Veuillez sélectionner d'autres dates.
                 </p>
               </div>
             )}
@@ -365,7 +494,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             {!added ? (
               <motion.button 
                 onClick={handleAddToCart}
-                disabled={availableSessionStock <= 0}
+                disabled={availableSessionStock <= 0 || !isValidSelection}
                 whileHover={availableSessionStock > 0 ? "hover" : ""}
                 variants={{
                   hover: { scale: 1.01, y: -2 }

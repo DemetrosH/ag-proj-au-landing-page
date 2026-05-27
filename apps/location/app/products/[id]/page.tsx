@@ -43,11 +43,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const role = await getUserRole();
   
-  // Fetch product and accessories in parallel
-  const [product, accessories] = await Promise.all([
-    getProductById(id, role),
-    getAccessories(id, role)
-  ]);
+  const product = await getProductById(id, role);
+  const accessories = product ? await getAccessories(product.id, role) : [];
 
   if (!product) {
     return (

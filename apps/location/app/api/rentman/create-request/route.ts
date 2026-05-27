@@ -63,9 +63,9 @@ export async function POST(request: Request) {
     // Rentman expects ISO strings with timezone offset
     const tz = '-04:00'; // Default to EDT for Artéfact Urbain
 
-    // Calculate total price from cart items
+    // Calculate total price from cart items (including custom options pricing adjustments)
     const totalPrice = items.reduce((sum: number, item: any) => 
-      sum + ((item.quantity || 1) * (item.price || 0)), 0);
+      sum + ((item.quantity || 1) * ((item.price || 0) + (item.customPriceAdjustment || 0))), 0);
 
     // 3. Ensure a Default Location exists to bypass the "Connect Location" step
     const defaultLocationName = "Lieu à confirmer";
@@ -133,14 +133,35 @@ Code Postal: ${body.locationPostalCode || ''}
     }
 
     // Add Equipment Items with all fields for clean conversion
-    console.log(`[Rentman API] Adding ${items.length} items to request ${requestId}...`);
-    const equipmentItems = items.map((item: any, index: number) => ({
-      name: item.name,
-      quantity: item.quantity || 1,
-      equipmentId: item.id,       // Rentman equipment ID
-      price: item.price || 0,
-      order: index,               // Sort order
-    }));
+    console.log(`[Rentman API] Adding ${items.length} base items (plus potential options) to request ${requestId}...`);
+    const equipmentItems: any[] = [];
+    let orderIndex = 0;
+
+    for (const item of items) {
+      // Add the machine itself at its base price
+      equipmentItems.push({
+        name: item.name,
+        quantity: item.quantity || 1,
+        equipmentId: item.id,       // Rentman equipment ID
+        price: item.price || 0,
+        order: orderIndex++,
+      });
+
+      // If ingredients option is selected, inject the custom portion line item
+      if (item.selectedIngredients && item.selectedFlavours) {
+        const flavorDetails = Object.entries(item.selectedFlavours)
+          .filter(([_, qty]) => (qty as number) > 0)
+          .map(([flavor, qty]) => `${qty}x ${flavor}`)
+          .join(', ');
+
+        equipmentItems.push({
+          name: `Portions de sirop (${flavorDetails}) pour Machine à slush`,
+          quantity: item.quantity || 1,
+          price: item.customPriceAdjustment || 0,
+          order: orderIndex++,
+        });
+      }
+    }
 
     await addEquipmentToProjectRequest(requestId, equipmentItems);
 

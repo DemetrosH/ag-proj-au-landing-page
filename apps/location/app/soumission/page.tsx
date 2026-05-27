@@ -114,18 +114,18 @@ function SoumissionContent() {
     setShowSuggestions(false);
   };
 
-  const handleRemove = (id: string) => {
-    removeFromCart(id);
+  const handleRemove = (cartItemId: string) => {
+    removeFromCart(cartItemId);
     if (items.length <= 1) setStep('cart');
   };
 
-  const handleQuantity = (id: string, q: number) => {
-    const item = items.find(i => i.id === id);
+  const handleQuantity = (cartItemId: string, q: number) => {
+    const item = items.find(i => i.cartItemId === cartItemId);
     if (item && item.stock_level !== undefined && q > item.stock_level) {
       // Don't allow increasing beyond stock
       return;
     }
-    updateQuantity(id, q);
+    updateQuantity(cartItemId, q);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -231,7 +231,10 @@ function SoumissionContent() {
             id: item.id,
             name: item.name,
             quantity: item.quantity,
-            price: item.price
+            price: item.price,
+            selectedIngredients: item.selectedIngredients,
+            selectedFlavours: item.selectedFlavours,
+            customPriceAdjustment: item.customPriceAdjustment
           })),
           details: formData.eventDetails,
           deliveryMethod: deliveryMethod
@@ -363,7 +366,7 @@ function SoumissionContent() {
 
                   <div className="space-y-4">
                     {items.map((item) => (
-                      <div key={item.id} className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 p-4 sm:p-6 border border-brand-border rounded-[1.5rem] sm:rounded-[2.5rem] bg-white hover:shadow-xl transition-all group text-center sm:text-left">
+                      <div key={item.cartItemId} className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 p-4 sm:p-6 border border-brand-border rounded-[1.5rem] sm:rounded-[2.5rem] bg-white hover:shadow-xl transition-all group text-center sm:text-left">
                         <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center text-brand-gold/20 flex-shrink-0 overflow-hidden relative">
                           {item.image ? (
                             <img src={item.image} alt={item.name} className="w-full h-full object-contain p-2" />
@@ -375,18 +378,26 @@ function SoumissionContent() {
                         </div>
                         <div className="flex-grow w-full sm:w-auto">
                           <h3 className="text-base sm:text-lg font-black text-brand-dark uppercase tracking-tight">{item.name}</h3>
-                          <p className="text-brand-orange font-black text-sm">{Math.round(item.price * factor)}$ <span className="text-[9px] font-bold text-gray-400 uppercase">/ total</span></p>
+                          {item.selectedIngredients && item.selectedFlavours && (
+                            <p className="text-xs text-brand-orange font-bold uppercase mt-1">
+                              Ingrédients inclus: {Object.entries(item.selectedFlavours)
+                                .filter(([_, q]) => q > 0)
+                                .map(([f, q]) => `${q}x ${f}`)
+                                .join(', ')}
+                            </p>
+                          )}
+                          <p className="text-brand-orange font-black text-sm">{Math.round((item.price + (item.customPriceAdjustment || 0)) * factor)}$ <span className="text-[9px] font-bold text-gray-400 uppercase">/ total</span></p>
                         </div>
                         <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-center sm:justify-end border-t sm:border-t-0 border-gray-100 pt-4 sm:pt-0 mt-2 sm:mt-0">
                           <div className="flex items-center border border-brand-border rounded-full px-4 py-1.5 bg-gray-50">
-                            <button onClick={() => handleQuantity(item.id, item.quantity - 1)} className="p-1 hover:text-brand-orange transition-colors">
+                            <button onClick={() => handleQuantity(item.cartItemId, item.quantity - 1)} className="p-1 hover:text-brand-orange transition-colors">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M20 12H4" />
                               </svg>
                             </button>
                             <span className="w-8 text-center font-black text-brand-dark">{item.quantity}</span>
                             <button 
-                              onClick={() => handleQuantity(item.id, item.quantity + 1)} 
+                              onClick={() => handleQuantity(item.cartItemId, item.quantity + 1)} 
                               className={`p-1 transition-colors ${
                                 item.stock_level !== undefined && item.quantity >= item.stock_level
                                   ? 'text-gray-200 cursor-not-allowed'
@@ -402,7 +413,7 @@ function SoumissionContent() {
                           {item.stock_level !== undefined && item.quantity >= item.stock_level && (
                             <span className="text-[8px] font-black text-brand-orange uppercase tracking-tighter">Max atteint</span>
                           )}
-                          <button onClick={() => handleRemove(item.id)} className="text-gray-300 hover:text-red-500 transition-colors p-2">
+                          <button onClick={() => handleRemove(item.cartItemId)} className="text-gray-300 hover:text-red-500 transition-colors p-2">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
