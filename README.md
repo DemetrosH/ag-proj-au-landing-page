@@ -1,4 +1,4 @@
-# Turborepo starter
+# Turborepo starter - Location App
 
 This Turborepo starter is maintained by the Turborepo core team.
 
