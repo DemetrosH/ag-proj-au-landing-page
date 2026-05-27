@@ -6,7 +6,7 @@ const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'gzkag8mw';
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
 
 export default defineConfig({
-  basePath: "/studio",
+  basePath: "/location/studio",
   projectId,
   dataset,
   plugins: [structureTool()],
