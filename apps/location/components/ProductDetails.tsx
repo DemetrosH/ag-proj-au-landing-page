@@ -330,7 +330,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                     }`}
                   >
                     <span className="block text-[10px] font-bold uppercase tracking-wider mb-1">Option 1</span>
-                    <span className="block text-sm font-black">Sans ingrédients</span>
+                    <span className="block text-sm font-black">Sans sirop</span>
                     <span className="block text-[10px] opacity-75 mt-1">Prix de base</span>
                   </button>
                   
@@ -344,7 +344,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                     }`}
                   >
                     <span className="block text-[10px] font-bold uppercase tracking-wider mb-1">Option 2</span>
-                    <span className="block text-sm font-black">Avec ingrédients</span>
+                    <span className="block text-sm font-black">Avec sirop</span>
                     <span className="block text-[10px] opacity-75 mt-1">+{isDoubleSlush ? '60' : '30'} CAD</span>
                   </button>
                 </div>
