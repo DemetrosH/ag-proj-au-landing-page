@@ -84,8 +84,16 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   products.sort((a, b) => {
     if (config?.orderedProducts && config.orderedProducts.length > 0) {
       const orderedSlugs = config.orderedProducts.map((op: any) => op.slug);
-      const indexA = orderedSlugs.indexOf(a.slug);
-      const indexB = orderedSlugs.indexOf(b.slug);
+      const indexA = orderedSlugs.findIndex((s: any) => 
+        s === a.slug || 
+        String(s) === String(a.id) || 
+        (a.slug && a.slug.endsWith(`-${s}`))
+      );
+      const indexB = orderedSlugs.findIndex((s: any) => 
+        s === b.slug || 
+        String(s) === String(b.id) || 
+        (b.slug && b.slug.endsWith(`-${s}`))
+      );
       
       if (indexA !== -1 && indexB !== -1) return indexA - indexB;
       if (indexA !== -1) return -1;
