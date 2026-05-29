@@ -7,6 +7,7 @@ export const config = {
   apiVersion: '2024-01-01',
   useCdn: false, // Set to false to avoid CDN caching issues for edited content
   token: process.env.SANITY_API_TOKEN,
+  perspective: 'published' as const, // Automatically filters out draft documents from results
 };
 
 export const client = createClient(config);
@@ -19,7 +20,7 @@ export function urlFor(source: any) {
 
 export async function getLocationDivision() {
   return await client.fetch(
-    `*[_type == "division" && slug.current == "location" && !(_id in drafts.**)][0] {
+    `*[_type == "division" && slug.current == "location"][0] {
       _id,
       title,
       "slug": slug.current,
@@ -43,9 +44,8 @@ export async function getCategoryConfigs(role: UserRole = 'guest') {
   
   // Note: We apply the visibility filter to the featuredProducts slugs if possible,
   // but the primary focus is filtering the categories themselves.
-  // We explicitly filter out draft documents (!(_id in drafts.**)) to avoid duplicates.
   return await client.fetch(
-    `*[_type == "categoryConfig" && !(_id in drafts.**) && ${visibilityFilter}] | order(order asc) {
+    `*[_type == "categoryConfig" && ${visibilityFilter}] | order(order asc) {
       rentmanId,
       title,
       description,
