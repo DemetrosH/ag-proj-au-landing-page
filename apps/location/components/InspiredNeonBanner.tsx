@@ -14,6 +14,7 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
       initial={{ opacity: 0, scale: 0.95 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
+      style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
       className={`relative w-full bg-[#050505] overflow-hidden flex h-full ${
         isVertical 
           ? 'flex-col items-center justify-between py-0 px-4 sm:px-6 text-center rounded-[1.75rem] shadow-[0_0_50px_rgba(0,0,0,0.5)]' 

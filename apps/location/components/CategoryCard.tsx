@@ -100,6 +100,7 @@ export function CategoryCard({ category, config: providedConfig, index }: Catego
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
+      style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
       className={`group bg-white border-t-8 ${borderColor} shadow-xl hover:shadow-2xl transition-all duration-500 rounded-b-[2rem] rounded-t-lg overflow-hidden flex flex-col`}
     >
       {/* 2x2 Product Thumbnail Grid */}
