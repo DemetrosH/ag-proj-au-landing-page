@@ -19,7 +19,8 @@ export async function GET(request: Request) {
   }
 
   const startTime = Date.now();
-  const result = await syncRentmanToSupabase();
+  const source = isCron ? 'cron' : 'manual';
+  const result = await syncRentmanToSupabase(source);
   const duration = (Date.now() - startTime) / 1000;
 
   if (result.success) {

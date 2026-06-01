@@ -6,16 +6,31 @@ import {
   getFolders,
   getCategories
 } from './rentman';
+import { client as sanityClient } from './sanity';
 import wcData from '../data/wc-data.json';
 
 /**
  * Main synchronization function to mirror Rentman data to Supabase
  */
-export async function syncRentmanToSupabase() {
+export async function syncRentmanToSupabase(source: string = 'manual') {
   const supabase = createAdminClient();
-  console.log('[Sync] Starting Rentman to Supabase synchronization...');
+  const startTime = Date.now();
+  console.log(`[Sync] Starting Rentman to Supabase synchronization (source: ${source})...`);
+  
+  let logId: string | null = null;
 
   try {
+    // Log start to database
+    const { data: logData, error: logError } = await supabase
+      .from('sync_logs')
+      .insert({ source, status: 'started' })
+      .select('id')
+      .single();
+    
+    if (logData && !logError) {
+      logId = logData.id;
+    }
+
     // 0. Fetch existing products to preserve images if sync fails to find them
     const { data: existingProducts } = await supabase.from('products').select('rentman_id, image_url');
     const existingImages: Record<string, string> = {};
@@ -199,6 +214,65 @@ export async function syncRentmanToSupabase() {
       if (prodError) throw prodError;
     }
 
+    // 3.5 Sync new products to Sanity categoryConfig
+    try {
+      console.log('[Sync] Updating Sanity categoryConfigs with new products...');
+      // Group products by category_slug
+      const productsByCategory: Record<string, any[]> = {};
+      for (const p of productsToUpsert) {
+        if (p.category_slug) {
+          if (!productsByCategory[p.category_slug]) {
+            productsByCategory[p.category_slug] = [];
+          }
+          productsByCategory[p.category_slug].push(p);
+        }
+      }
+
+      for (const [catSlug, products] of Object.entries(productsByCategory)) {
+        const docId = `category-config-${catSlug}`;
+        
+        let existingDoc: any = null;
+        try {
+          existingDoc = await sanityClient.getDocument(docId);
+        } catch (err) {
+          // ignore
+        }
+        let existingDraft: any = null;
+        try {
+          existingDraft = await sanityClient.getDocument(`drafts.${docId}`);
+        } catch (err) {
+          // ignore
+        }
+
+        const activeDoc = existingDraft || existingDoc;
+        if (activeDoc) {
+          const currentOrderedProducts = activeDoc.orderedProducts || [];
+          const existingSlugs = new Set(currentOrderedProducts.map((p: any) => p.slug));
+          
+          const newOrderedProducts = products
+            .filter((p: any) => !existingSlugs.has(p.slug))
+            .map((p: any) => ({
+              _key: `prod_${p.slug}_${Math.random().toString(36).substring(7)}`,
+              _type: 'orderedProduct',
+              name: p.name,
+              slug: p.slug
+            }));
+
+          if (newOrderedProducts.length > 0) {
+            console.log(`[Sync] Adding ${newOrderedProducts.length} new products to category: ${catSlug} in Sanity`);
+            await sanityClient
+              .patch(docId)
+              .setIfMissing({ orderedProducts: [] })
+              .append('orderedProducts', newOrderedProducts)
+              .commit();
+          }
+        }
+      }
+      console.log('[Sync] Sanity update complete.');
+    } catch (sanityErr) {
+      console.error('[Sync] Failed to update Sanity categoryConfigs:', sanityErr);
+    }
+
     // 4. Sync equipment allocations
     let allocationsCount = 0;
     try {
@@ -211,9 +285,27 @@ export async function syncRentmanToSupabase() {
     }
 
     console.log(`[Sync] Synchronization successful! Products: ${productsToUpsert.length}, Allocations: ${allocationsCount} (Ver 1.3)`);
+    
+    if (logId) {
+      await supabase.from('sync_logs').update({
+        status: 'success',
+        duration_ms: Date.now() - startTime,
+        items_processed: productsToUpsert.length
+      }).eq('id', logId);
+    }
+    
     return { success: true, count: productsToUpsert.length, allocationsCount };
-  } catch (error) {
+  } catch (error: any) {
     console.error('[Sync] Synchronization failed:', error);
+    
+    if (logId) {
+      await supabase.from('sync_logs').update({
+        status: 'error',
+        duration_ms: Date.now() - startTime,
+        error_message: error?.message || String(error)
+      }).eq('id', logId);
+    }
+    
     return { success: false, error };
   }
 }
