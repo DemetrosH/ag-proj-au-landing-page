@@ -44,28 +44,25 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
       {/* 2. Massive Vertical Title */}
       {isVertical ? (
         <div className="relative z-10 flex flex-col items-center justify-between flex-grow flex-1 h-full w-full">
-          {/* Mobile Horizontal Title */}
+          {/* Compact Vertical Title (Mobile & Tablet) */}
           <motion.div 
-            className="sm:hidden text-center flex flex-col justify-between py-2 flex-grow h-full"
+            className="xl:hidden text-center flex flex-col justify-center items-center py-2 sm:py-4 md:py-6 flex-grow h-full space-y-2 md:space-y-4"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
           >
              <h2 
-               className="text-white font-black uppercase tracking-[0.2em] text-3xl leading-none mb-2"
+               className="text-white font-black uppercase tracking-[0.2em] text-xl sm:text-2xl md:text-3xl leading-tight"
                style={{
                  textShadow: '0 0 15px rgba(236, 72, 153, 1), 0 0 30px rgba(236, 72, 153, 0.6)'
                }}
              >
                Enseigne<br/>Néon
              </h2>
-             <p className="text-[10px] text-pink-500/80 font-bold uppercase tracking-widest max-w-[180px] mx-auto">
-               Illuminez vos événements avec nos créations sur mesure.
-             </p>
           </motion.div>
  
-          {/* Desktop Vertical Title */}
+          {/* Desktop Tall Vertical Title (XL and above) */}
           <motion.div 
-            className="hidden sm:flex flex-col items-center justify-between flex-grow h-full w-full"
+            className="hidden xl:flex flex-col items-center justify-between flex-grow h-full w-full"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 1 }}
@@ -113,10 +110,6 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
              </div>
              
              <div className="h-6 sm:h-8 xl:h-12 flex-shrink-0" />
- 
-             <p className="text-[10px] sm:text-xs xl:text-xs 5xl:text-xl text-pink-500 font-bold uppercase tracking-[0.3em] max-w-[120px] sm:max-w-[150px] xl:max-w-[160px] 5xl:max-w-[300px] mx-auto leading-relaxed opacity-80 flex-shrink-0">
-               Illuminez vos événements avec nos créations sur mesure.
-             </p>
           </motion.div>
         </div>
       ) : (
@@ -141,15 +134,21 @@ export function InspiredNeonBanner({ isVertical = false }: InspiredNeonBannerPro
  
       {/* 3. Refined Bottom Content */}
       <div className={`relative z-10 flex flex-col ${
-         isVertical ? 'items-center text-center space-y-4 mt-6' : 'items-center md:items-end text-center md:text-right space-y-8'
+         isVertical ? 'items-center text-center space-y-2 md:space-y-4 mt-2 md:mt-4' : 'items-center md:items-end text-center md:text-right space-y-8'
       }`}>
         <div className="flex-grow" />
+        
+        {isVertical && (
+          <p className="text-[8px] sm:text-[9px] md:text-[10px] xl:text-[11px] 5xl:text-xl text-pink-500/80 font-bold uppercase tracking-[0.2em] sm:tracking-widest max-w-[140px] sm:max-w-[180px] md:max-w-[220px] 5xl:max-w-[300px] mx-auto leading-relaxed flex-shrink-0 mb-2">
+            Illuminez vos événements avec nos créations sur mesure.
+          </p>
+        )}
         
         <Link 
           href="/categories/enseigne-neon"
           className={`group/link relative overflow-hidden transition-all duration-500 ${
             isVertical 
-              ? 'px-8 py-5 5xl:px-20 5xl:py-12 text-xs 5xl:text-2xl font-black text-white tracking-[0.2em] uppercase border border-pink-500/50 bg-pink-500/10 hover:bg-pink-500 hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] rounded-xl' 
+              ? 'px-4 py-3 sm:px-5 sm:py-4 md:px-8 md:py-5 text-[9px] sm:text-[10px] md:text-xs 5xl:text-2xl font-black text-white tracking-[0.2em] uppercase border border-pink-500/50 bg-pink-500/10 hover:bg-pink-500 hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] rounded-xl' 
               : 'px-12 py-6 5xl:px-28 5xl:py-14 text-sm 5xl:text-3xl font-black text-white tracking-[0.3em] uppercase border-2 border-pink-500 hover:bg-pink-500 hover:shadow-[0_0_50px_rgba(236,72,153,0.6)] rounded-full'
           }`}
         >

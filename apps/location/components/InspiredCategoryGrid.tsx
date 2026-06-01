@@ -81,11 +81,8 @@ export function InspiredCategoryGrid({ categories, configs = [], showTitle = tru
           return <CategoryCard key={category.id} category={category} config={config} index={index} />;
         })}
 
-        {/* Banner: takes full width on its own row after 4 cards */}
-        <div className="col-span-2 lg:col-span-3 h-full">
-           {/* Forcing vertical to false on mobile ensures it looks good horizontally, 
-               but we'll keep the prop true if that was the preferred style.
-               Wait, previously `isVertical={true}` was used in both. We'll keep it true to match the aesthetic. */}
+        {/* Banner: occupies a single grid cell to match the dimensions of other cards */}
+        <div className="h-full w-full">
            <InspiredNeonBanner isVertical={true} />
         </div>
 
