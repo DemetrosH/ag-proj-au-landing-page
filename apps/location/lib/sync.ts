@@ -31,11 +31,11 @@ export async function syncRentmanToSupabase(source: string = 'manual') {
       logId = logData.id;
     }
 
-    // 0. Fetch existing products to preserve images if sync fails to find them
-    const { data: existingProducts } = await supabase.from('products').select('rentman_id, image_url');
-    const existingImages: Record<string, string> = {};
+    // 0. Fetch existing products to preserve images and stock levels if sync skips them
+    const { data: existingProducts } = await supabase.from('products').select('rentman_id, image_url, stock_level');
+    const existingData: Record<string, any> = {};
     existingProducts?.forEach(p => {
-      existingImages[p.rentman_id] = p.image_url;
+      existingData[p.rentman_id] = p;
     });
 
     // 1. Fetch everything from Rentman in parallel
@@ -75,13 +75,22 @@ export async function syncRentmanToSupabase(source: string = 'manual') {
     if (catError) throw catError;
 
     const productsToProcess = allEquipment.filter(item => item.in_shop);
-    console.log(`[Sync] Fetching details for ${productsToProcess.length} in-shop products to get accurate stock levels...`);
+    
+    // Only fetch details for products that are NEW or out of stock to avoid Rentman API rate limits (429) and Vercel timeouts
+    const forceFullFetch = source === 'manual_full';
+    const needsFetch = productsToProcess.filter(item => {
+      if (forceFullFetch) return true;
+      const existing = existingData[String(item.id)];
+      return !existing || typeof existing.stock_level !== 'number' || existing.stock_level === 0;
+    });
+
+    console.log(`[Sync] Fetching details for ${needsFetch.length} products (skipping ${productsToProcess.length - needsFetch.length} cached)...`);
     
     // Fetch individual details in batches to avoid overwhelming the API
-    const fullProducts: any[] = [];
+    const fetchedDetails: any[] = [];
     const batchSize = 5;
-    for (let i = 0; i < productsToProcess.length; i += batchSize) {
-      const batch = productsToProcess.slice(i, i + batchSize);
+    for (let i = 0; i < needsFetch.length; i += batchSize) {
+      const batch = needsFetch.slice(i, i + batchSize);
       const details = await Promise.all(batch.map(async (item) => {
         try {
           // Use the rentmanFetch for singular item to get current_quantity
@@ -92,15 +101,25 @@ export async function syncRentmanToSupabase(source: string = 'manual') {
           return item; // Fallback to bulk data
         }
       }));
-      fullProducts.push(...details);
+      fetchedDetails.push(...details);
       
       // Small delay to avoid rate limiting
-      if (i + batchSize < productsToProcess.length) {
+      if (i + batchSize < needsFetch.length) {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
       
-      console.log(`[Sync] Progress: ${Math.min(i + batchSize, productsToProcess.length)}/${productsToProcess.length}`);
+      console.log(`[Sync] Progress: ${Math.min(i + batchSize, needsFetch.length)}/${needsFetch.length}`);
     }
+
+    const fetchedLookup = new Map(fetchedDetails.map(p => [p.id, p]));
+    const fullProducts = productsToProcess.map(item => {
+      if (fetchedLookup.has(item.id)) {
+        return fetchedLookup.get(item.id);
+      } else {
+        const existingStock = existingData[String(item.id)]?.stock_level ?? 0;
+        return { ...item, current_quantity: existingStock };
+      }
+    });
 
     // Prepare folder lookup for faster category matching
     const folderLookup: Record<string, any> = {};
@@ -178,8 +197,8 @@ export async function syncRentmanToSupabase(source: string = 'manual') {
         }
 
         // Final Image fallback: keep existing if new is empty
-        if (!imageUrl && existingImages[String(item.id)]) {
-          imageUrl = existingImages[String(item.id)] || '';
+        if (!imageUrl && existingData[String(item.id)]?.image_url) {
+          imageUrl = existingData[String(item.id)].image_url || '';
         }
 
         return {
