@@ -171,8 +171,8 @@ Code Postal: ${body.locationPostalCode || ''}
       message: 'Rentman project request created successfully' 
     });
 
-    // Send confirmation email in the background (don't await to avoid blocking response)
-    sendQuoteConfirmationEmail({
+    // Await the email so Vercel serverless function doesn't terminate before it finishes sending
+    await sendQuoteConfirmationEmail({
       to: email,
       customerName: name,
       requestId: String(requestId),
