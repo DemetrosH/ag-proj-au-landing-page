@@ -231,10 +231,10 @@ function SoumissionContent() {
             id: item.id,
             name: item.name,
             quantity: item.quantity,
-            price: item.price,
+            price: item.price * factor,
             selectedIngredients: item.selectedIngredients,
             selectedFlavours: item.selectedFlavours,
-            customPriceAdjustment: item.customPriceAdjustment
+            customPriceAdjustment: (item.customPriceAdjustment || 0) * factor
           })),
           details: formData.eventDetails,
           deliveryMethod: deliveryMethod

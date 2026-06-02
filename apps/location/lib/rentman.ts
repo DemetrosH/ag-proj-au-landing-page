@@ -429,7 +429,7 @@ export async function getFilesLookup(): Promise<FilesLookup> {
           // file.itemtype === 'Materiaal' identifies equipment (as opposed to crew, state, etc.)
           if (
             file.item &&
-            file.itemtype === 'Materiaal' &&
+            file.itemtype === 'Equipment' &&
             (file.type?.startsWith('image/') || file.extension?.match(/jpg|jpeg|png|webp|gif/i))
           ) {
             const itemId = String(file.item); // already a plain integer
