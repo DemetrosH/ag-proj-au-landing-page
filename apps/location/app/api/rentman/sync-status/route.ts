@@ -1,7 +1,90 @@
 import { NextResponse } from 'next/server';
 import { getProjectRequestById, getProjectById, rentmanFetch } from '../../../../lib/rentman';
 import { createClient } from '../../../../lib/supabase/server';
+import { createAdminClient } from '../../../../lib/supabase/admin';
 
+// View Sync Logs in HTML format with Local Timezone
+export async function GET(request: Request) {
+  try {
+    const supabase = createAdminClient();
+    const { data: logs, error } = await supabase
+      .from('sync_logs')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+
+    const htmlRows = logs.map((log: any) => {
+      // Convert to Eastern Time (Montreal)
+      const localDate = new Date(log.created_at).toLocaleString('en-CA', {
+        timeZone: 'America/Toronto',
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
+      
+      const duration = log.duration_ms ? (log.duration_ms / 1000).toFixed(2) + 's' : '-';
+      const statusColor = log.status === 'success' ? '#10b981' : log.status === 'error' ? '#ef4444' : '#f59e0b';
+      
+      return `
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #333;">${localDate}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #333;">${log.source}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #333; font-weight: bold; color: ${statusColor}">${log.status}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #333;">${log.items_processed || '-'}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #333;">${duration}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #333; color: #ef4444">${log.error_message || ''}</td>
+        </tr>
+      `;
+    }).join('');
+
+    const html = `
+      <html>
+        <head>
+          <title>Sync Logs</title>
+          <style>
+            body { font-family: system-ui, sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; }
+            table { width: 100%; max-width: 1000px; border-collapse: collapse; background: #1e293b; border-radius: 8px; overflow: hidden; }
+            th { background: #0f172a; padding: 12px 10px; text-align: left; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; }
+            h1 { color: #38bdf8; }
+          </style>
+        </head>
+        <body>
+          <h1>Synchronization Logs</h1>
+          <p>Displaying the latest 50 logs (Timezone: Montreal / America/Toronto)</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Date & Time</th>
+                <th>Source</th>
+                <th>Status</th>
+                <th>Items Processed</th>
+                <th>Duration</th>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${htmlRows}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+
+    return new NextResponse(html, {
+      headers: { 'Content-Type': 'text/html' }
+    });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+
+// POST is used to fetch soumission statuses
 export async function POST(request: Request) {
   try {
     const { requestIds } = await request.json();
