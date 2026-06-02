@@ -32,7 +32,7 @@ export async function syncRentmanToSupabase(source: string = 'manual') {
     }
 
     // 0. Fetch existing products to preserve images and stock levels if sync skips them
-    const { data: existingProducts } = await supabase.from('products').select('rentman_id, image_url, stock_level');
+    const { data: existingProducts } = await supabase.from('products').select('rentman_id, image_url, stock_level, last_synced');
     const existingData: Record<string, any> = {};
     existingProducts?.forEach(p => {
       existingData[p.rentman_id] = p;
@@ -81,7 +81,23 @@ export async function syncRentmanToSupabase(source: string = 'manual') {
     const needsFetch = productsToProcess.filter(item => {
       if (forceFullFetch) return true;
       const existing = existingData[String(item.id)];
-      return !existing || typeof existing.stock_level !== 'number' || existing.stock_level === 0;
+      
+      // Need fetch if it's completely new or marked out of stock
+      if (!existing || typeof existing.stock_level !== 'number' || existing.stock_level === 0) {
+        return true;
+      }
+      
+      // Intelligent Cache Invalidation: 
+      // If Rentman's 'modified' date is newer than our 'last_synced' date, the item was updated (e.g. stock changed)
+      if (item.modified && existing.last_synced) {
+        const rentmanModified = new Date(item.modified).getTime();
+        const lastSynced = new Date(existing.last_synced).getTime();
+        if (rentmanModified > lastSynced) {
+          return true; // Rentman has newer data, we must fetch!
+        }
+      }
+      
+      return false;
     });
 
     console.log(`[Sync] Fetching details for ${needsFetch.length} products (skipping ${productsToProcess.length - needsFetch.length} cached)...`);
