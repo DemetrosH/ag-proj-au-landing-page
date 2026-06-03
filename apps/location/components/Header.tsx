@@ -284,7 +284,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-brand-border bg-white/90 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-brand-border bg-white/90 backdrop-blur-md">
       <div className="container mx-auto px-4 max-w-7xl 4xl:max-w-[90rem] 5xl:max-w-[140rem]">
         {/* Top Header: Logo, Search, Account/Cart */}
         <div className="h-20 flex items-center justify-between gap-1 sm:gap-8">

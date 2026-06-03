@@ -661,7 +661,7 @@ function SoumissionContent() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Ville</label>
                         <input 
@@ -748,7 +748,7 @@ function SoumissionContent() {
                         />
                       </div>
 
-                      <div className="grid grid-cols-2 gap-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-3">
                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-6">Ville</label>
                           <input 
