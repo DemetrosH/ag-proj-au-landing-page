@@ -16,6 +16,7 @@ interface HeaderProps {
   divisions?: Division[];
 }
 
+// Sticky navigation header component with logo, navigation links, and dynamic divisions dropdown
 export const Header = ({ className, divisions = [] }: HeaderProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
@@ -28,7 +29,7 @@ export const Header = ({ className, divisions = [] }: HeaderProps) => {
   ];
 
   return (
-    <header className={cn("fixed top-0 left-0 w-full z-40 bg-white/80 backdrop-blur-md border-b border-gray-100", className)}>
+    <header className={cn("fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100", className)}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo Placeholder */}
