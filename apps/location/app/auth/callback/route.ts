@@ -8,12 +8,34 @@ export async function GET(request: NextRequest) {
   const basePath = '/location'
   const next = nextParam.startsWith(basePath) ? nextParam : `${basePath}${nextParam === '/' ? '' : nextParam}`
 
-  // Safe origin resolution to avoid 0.0.0.0 redirects in dev environments
-  const host = request.headers.get('host') || request.headers.get('x-forwarded-host') || 'localhost:3007'
-  const protocol = request.headers.get('x-forwarded-proto') || 'http'
-  let safeOrigin = `${protocol}://${host}`
-  if (safeOrigin.includes('0.0.0.0')) {
-    safeOrigin = safeOrigin.replace('0.0.0.0', 'localhost')
+  // 1. Check if the client passed an explicit origin in the query parameters (useful behind reverse proxies)
+  const queryOrigin = searchParams.get('origin')
+  let safeOrigin = ''
+  
+  if (queryOrigin) {
+    try {
+      const parsedUrl = new URL(queryOrigin)
+      const hostname = parsedUrl.hostname
+      const isAllowed = ['artefacturbain.ca', 'localhost', '127.0.0.1'].some(domain => 
+        hostname === domain || hostname.endsWith('.' + domain)
+      ) || hostname.endsWith('.vercel.app')
+      
+      if (isAllowed) {
+        safeOrigin = parsedUrl.origin
+      }
+    } catch (e) {
+      console.error('Invalid origin parameter:', queryOrigin, e)
+    }
+  }
+
+  // 2. Fall back to headers if no valid queryOrigin was provided
+  if (!safeOrigin) {
+    const host = request.headers.get('host') || request.headers.get('x-forwarded-host') || 'localhost:3007'
+    const protocol = request.headers.get('x-forwarded-proto') || 'http'
+    safeOrigin = `${protocol}://${host}`
+    if (safeOrigin.includes('0.0.0.0')) {
+      safeOrigin = safeOrigin.replace('0.0.0.0', 'localhost')
+    }
   }
 
   const redirectTo = `${safeOrigin}${next}`

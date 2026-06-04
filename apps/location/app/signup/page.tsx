@@ -25,7 +25,7 @@ export default function SignupPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/location/auth/callback/`,
+        emailRedirectTo: `${window.location.origin}/location/auth/callback/?origin=${encodeURIComponent(window.location.origin)}`,
       },
     })
 
@@ -53,7 +53,7 @@ export default function SignupPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/location/auth/callback/`,
+        redirectTo: `${window.location.origin}/location/auth/callback/?origin=${encodeURIComponent(window.location.origin)}`,
         queryParams: { prompt: 'select_account' },
       },
     })
