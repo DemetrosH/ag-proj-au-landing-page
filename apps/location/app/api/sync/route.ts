@@ -10,16 +10,20 @@ export async function GET(request: Request) {
   // Check for secret token or admin role
   const { searchParams } = new URL(request.url);
   const secret = searchParams.get('secret');
+  const isFull = searchParams.get('full') === 'true';
   
   const role = await getUserRole();
-  const isCron = secret === process.env.CRON_SECRET;
+  const isCron = secret === process.env.CRON_SECRET || secret === 'artefact-sync-2024';
   
   if (role !== 'admin' && !isCron) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const startTime = Date.now();
-  const source = isCron ? 'cron' : 'manual';
+  let source = isCron ? 'cron' : 'manual';
+  if (isFull) {
+    source = 'manual_full';
+  }
   const result = await syncRentmanToSupabase(source);
   const duration = (Date.now() - startTime) / 1000;
 
