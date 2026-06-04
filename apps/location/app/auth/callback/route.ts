@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const next = nextParam.startsWith(basePath) ? nextParam : `${basePath}${nextParam === '/' ? '' : nextParam}`
 
   // Safe origin resolution to avoid 0.0.0.0 redirects in dev environments
-  const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || 'localhost:3007'
+  const host = request.headers.get('host') || request.headers.get('x-forwarded-host') || 'localhost:3007'
   const protocol = request.headers.get('x-forwarded-proto') || 'http'
   let safeOrigin = `${protocol}://${host}`
   if (safeOrigin.includes('0.0.0.0')) {
@@ -51,5 +51,5 @@ export async function GET(request: NextRequest) {
   }
 
   // return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}${basePath}/login?error=Could not authenticate user`)
+  return NextResponse.redirect(`${safeOrigin}${basePath}/login?error=Could not authenticate user`)
 }
