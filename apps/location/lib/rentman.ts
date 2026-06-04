@@ -607,7 +607,7 @@ export async function getProductById(id: string, role: UserRole = 'guest'): Prom
   if ((!p || error) && id.includes('-')) {
     const parts = id.split('-');
     const lastPart = parts[parts.length - 1];
-    if (/^\d+$/.test(lastPart)) {
+    if (lastPart && /^\d+$/.test(lastPart)) {
       const { data: fallbackP, error: fallbackErr } = await supabase
         .from('products')
         .select('*')

@@ -255,11 +255,15 @@ export async function syncRentmanToSupabase(source: string = 'manual') {
       // Group products by category_slug
       const productsByCategory: Record<string, any[]> = {};
       for (const p of productsToUpsert) {
-        if (p.category_slug) {
-          if (!productsByCategory[p.category_slug]) {
-            productsByCategory[p.category_slug] = [];
+        const catSlug = p.category_slug;
+        if (catSlug) {
+          if (!productsByCategory[catSlug]) {
+            productsByCategory[catSlug] = [];
           }
-          productsByCategory[p.category_slug].push(p);
+          const list = productsByCategory[catSlug];
+          if (list) {
+            list.push(p);
+          }
         }
       }
 

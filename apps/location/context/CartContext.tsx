@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product } from '../lib/rentman';
 import { useRental } from './RentalContext';
 import { calculateRentalFactor } from '../lib/pricing';
+import { createClient } from '../lib/supabase/client';
 
 interface CartItem extends Product {
   quantity: number;
@@ -31,6 +32,7 @@ interface CartContextType {
   itemCount: number;
   totalPrice: number;
   factor: number;
+  discountFactor: number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -38,6 +40,43 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const { durationInDays, startDate, endDate } = useRental();
+  const [discountFactor, setDiscountFactor] = useState<number>(1.0);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const fetchDiscount = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('discount_factor')
+            .eq('id', user.id)
+            .single();
+          if (!error && profile && profile.discount_factor !== null) {
+            setDiscountFactor(Number(profile.discount_factor));
+          } else {
+            setDiscountFactor(1.0);
+          }
+        } else {
+          setDiscountFactor(1.0);
+        }
+      } catch (e) {
+        console.error('[CartContext] Failed to fetch discount_factor:', e);
+        setDiscountFactor(1.0);
+      }
+    };
+
+    fetchDiscount();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: any, session: any) => {
+      fetchDiscount();
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   // Load cart from local storage
   useEffect(() => {
@@ -189,13 +228,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
   
-  // Apply Degressive Pricing Factor to the total
+  // Apply Degressive Pricing Factor and Custom Discount to the total
   const factor = calculateRentalFactor(durationInDays);
   const baseTotal = items.reduce((sum, item) => {
     const itemPrice = item.price + (item.customPriceAdjustment || 0);
     return sum + (itemPrice * item.quantity);
   }, 0);
-  const totalPrice = Math.round(baseTotal * factor);
+  const totalPrice = Math.round(baseTotal * factor * discountFactor);
 
   return (
     <CartContext.Provider value={{ 
@@ -207,7 +246,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       clearCart, 
       itemCount,
       totalPrice,
-      factor
+      factor,
+      discountFactor
     }}>
       {children}
     </CartContext.Provider>

@@ -15,7 +15,7 @@ interface ProductDetailsProps {
 
 export function ProductDetails({ product }: ProductDetailsProps) {
   const { durationInDays, isDateSet, startDate, endDate } = useRental();
-  const { addToCart, getItemQuantity } = useCart();
+  const { addToCart, getItemQuantity, discountFactor } = useCart();
   const [added, setAdded] = React.useState(false);
   const [quantity, setQuantity] = React.useState(1);
   const [activeImage, setActiveImage] = React.useState(product.image);
@@ -84,7 +84,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const maxStock = availableSessionStock;
   
   const factor = calculateRentalFactor(durationInDays);
-  const totalPrice = Math.round((product.price + optionAdjustment) * factor);
+  const hasDiscount = discountFactor && discountFactor < 1.0;
+  const totalPrice = Math.round((product.price + optionAdjustment) * factor * (discountFactor ?? 1.0));
 
   // Sync active image if product changes
   React.useEffect(() => {
@@ -228,7 +229,21 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             <div className="flex justify-between items-start mb-10">
               <div>
                 <span className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Prix de base</span>
-                <span className="text-4xl font-bold text-gray-900">{(product.price + optionAdjustment)}$ <span className="text-lg font-normal text-gray-400">/ jour</span></span>
+                {hasDiscount ? (
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl font-bold text-gray-400 line-through">{(product.price + optionAdjustment)}$</span>
+                      <span className="bg-brand-orange text-white text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full">
+                        -{Math.round((1 - discountFactor) * 100)}% Club
+                      </span>
+                    </div>
+                    <span className="text-4xl font-black text-brand-dark">
+                      {Math.round((product.price + optionAdjustment) * discountFactor)}$ <span className="text-lg font-normal text-gray-400">/ jour</span>
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-4xl font-bold text-gray-900">{(product.price + optionAdjustment)}$ <span className="text-lg font-normal text-gray-400">/ jour</span></span>
+                )}
               </div>
               <div className="text-right">
                 {isDateSet ? (
@@ -368,21 +383,21 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                             type="button"
                             onClick={() => setFlavourQuantities(prev => ({
                               ...prev,
-                              [flavor]: Math.max(0, prev[flavor] - 1)
+                              [flavor]: Math.max(0, (prev[flavor] || 0) - 1)
                             }))}
                             className="w-6 h-6 rounded-full border border-brand-border flex items-center justify-center hover:bg-brand-surface transition-colors disabled:opacity-30"
-                            disabled={flavourQuantities[flavor] <= 0}
+                            disabled={(flavourQuantities[flavor] || 0) <= 0}
                           >
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M20 12H4" />
                             </svg>
                           </button>
-                          <span className="text-sm font-black w-6 text-center">{flavourQuantities[flavor]}</span>
+                          <span className="text-sm font-black w-6 text-center">{flavourQuantities[flavor] || 0}</span>
                           <button
                             type="button"
                             onClick={() => setFlavourQuantities(prev => ({
                               ...prev,
-                              [flavor]: prev[flavor] + 1
+                              [flavor]: (prev[flavor] || 0) + 1
                             }))}
                             className="w-6 h-6 rounded-full border border-brand-border flex items-center justify-center hover:bg-brand-surface transition-colors"
                           >
